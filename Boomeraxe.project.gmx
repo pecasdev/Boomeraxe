@@ -5,11 +5,43 @@
   </Configs>
   <NewExtensions/>
   <sounds name="sound"/>
-  <sprites name="sprites"/>
+  <sprites name="sprites">
+    <sprites name="dynamic">
+      <sprites name="player">
+        <sprite>sprites\spr_player_move</sprite>
+        <sprite>sprites\spr_player_fall</sprite>
+        <sprite>sprites\spr_player_throw</sprite>
+        <sprite>sprites\spr_player_slide</sprite>
+        <sprite>sprites\spr_player_wall</sprite>
+      </sprites>
+      <sprites name="enemies"/>
+    </sprites>
+    <sprites name="static">
+      <sprites name="hitboxes">
+        <sprite>sprites\spr_wall0</sprite>
+      </sprites>
+    </sprites>
+  </sprites>
   <backgrounds name="background"/>
   <paths name="paths"/>
   <objects name="objects">
-    <object>objects\obj_player</object>
+    <objects name="visible">
+      <objects name="dynamic">
+        <object>objects\obj_player</object>
+        <objects name="enemies">
+          <object>objects\obj_enemy0</object>
+          <object>objects\obj_enemy1</object>
+          <object>objects\obj_enemy2</object>
+        </objects>
+      </objects>
+      <objects name="static">
+        <objects name="hitboxes">
+          <object>objects\obj_wall</object>
+        </objects>
+        <object>objects\obj_hud</object>
+      </objects>
+    </objects>
+    <object>objects\obj_host</object>
   </objects>
   <help>
     <rtf>help.rtf</rtf>
