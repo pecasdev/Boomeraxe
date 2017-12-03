@@ -8,7 +8,7 @@
   <parentName>&lt;undefined&gt;</parentName>
   <maskName>&lt;undefined&gt;</maskName>
   <events>
-    <event eventtype="3" enumb="0">
+    <event eventtype="0" enumb="0">
       <action>
         <libid>1</libid>
         <id>603</id>
@@ -25,11 +25,20 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>///MANAGES GAME IN BACKGROUND
+            <string>/// Initialize
 
-//ENEMY SPAWNING
-//CHECK IF GAME IS OVER
-//OTHER STUFF LIKE THAT
+create_level()
+create_spike()
+create_enum()
+
+room_width=4000
+room_height=4000
+
+// Create starting objects
+instance_create(64,64,obj_player)
+instance_create(64,64,obj_camera)
+instance_create(0,0,obj_debug)
+
 </string>
           </argument>
         </arguments>

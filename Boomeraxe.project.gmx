@@ -6,43 +6,110 @@
   <NewExtensions/>
   <sounds name="sound"/>
   <sprites name="sprites">
-    <sprites name="dynamic">
+    <sprites name="live">
       <sprites name="player">
-        <sprite>sprites\spr_player_move</sprite>
+        <sprite>sprites\spr_player_attack</sprite>
+        <sprite>sprites\spr_player_dash</sprite>
+        <sprite>sprites\spr_player_down</sprite>
         <sprite>sprites\spr_player_fall</sprite>
-        <sprite>sprites\spr_player_throw</sprite>
-        <sprite>sprites\spr_player_slide</sprite>
+        <sprite>sprites\spr_player_idle</sprite>
+        <sprite>sprites\spr_player_jump</sprite>
+        <sprite>sprites\spr_player_move</sprite>
+        <sprite>sprites\spr_player_up</sprite>
         <sprite>sprites\spr_player_wall</sprite>
       </sprites>
-      <sprites name="enemies"/>
-    </sprites>
-    <sprites name="static">
-      <sprites name="hitboxes">
-        <sprite>sprites\spr_wall0</sprite>
+      <sprites name="enemy">
+        <sprite>sprites\spr_enemy0</sprite>
+        <sprite>sprites\spr_enemy1</sprite>
+        <sprite>sprites\spr_enemy2</sprite>
       </sprites>
+    </sprites>
+    <sprites name="dead">
+      <sprites name="safe">
+        <sprite>sprites\spr_wall</sprite>
+        <sprite>sprites\spr_wall_crumble</sprite>
+        <sprite>sprites\spr_platform</sprite>
+      </sprites>
+      <sprites name="trap">
+        <sprite>sprites\spr_spike</sprite>
+        <sprite>sprites\spr_spike_retract</sprite>
+        <sprite>sprites\spr_spike_shard</sprite>
+      </sprites>
+      <sprites name="else">
+        <sprite>sprites\spr_savepoint</sprite>
+      </sprites>
+    </sprites>
+    <sprites name="else">
+      <sprite>sprites\spr_particle</sprite>
+      <sprite>sprites\spr_axe</sprite>
     </sprites>
   </sprites>
   <backgrounds name="background"/>
   <paths name="paths"/>
+  <scripts name="scripts">
+    <scripts name="init">
+      <script>scripts\create_level.gml</script>
+      <script>scripts\create_spike.gml</script>
+      <script>scripts\create_enum.gml</script>
+    </scripts>
+    <scripts name="debug">
+      <script>scripts\state_string.gml</script>
+    </scripts>
+    <scripts name="local">
+      <script>scripts\combine_hsp.gml</script>
+      <script>scripts\combine_vsp.gml</script>
+      <script>scripts\get_e_collisions.gml</script>
+    </scripts>
+    <scripts name="else">
+      <script>scripts\create_particles.gml</script>
+      <script>scripts\draw_config.gml</script>
+    </scripts>
+  </scripts>
+  <fonts name="fonts">
+    <font>fonts\fnt_debug</font>
+  </fonts>
   <objects name="objects">
     <objects name="visible">
-      <objects name="dynamic">
+      <objects name="live">
         <object>objects\obj_player</object>
-        <objects name="enemies">
+        <objects name="enemy">
+          <object>objects\obj_enemy</object>
           <object>objects\obj_enemy0</object>
           <object>objects\obj_enemy1</object>
           <object>objects\obj_enemy2</object>
         </objects>
       </objects>
-      <objects name="static">
-        <objects name="hitboxes">
+      <objects name="dead">
+        <objects name="safe">
+          <object>objects\obj_collision</object>
           <object>objects\obj_wall</object>
+          <object>objects\obj_wall_crumble</object>
+          <object>objects\obj_platform</object>
         </objects>
-        <object>objects\obj_hud</object>
+        <objects name="trap">
+          <object>objects\obj_spike</object>
+          <object>objects\obj_spike_retract</object>
+          <object>objects\obj_spike_shard</object>
+        </objects>
+        <objects name="else">
+          <object>objects\obj_savepoint</object>
+        </objects>
+      </objects>
+      <objects name="else">
+        <object>objects\obj_particle</object>
+        <object>objects\obj_player_death</object>
+        <object>objects\obj_axe</object>
       </objects>
     </objects>
-    <object>objects\obj_host</object>
+    <objects name="invisible">
+      <object>objects\obj_host</object>
+      <object>objects\obj_camera</object>
+      <object>objects\obj_debug</object>
+    </objects>
   </objects>
+  <rooms name="rooms">
+    <room>rooms\rm_main</room>
+  </rooms>
   <help>
     <rtf>help.rtf</rtf>
   </help>
