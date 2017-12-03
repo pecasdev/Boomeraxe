@@ -1,0 +1,15 @@
+(0,0,0)       = obj_wall
+(0,0,100)     = obj_wall_crumble
+(0,0,200)     = obj_platform
+
+(100,0,0)     = obj_spike
+(200,0,0)     = obj_spike_retract
+
+(0,200,0)     = obj_savepoint
+(200,200,0)   = obj_torch
+
+(250,0,0)     = obj_enemy0
+(250,0,50)    = obj_enemy1
+(250,0,100)   = obj_enemy2
+(250,0,150)   = obj_enemy3
+
