@@ -54,20 +54,26 @@ savepoint=undefined
 
 if savepoint=undefined
 {
-    for (i=instance_number(obj_savepoint);i!=0;i--)
+    for (i=0;i!=instance_number(obj_savepoint);i++)
     {
-        savepoint=instance_find(obj_savepoint,i)
+        sp=instance_find(obj_savepoint,i)
         
-        if savepoint.state=s.open
+        if sp.state=s.open
         {
+            savepoint=sp
             break
         }
     }
+    
+    if savepoint=undefined
+    {
+        savepoint=instance_nearest(x,y,obj_savepoint)
+    }
 }
 
-move_towards_point(savepoint.x,savepoint.y,point_distance(x,y,savepoint.x,savepoint.y)/20+8)
+move_towards_point(savepoint.x+10,savepoint.y+10,point_distance(x,y,savepoint.x+10,savepoint.y+10)/20+8)
 
-if point_distance(x,y,savepoint.x,savepoint.y)&lt;5
+if point_distance(x,y,savepoint.x+10,savepoint.y+10)&lt;5
 {
     instance_create(x,y-5,obj_player)
     instance_destroy()

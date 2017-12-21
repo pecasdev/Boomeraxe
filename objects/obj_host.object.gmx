@@ -8,7 +8,67 @@
   <parentName>&lt;undefined&gt;</parentName>
   <maskName>&lt;undefined&gt;</maskName>
   <events>
-    <event eventtype="0" enumb="0">
+    <event eventtype="3" enumb="0">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>/// game_time Ticking
+
+if running
+{
+    game_time+=1
+}
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="7" enumb="5">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>/// Write run data
+
+if game_time&lt;best_time and !running
+{
+    ini_open('times.ini')
+
+    ini_write_real('best','0',game_time)
+    
+    ini_close()
+}
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="7" enumb="4">
       <action>
         <libid>1</libid>
         <id>603</id>
@@ -27,18 +87,146 @@
             <kind>1</kind>
             <string>/// Initialize
 
-create_level()
-create_spike()
-create_enum()
+if room=rm_title
+{
 
-room_width=4000
-room_height=4000
+}
 
-// Create starting objects
-instance_create(64,64,obj_player)
-instance_create(64,64,obj_camera)
-instance_create(0,0,obj_debug)
+if room=rm_main
+{
+    create_level()
+    create_spike()
+    create_enum()
+    
+    room_width=4000
+    room_height=4000
+    
+    // Create starting objects
+    instance_create(100,160,obj_player)
+    instance_create(64,64,obj_camera)
+    instance_create(0,0,obj_debug)
+    
+    // Other variables
+    game_time=0
+    running=true
+    gui_state=s.idle
+}
 
+</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>/// Read run data
+
+ini_open('boomeraxe.ini')
+
+best_time=ini_read_real('meta','best',2000)
+profile_count=ini_read_real('meta','profiles',1)
+
+profiles=ds_grid_create(profile_count,10)
+
+for (i=0;i!=profile_count;i++)
+{
+    name=ini_read_string('meta',string(i),'')
+    
+    profiles[# i,0]=name
+    profiles[# i,1]=ini_read_real(name,'best',2000)
+    profiles[# i,2]=ini_read_real(name,'run_count',0)
+    
+    ds_grid_resize(profiles,max(profiles[# i,2],ds_grid_width(profiles)),ds_grid_height(profiles))
+    
+    for (z=3;z!=3+profiles[# i,2];z++)
+    {
+        profiles[# i,z]=ini_read_real(name,string(z),0)
+    }
+    
+    profiles[# i,3+profiles[# i,2]+0]=ini_read_real(name,'up',vk_up)
+    profiles[# i,3+profiles[# i,2]+1]=ini_read_real(name,'down',vk_down)
+    profiles[# i,3+profiles[# i,2]+2]=ini_read_real(name,'left',vk_left)
+    profiles[# i,3+profiles[# i,2]+3]=ini_read_real(name,'right',vk_right)
+    profiles[# i,3+profiles[# i,2]+4]=ini_read_real(name,'jump',ord('Z'))
+    profiles[# i,3+profiles[# i,2]+5]=ini_read_real(name,'throw',ord('X'))
+    profiles[# i,3+profiles[# i,2]+6]=ini_read_real(name,'dash',vk_shift)
+}
+
+ini_close()
+
+for (i=0;i!=ds_grid_height(profiles);i++)
+{
+    for (z=0;z!=ds_grid_width(profiles);z++)
+    {
+        show_debug_message(string(profiles[# z,i]))
+    }
+}
+
+game_end()
+
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="8" enumb="0">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>if gui_state!=s.idle
+{
+    if keyboard_check_pressed(vk_escape)
+    {
+        gui_state=s.main
+        select=2
+    }
+}
+if gui_state=s.main
+{
+    if keyboard_check_pressed(vk_enter)
+    {
+        if select=1
+        {
+            gui_state=s.stats
+        }
+        
+        if select=profile_count+1
+        {
+            gui_state=s.add
+        }
+        
+        if select=profile_count+2
+        {
+            gui_state=s.delete
+        }
+    }           
+}
 </string>
           </argument>
         </arguments>

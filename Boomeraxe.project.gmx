@@ -36,12 +36,14 @@
         <sprite>sprites\spr_spike_shard</sprite>
       </sprites>
       <sprites name="else">
-        <sprite>sprites\spr_savepoint</sprite>
+        <sprite>sprites\spr_savepoint_base</sprite>
+        <sprite>sprites\spr_savepoint_gem</sprite>
       </sprites>
     </sprites>
     <sprites name="else">
       <sprite>sprites\spr_particle</sprite>
       <sprite>sprites\spr_axe</sprite>
+      <sprite>sprites\spr_savepoint_background</sprite>
     </sprites>
   </sprites>
   <backgrounds name="background"/>
@@ -59,14 +61,18 @@
       <script>scripts\combine_hsp.gml</script>
       <script>scripts\combine_vsp.gml</script>
       <script>scripts\get_e_collisions.gml</script>
+      <script>scripts\profile_gui.gml</script>
     </scripts>
     <scripts name="else">
       <script>scripts\create_particles.gml</script>
       <script>scripts\draw_config.gml</script>
+      <script>scripts\format_time_full.gml</script>
+      <script>scripts\format_time_split.gml</script>
     </scripts>
   </scripts>
   <fonts name="fonts">
     <font>fonts\fnt_debug</font>
+    <font>fonts\fnt_savepoint</font>
   </fonts>
   <objects name="objects">
     <objects name="visible">
@@ -96,9 +102,9 @@
         </objects>
       </objects>
       <objects name="else">
+        <object>objects\obj_axe</object>
         <object>objects\obj_particle</object>
         <object>objects\obj_player_death</object>
-        <object>objects\obj_axe</object>
       </objects>
     </objects>
     <objects name="invisible">
@@ -109,6 +115,7 @@
   </objects>
   <rooms name="rooms">
     <room>rooms\rm_main</room>
+    <room>rooms\rm_title</room>
   </rooms>
   <help>
     <rtf>help.rtf</rtf>

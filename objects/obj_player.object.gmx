@@ -3,7 +3,7 @@
   <spriteName>spr_player_fall</spriteName>
   <solid>0</solid>
   <visible>-1</visible>
-  <depth>0</depth>
+  <depth>-10</depth>
   <persistent>0</persistent>
   <parentName>&lt;undefined&gt;</parentName>
   <maskName>&lt;undefined&gt;</maskName>
@@ -254,6 +254,11 @@ switch(state)
             dash_hsp=0
         }
         
+        if k_jump and jump_count&gt;0
+        {
+            state=s.jump
+        }
+        
         create_particles(x,y,'dash')
         
         if place_meeting(x,y+1,obj_collision)
@@ -485,10 +490,10 @@ if sp!=noone and sp.state=s.close
 {
     obj_savepoint.state=s.close
     sp.state=s.open
-    create_particles(sp.x,sp.y,'savepoint_get')
+    sp.peek=120
+    create_particles(sp.x+10,sp.y+10,'savepoint_get')
 }
 
- 
 if place_meeting(x,y,obj_spike)
 {
     instance_destroy()

@@ -14,6 +14,12 @@ enum s
     hit     ,
     open    ,
     close   ,
+    add     ,
+    delete  ,
+    main    ,
+    user    ,
+    stats   ,
+    keybind ,
 }
 
 

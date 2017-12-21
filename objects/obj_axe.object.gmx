@@ -177,7 +177,14 @@ if sp!=noone and sp.state=s.close
 {
     obj_savepoint.state=s.close
     sp.state=s.open
-    create_particles(sp.x,sp.y,'savepoint_get')
+    sp.peek=120
+    create_particles(sp.x+10,sp.y+10,'savepoint_get')
+    
+    with(obj_player)
+    {
+        instance_destroy()
+        instance_create(x,y,obj_player_death)
+    } 
 }
 </string>
           </argument>

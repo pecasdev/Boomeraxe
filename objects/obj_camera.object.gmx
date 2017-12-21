@@ -31,13 +31,19 @@ if instance_exists(obj_player)
 {
     x=obj_player.x
     y=obj_player.y
-    
-    view_xview[0]=x-200
-    view_yview[0]=y-200
-    
-    x=clamp(x,200,room_width-200)
-    y=clamp(y,200,room_height-200)
 }
+
+else if instance_exists(obj_player_death)
+{
+    x=obj_player_death.x
+    y=obj_player_death.y
+}
+
+view_xview[0]=x-200
+view_yview[0]=y-200
+
+x=clamp(x,200,room_width-200)
+y=clamp(y,200,room_height-200)
 </string>
           </argument>
         </arguments>
