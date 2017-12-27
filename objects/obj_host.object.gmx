@@ -26,10 +26,12 @@
           <argument>
             <kind>1</kind>
             <string>/// game_time Ticking
-
-if running
+if room=rm_main
 {
-    game_time+=1
+    if running
+    {
+        game_time+=2
+    }
 }
 </string>
           </argument>
@@ -55,6 +57,7 @@ if running
             <kind>1</kind>
             <string>/// Write run data
 
+/*
 if game_time&lt;best_time and !running
 {
     ini_open('times.ini')
@@ -89,14 +92,22 @@ if game_time&lt;best_time and !running
 
 if room=rm_title
 {
-
+    create_enum()
+    
+    // GUI
+    gui_state=s.title
+    select=0
+    select_offset=2
+    x_cur=200
+    y_cur=200
+    w_cur=string_width('New Game')+5
+    h_cur=string_height('New Game')+5
 }
 
 if room=rm_main
 {
     create_level()
     create_spike()
-    create_enum()
     
     room_width=4000
     room_height=4000
@@ -110,6 +121,7 @@ if room=rm_main
     game_time=0
     running=true
     gui_state=s.idle
+    select=2
 }
 
 </string>
@@ -132,57 +144,74 @@ if room=rm_main
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>/// Read run data
+            <string>/// Read Data
 
 ini_open('boomeraxe.ini')
 
 best_time=ini_read_real('meta','best',2000)
-profile_count=ini_read_real('meta','profiles',1)
+profile_count=ini_read_real('meta','profile_count',1)
 
-profiles=ds_grid_create(profile_count,10)
+profiles=ds_grid_create(10,profile_count)
 
 for (i=0;i!=profile_count;i++)
 {
     name=ini_read_string('meta',string(i),'')
     
-    profiles[# i,0]=name
-    profiles[# i,1]=ini_read_real(name,'best',2000)
-    profiles[# i,2]=ini_read_real(name,'run_count',0)
+    profiles[#0,i]=name
+    profiles[#1,i]=ini_read_real(name,'best',2000)
+    profiles[#2,i]=ini_read_real(name,'run_count',0)
     
-    ds_grid_resize(profiles,max(profiles[# i,2],ds_grid_width(profiles)),ds_grid_height(profiles))
-    
-    for (z=3;z!=3+profiles[# i,2];z++)
+    ds_grid_resize(profiles,max(ds_grid_height(profiles),profiles[#2,i]*6+10),profile_count)
+
+    for (z=0;z!=profiles[#2,i]*6;z+=6)
     {
-        profiles[# i,z]=ini_read_real(name,string(z),0)
+        profiles[#z+3,i]=ini_read_real(name,string(z/6)+'0',0)    // Runtime
+        profiles[#z+4,i]=ini_read_string(name,string(z/6)+'1',0)  // Date 
+        profiles[#z+5,i]=ini_read_real(name,string(z/6)+'2',0)    // Jumps
+        profiles[#z+6,i]=ini_read_real(name,string(z/6)+'3',0)    // Throws
+        profiles[#z+7,i]=ini_read_real(name,string(z/6)+'4',0)    // Dashes
+        profiles[#z+8,i]=ini_read_real(name,string(z/6)+'5',0)    // Kills
     }
     
-    profiles[# i,3+profiles[# i,2]+0]=ini_read_real(name,'up',vk_up)
-    profiles[# i,3+profiles[# i,2]+1]=ini_read_real(name,'down',vk_down)
-    profiles[# i,3+profiles[# i,2]+2]=ini_read_real(name,'left',vk_left)
-    profiles[# i,3+profiles[# i,2]+3]=ini_read_real(name,'right',vk_right)
-    profiles[# i,3+profiles[# i,2]+4]=ini_read_real(name,'jump',ord('Z'))
-    profiles[# i,3+profiles[# i,2]+5]=ini_read_real(name,'throw',ord('X'))
-    profiles[# i,3+profiles[# i,2]+6]=ini_read_real(name,'dash',vk_shift)
+    profiles[#3+profiles[#2,i]*6+0,i]=ini_read_real(name,'up',vk_up)
+    profiles[#3+profiles[#2,i]*6+1,i]=ini_read_real(name,'down',vk_down)
+    profiles[#3+profiles[#2,i]*6+2,i]=ini_read_real(name,'left',vk_left)
+    profiles[#3+profiles[#2,i]*6+3,i]=ini_read_real(name,'right',vk_right)
+    profiles[#3+profiles[#2,i]*6+4,i]=ini_read_real(name,'jump',ord('Z'))
+    profiles[#3+profiles[#2,i]*6+5,i]=ini_read_real(name,'throw',ord('X'))
+    profiles[#3+profiles[#2,i]*6+6,i]=ini_read_real(name,'dash',vk_shift)
 }
+
+ds_grid_sort(profiles,1,1)
 
 ini_close()
 
-for (i=0;i!=ds_grid_height(profiles);i++)
+/*
+output=date_datetime_string(date_current_datetime())
+
+output=string_replace_all(output,'-','/')
+output=string_replace(output,' ',' - ')
+output=string_delete(output,string_length(output)-7,3)
+
+show_debug_message('&lt; '+output+' &gt;')
+*/
+
+/*
+for (Y=0;Y!=ds_grid_height(profiles);Y++)
 {
-    for (z=0;z!=ds_grid_width(profiles);z++)
+    for (X=0;X!=ds_grid_width(profiles);X++)
     {
-        show_debug_message(string(profiles[# z,i]))
+        show_debug_message(profiles[#X,Y])
     }
 }
 
 game_end()
-
 </string>
           </argument>
         </arguments>
       </action>
     </event>
-    <event eventtype="8" enumb="0">
+    <event eventtype="8" enumb="64">
       <action>
         <libid>1</libid>
         <id>603</id>
@@ -199,33 +228,116 @@ game_end()
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>if gui_state!=s.idle
+            <string>/// GUI
+
+if room=rm_title
 {
-    if keyboard_check_pressed(vk_escape)
+    if gui_state=s.title
     {
-        gui_state=s.main
-        select=2
-    }
-}
-if gui_state=s.main
-{
-    if keyboard_check_pressed(vk_enter)
-    {
+        draw_config(fnt_title_big,c_white,fa_middle,fa_middle)
+        draw_text(300,75,'- BOOMERAXE -')
+        draw_config(fnt_title,c_white,fa_middle,fa_middle)
+        draw_text(300,300,'New Game')
+        draw_text(300,375,'Profiles')
+        draw_text(300,450,'Quit')
+        
+        if select=0
+        {
+            draw_select(300,300,string_width('New Game'),string_height('New Game'))
+        }
+        
         if select=1
         {
-            gui_state=s.stats
+            draw_select(300,375,string_width('Profiles'),string_height('Profiles'))
         }
         
-        if select=profile_count+1
+        if select=2
         {
-            gui_state=s.add
+            draw_select(300,450,string_width('Quit'),string_height('Quit'))
+        }     
+    }        
+}
+
+if room=rm_main
+{
+    if gui_state=s.idle
+    {
+        if keyboard_check_pressed(vk_escape)
+        {
+            gui_state=s.main
+            select=2
         }
+    }
+    
+    if gui_state=s.main
+    {
+        // Background
+        draw_area(0,0,600,600,c_white,c_red,1)
         
-        if select=profile_count+2
+        // Profiles
+        draw_area(1,80,599,599,c_dkgray,c_fuchsia,1)
+        
+        // Title
+        draw_area(1,1,599,79,c_white,c_aqua,1)
+        
+        for (i=1;i!=profile_count+1;i++)
         {
-            gui_state=s.delete
+            if i=1
+            {
+                // Profile
+                draw_area(1,80,599,199,c_yellow,c_green,1)
+                
+                // Rank
+                draw_area(8,87,114,193,c_ltgray,c_blue,1)
+                
+                // Text
+                draw_config(fnt_profiles_big,c_black,fa_middle,fa_middle)
+                draw_text(200,120,'03:15.25')
+                
+                draw_config(fnt_profiles_small,c_black,fa_middle,fa_middle)
+                draw_text(200,160,'&lt;17/12/24 - 3:15 PM&gt;')
+                
+                draw_config(fnt_profiles_big,c_black,fa_middle,fa_middle)
+                draw_text(400,140,'Pecas')
+            }
+            else if i=2
+            {
+                // Profile
+                draw_area(1,200,599,299,c_gray,c_green,1)
+                
+                // Rank
+                draw_area(8,207,93,292,c_ltgray,c_blue,1)
+            } 
+            else if i=3
+            {
+                // Profile
+                draw_area(1,300,599,379,c_olive,c_green,1)
+                
+                // Rank
+                draw_area(8,307,73,372,c_ltgray,c_blue,1)                         
+            }
+            else
+            {
+                // Profile
+                draw_area(1,140+i*60,599,200+i*60,c_maroon,c_green,1)
+                
+                // Rank
+                draw_area(8,147+i*60,54,193+i*60,c_ltgray,c_blue,1) 
+            }
         }
-    }           
+    }
+}
+
+// User Input
+
+if keyboard_check_pressed(vk_up) or keyboard_check_pressed(vk_left)
+{
+    select-=1
+}
+
+if keyboard_check_pressed(vk_down) or keyboard_check_pressed(vk_right)
+{
+    select+=1
 }
 </string>
           </argument>

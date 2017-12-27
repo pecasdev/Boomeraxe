@@ -46,7 +46,7 @@ grav=0.6
 // Other
 can_throw=true
 state=s.idle
-move_speed=4
+move_speed=5
 jump_speed=10
 dash_timer=0
 move_timer=0
@@ -500,6 +500,17 @@ if place_meeting(x,y,obj_spike)
     instance_create(x,y,obj_player_death)
 }
 
+db=instance_place(x,y,obj_dirtball)
+if db!=noone
+{
+    instance_destroy()
+    instance_create(x,y,obj_player_death)
+    with(db)
+    {
+        instance_destroy()
+        //create_particles('dirtball_hit')
+    }
+}
 </string>
           </argument>
         </arguments>

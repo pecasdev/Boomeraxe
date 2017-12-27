@@ -20,6 +20,7 @@ enum s
     user    ,
     stats   ,
     keybind ,
+    title   ,
 }
 
 

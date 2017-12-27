@@ -19,9 +19,13 @@
         <sprite>sprites\spr_player_wall</sprite>
       </sprites>
       <sprites name="enemy">
-        <sprite>sprites\spr_enemy0</sprite>
+        <sprite>sprites\spr_enemy0_attack</sprite>
+        <sprite>sprites\spr_enemy0_idle</sprite>
         <sprite>sprites\spr_enemy1</sprite>
         <sprite>sprites\spr_enemy2</sprite>
+        <sprites name="props">
+          <sprite>sprites\spr_dirtball</sprite>
+        </sprites>
       </sprites>
     </sprites>
     <sprites name="dead">
@@ -62,6 +66,8 @@
       <script>scripts\combine_vsp.gml</script>
       <script>scripts\get_e_collisions.gml</script>
       <script>scripts\profile_gui.gml</script>
+      <script>scripts\draw_select.gml</script>
+      <script>scripts\draw_area.gml</script>
     </scripts>
     <scripts name="else">
       <script>scripts\create_particles.gml</script>
@@ -73,6 +79,11 @@
   <fonts name="fonts">
     <font>fonts\fnt_debug</font>
     <font>fonts\fnt_savepoint</font>
+    <font>fonts\fnt_title</font>
+    <font>fonts\fnt_title_big</font>
+    <font>fonts\fnt_profiles_small</font>
+    <font>fonts\fnt_profiles</font>
+    <font>fonts\fnt_profiles_big</font>
   </fonts>
   <objects name="objects">
     <objects name="visible">
@@ -83,6 +94,9 @@
           <object>objects\obj_enemy0</object>
           <object>objects\obj_enemy1</object>
           <object>objects\obj_enemy2</object>
+          <objects name="props">
+            <object>objects\obj_dirtball</object>
+          </objects>
         </objects>
       </objects>
       <objects name="dead">

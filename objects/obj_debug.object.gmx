@@ -34,7 +34,7 @@ timer=0
         </arguments>
       </action>
     </event>
-    <event eventtype="8" enumb="64">
+    <event eventtype="8" enumb="0">
       <action>
         <libid>1</libid>
         <id>603</id>
@@ -53,6 +53,7 @@ timer=0
             <kind>1</kind>
             <string>/// Debug
 
+/*
 if instance_exists(obj_player)
 {
     draw_config(fnt_debug,c_dkgray,fa_left,fa_top)
@@ -66,19 +67,11 @@ if instance_exists(obj_player)
     draw_text(10,70,'X : '+string(obj_player.x))
     draw_text(10,90,'Y : '+string(obj_player.y))
 }
+*/
     
 if keyboard_check(ord('R'))
 {
     room_restart()
-}
-
-if keyboard_check(ord('H'))
-{
-    ini_open('times.ini')
-    ini_write_real('best','0',1200)    
-    ini_close()
-    
-    show_message('Highscore Resetted!  &gt;.&lt;')    
 }
 </string>
           </argument>
