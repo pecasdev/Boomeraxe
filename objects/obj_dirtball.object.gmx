@@ -27,7 +27,7 @@
             <kind>1</kind>
             <string>/// Initialize
 
-speed=6
+speed=8
 </string>
           </argument>
         </arguments>
@@ -50,8 +50,40 @@ speed=6
         <arguments>
           <argument>
             <kind>1</kind>
+            <string>/// Pause Check
+
+if obj_host.paused
+{
+    image_speed=0
+    speed=0
+    exit
+}
+else
+{
+    speed=8
+}
+</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
             <string>/// Collision and Particles
-if place_meeting(x,y,obj_wall)
+if place_meeting(x,y,obj_collision)
 {
     instance_destroy()
     //create_particles('dirtball_hit')

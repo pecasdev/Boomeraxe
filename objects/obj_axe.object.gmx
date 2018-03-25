@@ -54,6 +54,32 @@ backward_hit=ds_list_create()
         <arguments>
           <argument>
             <kind>1</kind>
+            <string>/// Pause Check
+
+if obj_host.paused
+{
+    exit
+}
+</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
             <string>/// Movement Physics
 
 if !instance_exists(obj_player)
@@ -110,7 +136,7 @@ switch(state)
 // Enemy Collision
 enemy=instance_nearest(x,y,obj_enemy)
 
-if point_distance(x,y,enemy.x,enemy.y)&lt;10
+if instance_exists(enemy) and point_distance(x,y,enemy.x,enemy.y)&lt;10
 {
     e_collisions=get_e_collisions(obj_enemy)
                     
@@ -118,6 +144,8 @@ if point_distance(x,y,enemy.x,enemy.y)&lt;10
     {
         e_collisions[| i].dmg_tint=1
         create_particles(e_collisions[| i].x,e_collisions[| i].y,'blood')
+        
+        e_collisions[| i].death=true
     }
 }
 
@@ -179,12 +207,42 @@ if sp!=noone and sp.state=s.close
     sp.state=s.open
     sp.peek=120
     create_particles(sp.x+10,sp.y+10,'savepoint_get')
-    
-    with(obj_player)
+
+    global.death_count-=1     // counters player's kill_count addition
+    if instance_exists(obj_player)
     {
-        instance_destroy()
-        instance_create(x,y,obj_player_death)
-    } 
+        with(obj_player)
+        {
+            instance_destroy()
+            instance_create(x,y,obj_player_death)
+        } 
+    }
+}
+
+tp=instance_nearest(x,y,obj_telepoint)
+if tp!=noone
+{
+    if point_distance(x,y,tp.x,tp.y)&lt;75
+    {
+        x-=sign(x-tp.x)*5
+        y-=sign(y-tp.y)*5
+    }
+    
+    if point_distance(x,y,tp.x,tp.y)&lt;20
+    {
+        global.death_count-=1     // counters player's kill_count addition
+        
+        //create_particles(tp.x+10,sp.y+10,'telepoint_get')
+        if instance_exists(obj_player)
+        {
+            with(obj_player)
+            {
+                instance_destroy()
+                instance_create(x,y,obj_player_death)
+                obj_player_death.target=other.tp        
+            }        
+        }
+    }
 }
 </string>
           </argument>

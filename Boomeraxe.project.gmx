@@ -38,10 +38,13 @@
         <sprite>sprites\spr_spike</sprite>
         <sprite>sprites\spr_spike_retract</sprite>
         <sprite>sprites\spr_spike_shard</sprite>
+        <sprite>sprites\spr_pendulum</sprite>
+        <sprite>sprites\spr_pendulum_bob</sprite>
       </sprites>
       <sprites name="else">
         <sprite>sprites\spr_savepoint_base</sprite>
         <sprite>sprites\spr_savepoint_gem</sprite>
+        <sprite>sprites\spr_telepoint</sprite>
       </sprites>
     </sprites>
     <sprites name="else">
@@ -50,13 +53,19 @@
       <sprite>sprites\spr_savepoint_background</sprite>
     </sprites>
   </sprites>
-  <backgrounds name="background"/>
+  <backgrounds name="background">
+    <background>background\bg_forest_0</background>
+    <background>background\bg_forest_1</background>
+    <background>background\bg_forest_2</background>
+    <background>background\bg_forest_3</background>
+  </backgrounds>
   <paths name="paths"/>
   <scripts name="scripts">
     <scripts name="init">
       <script>scripts\create_level.gml</script>
-      <script>scripts\create_spike.gml</script>
+      <script>scripts\create_spike_and_enemy.gml</script>
       <script>scripts\create_enum.gml</script>
+      <script>scripts\reset_crumble_and_telepoint.gml</script>
     </scripts>
     <scripts name="debug">
       <script>scripts\state_string.gml</script>
@@ -68,12 +77,23 @@
       <script>scripts\profile_gui.gml</script>
       <script>scripts\draw_select.gml</script>
       <script>scripts\draw_area.gml</script>
+      <script>scripts\draw_graph.gml</script>
+      <script>scripts\calculate_rank.gml</script>
+      <script>scripts\draw_key.gml</script>
+      <script>scripts\binding_taken.gml</script>
     </scripts>
     <scripts name="else">
       <script>scripts\create_particles.gml</script>
       <script>scripts\draw_config.gml</script>
-      <script>scripts\format_time_full.gml</script>
-      <script>scripts\format_time_split.gml</script>
+      <script>scripts\format_time.gml</script>
+      <script>scripts\string_pad.gml</script>
+      <script>scripts\format_datetime.gml</script>
+      <script>scripts\string_scale.gml</script>
+      <script>scripts\read_data.gml</script>
+      <script>scripts\process_buffer.gml</script>
+      <script>scripts\set_bindings.gml</script>
+      <script>scripts\string_key.gml</script>
+      <script>scripts\get_user_from_name.gml</script>
     </scripts>
   </scripts>
   <fonts name="fonts">
@@ -81,9 +101,23 @@
     <font>fonts\fnt_savepoint</font>
     <font>fonts\fnt_title</font>
     <font>fonts\fnt_title_big</font>
-    <font>fonts\fnt_profiles_small</font>
     <font>fonts\fnt_profiles</font>
+    <font>fonts\fnt_profiles_medium</font>
     <font>fonts\fnt_profiles_big</font>
+    <font>fonts\fnt_profile_big</font>
+    <font>fonts\fnt_profile</font>
+    <font>fonts\fnt_profile_small</font>
+    <font>fonts\fnt_profile_tiny</font>
+    <font>fonts\fnt_end_big</font>
+    <font>fonts\fnt_end_tiny</font>
+    <font>fonts\fnt_end_medium</font>
+    <font>fonts\fnt_end_small</font>
+    <font>fonts\fnt_keybind_big</font>
+    <font>fonts\fnt_keybind</font>
+    <font>fonts\fnt_entry_big</font>
+    <font>fonts\fnt_entry</font>
+    <font>fonts\fnt_entry_tiny</font>
+    <font>fonts\fnt_entry_small</font>
   </fonts>
   <objects name="objects">
     <objects name="visible">
@@ -100,19 +134,21 @@
         </objects>
       </objects>
       <objects name="dead">
+        <object>objects\obj_collision</object>
         <objects name="safe">
-          <object>objects\obj_collision</object>
           <object>objects\obj_wall</object>
           <object>objects\obj_wall_crumble</object>
-          <object>objects\obj_platform</object>
         </objects>
         <objects name="trap">
           <object>objects\obj_spike</object>
           <object>objects\obj_spike_retract</object>
           <object>objects\obj_spike_shard</object>
+          <object>objects\obj_pendulum</object>
+          <object>objects\obj_pendulum_bob</object>
         </objects>
         <objects name="else">
           <object>objects\obj_savepoint</object>
+          <object>objects\obj_telepoint</object>
         </objects>
       </objects>
       <objects name="else">
@@ -128,8 +164,9 @@
     </objects>
   </objects>
   <rooms name="rooms">
-    <room>rooms\rm_main</room>
     <room>rooms\rm_title</room>
+    <room>rooms\rm_main</room>
+    <room>rooms\rm_end</room>
   </rooms>
   <help>
     <rtf>help.rtf</rtf>

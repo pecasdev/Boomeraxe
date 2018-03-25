@@ -25,12 +25,196 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>/// game_time Ticking
+            <string>/// Counters and run_over
 if room=rm_main
 {
-    if running
+    if run_over
     {
-        game_time+=2
+        paused=true
+        if global.selected_profile!='Anonymous'
+        {
+            room=rm_end
+        }
+        else
+        {
+            game_end()
+        }
+    }
+    else if !paused
+    {
+        global.game_time+=2    // Room speed is 50, so this should be an accurate timer
+    }
+    
+    // Game Stats
+
+    // death_count &amp; jump_coung &amp; dash_count being updated by obj_player
+    // kill_count being updated by obj_enemy
+    
+    if instance_exists(obj_player) and obj_player.y&gt;room_height
+    {
+        run_over=true
+    }
+}
+</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>/// Networking
+
+/*
+
+if room=rm_main
+{
+    switch(network_state)
+    {
+        default:
+        {
+            payload=buffer_create(1,buffer_grow,1)
+            
+            // Timezone setting for sending to server
+            date_set_timezone(timezone_utc)
+        }break
+    }
+    
+    switch(network_state)
+    {        
+        case(s.create):
+        {
+            buffer_write(payload,buffer_string,'user')
+            buffer_write(payload,buffer_string,'pass')
+            buffer_write(payload,buffer_string,global.k[? 'up']+'#')
+            buffer_write(payload,buffer_string,global.k[? 'down']+'#')
+            buffer_write(payload,buffer_string,global.k[? 'left']+'#')
+            buffer_write(payload,buffer_string,global.k[? 'right']+'#')
+            buffer_write(payload,buffer_string,global.k[? 'jump']+'#')
+            buffer_write(payload,buffer_string,global.k[? 'throw']+'#')
+            buffer_write(payload,buffer_string,global.k[? 'dash']+'#')
+        }break
+        
+        case(s.login):
+        {
+            buffer_write(payload,buffer_string,'LOGIN#')
+            buffer_write(payload,buffer_string,'pecas#')
+            buffer_write(payload,buffer_string,get_string('Password',''))
+        }break
+        
+        case(s.pull):
+        {
+            buffer_write(payload,buffer_string,'PULL#')
+            buffer_write(payload,buffer_string,global.selected_profile+'#')
+        }break
+        
+        case(s.push_run):
+        {
+            buffer_write(payload,buffer_string,'PUSH_RUN#')
+            buffer_write(payload,buffer_string,global.selected_profile+'#')
+            buffer_write(payload,buffer_string,global.game_time+'#')
+            buffer_write(payload,buffer_string,'date#')
+            buffer_write(payload,buffer_string,global.kill_count)
+            buffer_write(payload,buffer_string,global.death_count)
+            buffer_write(payload,buffer_string,global.jump_count)
+            buffer_write(payload,buffer_string,global.dash_count)
+        }break
+        
+        case(s.push_bind):
+        {
+            buffer_write(payload,buffer_string,'PUSH_BIND#')
+            buffer_write(payload,buffer_string,global.selected_profile+'#')
+            buffer_write(payload,buffer_string,global.k[? 'up']+'#')
+            buffer_write(payload,buffer_string,global.k[? 'down']+'#')
+            buffer_write(payload,buffer_string,global.k[? 'left']+'#')
+            buffer_write(payload,buffer_string,global.k[? 'right']+'#')
+            buffer_write(payload,buffer_string,global.k[? 'jump']+'#')
+            buffer_write(payload,buffer_string,global.k[? 'throw']+'#')
+            buffer_write(payload,buffer_string,global.k[? 'dash']+'#')
+        }break
+    }
+    
+    switch(network_state)
+    {
+        default:
+        {       
+            network_send_udp_raw(global.udp_socket,"192.168.0.200",9000,payload,buffer_tell(payload))        
+            network_state=s.idle
+            buffer_delete(payload)
+        }break
+    }
+}
+</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>/// Background Scrolling
+/*
+if room=rm_main
+{
+    background_x[0]=obj_player.x/1.5
+    background_x[1]=obj_player.x/2
+    background_x[2]=obj_player.x/2.5
+    background_x[3]=obj_player.x/3
+}
+*/
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="7" enumb="68">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>/*
+if async_load[? "id"]=global.udp_socket
+{
+    if async_load[? "type"]=network_type_data
+    {
+        buffer=async_load[? "buffer"]
+        process_buffer(buffer)
     }
 }
 </string>
@@ -96,34 +280,91 @@ if room=rm_title
     
     // GUI
     gui_state=s.title
-    select=0
     select_offset=2
-    x_cur=200
-    y_cur=200
-    w_cur=string_width('New Game')+5
-    h_cur=string_height('New Game')+5
+    
+    global.volume_effects=10
+    global.volume_music=10
+    
+    // Time
+    global.unix_start=date_create_datetime(1970,1,1,0,0,0)
+    
+    // Other
+    global.udp_socket=network_create_socket(network_socket_udp) 
 }
 
 if room=rm_main
 {
-    create_level()
-    create_spike()
-    
+    crumble_spawns=ds_list_create()
+    telepoint_spawns=ds_list_create()
+
     room_width=4000
-    room_height=4000
+    room_height=2000    
     
+    create_level()
+    create_spike_and_enemy()
+    
+    // Backgrounds
+    /*
+    background_yscale[0]=room_height/background_get_height(bg_forest_0)/1.5
+    background_yscale[1]=room_height/background_get_height(bg_forest_1)/2
+    background_yscale[2]=room_height/background_get_height(bg_forest_2)/2.5
+    background_yscale[3]=room_height/background_get_height(bg_forest_3)/3
+    */
     // Create starting objects
     instance_create(100,160,obj_player)
     instance_create(64,64,obj_camera)
     instance_create(0,0,obj_debug)
+        
+    // Time
+    global.game_time=0
     
-    // Other variables
-    game_time=0
-    running=true
+    // States
+    run_over=false
     gui_state=s.idle
-    select=2
+    network_state=s.idle
+    paused=false
+    leaderboard_overlay=false
+        
+    // Scrolling
+    y_view_cur=0
+    y_view_tar=0
+    y_search=0
+    y_match=0
+    
+    // Animations
+    profile_match=0 
+    prompt_timer=0 
+    pause_x=0
+    
+    // Other
+    global.selected_profile='Anonymous'
+    
+    global.kill_count=0
+    global.death_count=0
+    global.jump_count=0
+    global.dash_count=0   
 }
 
+if room=rm_end
+{
+    selected_profile=ds_grid_value_y(global.profiles,0,0,0,ds_grid_height(global.profiles),global.selected_profile)
+    
+    new_profiles=ds_grid_create(ds_grid_width(global.profiles),ds_grid_height(global.profiles))
+    ds_grid_copy(new_profiles,global.profiles)
+}
+
+// Global
+select=0
+prev_select=0
+hold_up=0
+hold_dn=0
+
+x_cur=300
+y_cur=300
+w_cur=100
+h_cur=100
+
+mix=0.2
 </string>
           </argument>
         </arguments>
@@ -145,67 +386,10 @@ if room=rm_main
           <argument>
             <kind>1</kind>
             <string>/// Read Data
-
-ini_open('boomeraxe.ini')
-
-best_time=ini_read_real('meta','best',2000)
-profile_count=ini_read_real('meta','profile_count',1)
-
-profiles=ds_grid_create(10,profile_count)
-
-for (i=0;i!=profile_count;i++)
+if room=rm_main
 {
-    name=ini_read_string('meta',string(i),'')
-    
-    profiles[#0,i]=name
-    profiles[#1,i]=ini_read_real(name,'best',2000)
-    profiles[#2,i]=ini_read_real(name,'run_count',0)
-    
-    ds_grid_resize(profiles,max(ds_grid_height(profiles),profiles[#2,i]*6+10),profile_count)
-
-    for (z=0;z!=profiles[#2,i]*6;z+=6)
-    {
-        profiles[#z+3,i]=ini_read_real(name,string(z/6)+'0',0)    // Runtime
-        profiles[#z+4,i]=ini_read_string(name,string(z/6)+'1',0)  // Date 
-        profiles[#z+5,i]=ini_read_real(name,string(z/6)+'2',0)    // Jumps
-        profiles[#z+6,i]=ini_read_real(name,string(z/6)+'3',0)    // Throws
-        profiles[#z+7,i]=ini_read_real(name,string(z/6)+'4',0)    // Dashes
-        profiles[#z+8,i]=ini_read_real(name,string(z/6)+'5',0)    // Kills
-    }
-    
-    profiles[#3+profiles[#2,i]*6+0,i]=ini_read_real(name,'up',vk_up)
-    profiles[#3+profiles[#2,i]*6+1,i]=ini_read_real(name,'down',vk_down)
-    profiles[#3+profiles[#2,i]*6+2,i]=ini_read_real(name,'left',vk_left)
-    profiles[#3+profiles[#2,i]*6+3,i]=ini_read_real(name,'right',vk_right)
-    profiles[#3+profiles[#2,i]*6+4,i]=ini_read_real(name,'jump',ord('Z'))
-    profiles[#3+profiles[#2,i]*6+5,i]=ini_read_real(name,'throw',ord('X'))
-    profiles[#3+profiles[#2,i]*6+6,i]=ini_read_real(name,'dash',vk_shift)
+    read_data()
 }
-
-ds_grid_sort(profiles,1,1)
-
-ini_close()
-
-/*
-output=date_datetime_string(date_current_datetime())
-
-output=string_replace_all(output,'-','/')
-output=string_replace(output,' ',' - ')
-output=string_delete(output,string_length(output)-7,3)
-
-show_debug_message('&lt; '+output+' &gt;')
-*/
-
-/*
-for (Y=0;Y!=ds_grid_height(profiles);Y++)
-{
-    for (X=0;X!=ds_grid_width(profiles);X++)
-    {
-        show_debug_message(profiles[#X,Y])
-    }
-}
-
-game_end()
 </string>
           </argument>
         </arguments>
@@ -232,112 +416,1149 @@ game_end()
 
 if room=rm_title
 {
-    if gui_state=s.title
+    switch(gui_state)
     {
-        draw_config(fnt_title_big,c_white,fa_middle,fa_middle)
-        draw_text(300,75,'- BOOMERAXE -')
-        draw_config(fnt_title,c_white,fa_middle,fa_middle)
-        draw_text(300,300,'New Game')
-        draw_text(300,375,'Profiles')
-        draw_text(300,450,'Quit')
-        
-        if select=0
+        case s.title:
         {
-            draw_select(300,300,string_width('New Game'),string_height('New Game'))
-        }
-        
-        if select=1
-        {
-            draw_select(300,375,string_width('Profiles'),string_height('Profiles'))
-        }
-        
-        if select=2
-        {
-            draw_select(300,450,string_width('Quit'),string_height('Quit'))
-        }     
-    }        
+            draw_config(fnt_title_big,c_white,fa_middle,fa_middle)
+            draw_text(300,75,'- BOOMERAXE -')
+            draw_config(fnt_title,c_white,fa_middle,fa_middle)
+            draw_text(300,300,'New Game')
+            draw_text(300,375,'New Profile')
+            draw_text(300,450,'Options')
+            draw_text(300,525,'Quit')
+            
+            select=clamp(select,0,3)
+            
+            if select=0
+            {
+                draw_select(300,300,string_width('New Game'),string_height('New Game'),3)
+            }
+            
+            if select=1
+            {
+                draw_select(300,375,string_width('New Profile'),string_height('New Profile'),3)
+            }
+            
+            if select=2
+            {
+                draw_select(300,450,string_width('Options'),string_height('Options'),3)
+            }
+            
+            if select=3
+            {
+                draw_select(300,525,string_width('Quit'),string_height('Quit'),3)
+            } 
+            
+            if keyboard_check_pressed(vk_enter)
+            {
+                if select=0
+                {
+                    room=rm_main
+                }
+                
+                if select=1
+                {
+                    // new profile
+                }
+                
+                if select=2
+                {
+                    // options
+                }
+                
+                if select=3
+                {
+                    game_end()
+                }
+            }
+                    
+        }break
+    }   
 }
 
 if room=rm_main
 {
-    if gui_state=s.idle
+    switch(gui_state)
     {
-        if keyboard_check_pressed(vk_escape)
+        case s.idle:
         {
-            gui_state=s.main
-            select=2
-        }
-    }
-    
-    if gui_state=s.main
-    {
-        // Background
-        draw_area(0,0,600,600,c_white,c_red,1)
-        
-        // Profiles
-        draw_area(1,80,599,599,c_dkgray,c_fuchsia,1)
-        
-        // Title
-        draw_area(1,1,599,79,c_white,c_aqua,1)
-        
-        for (i=1;i!=profile_count+1;i++)
-        {
-            if i=1
+            if keyboard_check_pressed(vk_escape)
             {
-                // Profile
-                draw_area(1,80,599,199,c_yellow,c_green,1)
-                
-                // Rank
-                draw_area(8,87,114,193,c_ltgray,c_blue,1)
-                
-                // Text
-                draw_config(fnt_profiles_big,c_black,fa_middle,fa_middle)
-                draw_text(200,120,'03:15.25')
-                
-                draw_config(fnt_profiles_small,c_black,fa_middle,fa_middle)
-                draw_text(200,160,'&lt;17/12/24 - 3:15 PM&gt;')
-                
-                draw_config(fnt_profiles_big,c_black,fa_middle,fa_middle)
-                draw_text(400,140,'Pecas')
+                pause_x=-200
+                gui_state=s.pause
+                paused=true
+                select=0
             }
-            else if i=2
+        }break
+        
+        case s.pause:
+        {
+            if pause_x&lt;0
             {
-                // Profile
-                draw_area(1,200,599,299,c_gray,c_green,1)
-                
-                // Rank
-                draw_area(8,207,93,292,c_ltgray,c_blue,1)
-            } 
-            else if i=3
+                pause_x+=50
+            }
+
+            if keyboard_check_pressed(vk_escape)
             {
-                // Profile
-                draw_area(1,300,599,379,c_olive,c_green,1)
-                
-                // Rank
-                draw_area(8,307,73,372,c_ltgray,c_blue,1)                         
+                gui_state=s.idle
+                paused=false
+            }
+            
+            // Display
+            draw_area(0+pause_x,0,200+pause_x,600,c_white,c_black,3)
+            
+            draw_config(fnt_title_big,c_black,fa_middle,fa_middle)
+            draw_text(100+pause_x,100,"- Paused -")
+            
+            draw_config(fnt_title,c_black,fa_left,fa_middle)
+            draw_text(25+pause_x,190,"Continue")
+            draw_text(25+pause_x,240,"New Run")
+            draw_text(25+pause_x,290,"Profiles")
+            draw_text(25+pause_x,340,"Options")
+            draw_text(25+pause_x,390,"Title Screen")
+            
+            draw_area(5+pause_x,489,195+pause_x,525,c_ltgray,c_black,3)
+            draw_config(fnt_title,c_black,fa_middle,fa_middle)
+            
+            if global.selected_profile='Anonymous'
+            {
+                draw_text_transformed(100+pause_x,508,'No Profile Selected',0.75,1,0)
             }
             else
             {
-                // Profile
-                draw_area(1,140+i*60,599,200+i*60,c_maroon,c_green,1)
-                
-                // Rank
-                draw_area(8,147+i*60,54,193+i*60,c_ltgray,c_blue,1) 
+                draw_text(100+pause_x,508,global.selected_profile)
             }
+            
+            draw_area(5+pause_x,529,195+pause_x,595,c_ltgray,c_black,3)
+            draw_config(fnt_title_big,c_black,fa_middle,fa_middle)
+            draw_text_transformed(100+pause_x,552,format_time(global.game_time,false),1.1,1.1,0)
+            
+            draw_config(fnt_title_big,c_black,fa_middle,fa_middle)
+            draw_text_transformed(100+pause_x,578,"Current Time",0.56,0.56,0)
+            
+            // User Input
+            select=clamp(select,0,4)
+            draw_select(100+pause_x,190+select*50,195,45,2)
+            
+            if keyboard_check_pressed(vk_enter)
+            {
+                if select=0
+                {
+                    gui_state=s.idle
+                    paused=false
+                }
+                
+                if select=1
+                {
+                    room_restart()
+                }
+                
+                if select=2
+                {
+                    select=0
+                    gui_state=s.profiles
+                    keyboard_string=''
+                }
+                
+                if select=3
+                {
+                    gui_state=s.options
+                }
+                
+                if select=4
+                {
+                    room=rm_title
+                }
+            }            
+        }break
+        
+        case s.options:
+        {
+            // Display
+            draw_area(0,0,200,600,c_white,c_black,3)
+            
+            draw_config(fnt_title_big,c_black,fa_middle,fa_middle)
+            draw_text(100,100,"- Options -")
+            
+            draw_config(fnt_title,c_black,fa_left,fa_middle)
+            draw_text(25,180,"SFX : ")            
+            draw_text(25,240,"MUSIC : ")
+            draw_text(25,300,"Overlay: ")
+            draw_text(25,360,"Keybindings")
+            draw_text(25,420,"Back")
+            
+            draw_config(fnt_title_big,c_black,fa_left,fa_middle)
+            draw_text(125,180,string(global.volume_effects))
+            draw_text(125,240,string(global.volume_music))
+            
+            if leaderboard_overlay
+            {
+                draw_text(135,300,"On")
+            }
+            else
+            {
+                draw_text(135,300,"Off")
+            }
+            
+            draw_area(5,489,195,525,c_ltgray,c_black,3)
+            draw_config(fnt_title,c_black,fa_middle,fa_middle)
+            
+            if global.selected_profile='Anonymous'
+            {
+                draw_text_transformed(100+pause_x,508,'No Profile Selected',0.75,1,0)
+            }
+            else
+            {
+                draw_text(100+pause_x,508,global.selected_profile)
+            }
+            
+            draw_area(5+pause_x,529,195+pause_x,595,c_ltgray,c_black,3)
+            draw_config(fnt_title_big,c_black,fa_middle,fa_middle)
+            draw_text_transformed(100+pause_x,552,format_time(global.game_time,false),1.1,1.1,0)
+            
+            draw_config(fnt_title_big,c_black,fa_middle,fa_middle)
+            draw_text_transformed(100+pause_x,578,"Current Time",0.56,0.56,0)
+            
+            // User Input
+            select=clamp(select,0,4)
+            draw_select(100+pause_x,180+select*60,195,45,2)
+            
+            if keyboard_check_pressed(global.k[? 'left']) or keyboard_check_pressed(global.k[? 'right']) or keyboard_check_pressed(vk_enter)
+            {
+                if select=0
+                {
+                    global.volume_effects+=keyboard_check_pressed(global.k[? 'right']) - keyboard_check_pressed(global.k[? 'left'])
+                }
+                
+                if select=1
+                {
+                    global.volume_music+=keyboard_check_pressed(global.k[? 'right']) - keyboard_check_pressed(global.k[? 'left'])
+                }
+                
+                if select=2
+                {
+                    leaderboard_overlay=(leaderboard_overlay==false) // quick switcher from true/false
+                }
+                
+                if select=3
+                {
+                    binding_select=undefined
+                    gui_state=s.keybind
+                }
+                
+                if select=4
+                {
+                    gui_state=s.pause
+                }
+            }
+            
+            if keyboard_check_pressed(vk_escape)
+            {
+                gui_state=s.pause
+            }
+        }break
+        
+        case s.profiles:
+        {
+            select=clamp(select,0,profile_count-1)
+            
+            // Configuring scrolling
+            if -60*(select-5)&lt;=0
+            {
+                y_view_tar=-60*(select-5)
+                
+                if select=profile_count-1
+                {
+                    y_view_tar+=40
+                }
+            }
+            else
+            {
+                y_view_tar=0
+            }
+            
+            // Smoothing
+            y_view_cur+=(y_view_tar-y_view_cur)/3
+            if abs(y_view_tar-y_view_cur)&lt;5
+            {
+                y_view_cur=y_view_tar
+            }
+          
+            // Background
+            draw_area(0,0,599,599,c_white,c_black,1)
+            
+            // Profiles
+            draw_area(1,80,598,599,c_dkgray,c_black,1)
+    
+            for (i=0;i!=profile_count;i++)
+            {             
+                if i=0
+                {
+                    // Profile
+                    draw_area(1,80+y_view_cur,598,199+y_view_cur,3517429,c_black,1)     // Gold
+                    
+                    // Rank
+                    draw_area(8,87+y_view_cur,114,193+y_view_cur,3118552,c_black,1)     // Darker Gold
+                    draw_config(fnt_profiles_big,c_black,fa_middle,fa_middle)
+                    draw_text_transformed(64,137+y_view_cur,'1',2,2,0)
+                    
+                    // Username
+                    draw_config(fnt_profiles_big,c_black,fa_middle,fa_middle)
+                    draw_text_transformed(500,140+y_view_cur,global.profiles[#0,i],string_scale(global.profiles[#0,i],4.5),string_scale(global.profiles[#0,i],4.5),0)
+                    
+                    // Best Time
+                    draw_config(fnt_profiles_big,c_black,fa_left,fa_middle)
+                    draw_text_transformed(135,120+y_view_cur,format_time(global.profiles[#1,i],false),1.1,1.1,0)
+                    
+                    // Best Time (date)
+                    draw_config(fnt_profiles,c_black,fa_left,fa_middle)
+                    draw_text(135,165+y_view_cur,format_datetime(global.profiles[#2,i]))
+                }
+                else if i=1
+                {
+                    scale=0.8
+                                    
+                    // Profile
+                    draw_area(1,200+y_view_cur,598,299+y_view_cur,13157819,c_black,1)   // Silver
+                    
+                    // Rank
+                    draw_area(8,207+y_view_cur,92,292+y_view_cur,11184288,c_black,1)    // Darker Silver
+                    draw_config(fnt_profiles_big,c_black,fa_middle,fa_middle)
+                    draw_text_transformed(54,247+y_view_cur,'2',1.2,1.2,0)
+                    
+                    // Username
+                    draw_config(fnt_profiles_big,c_black,fa_middle,fa_middle)
+                    draw_text_transformed(480,250+y_view_cur,global.profiles[#0,i],string_scale(global.profiles[#0,i],5),string_scale(global.profiles[#0,i],5),0)
+                    
+                    // Best Time
+                    draw_config(fnt_profiles_big,c_black,fa_left,fa_middle)
+                    draw_text_transformed(114,230+y_view_cur,format_time(global.profiles[#1,i],false),scale,scale,0)
+                    
+                    // Best Time (date)
+                    draw_config(fnt_profiles,c_black,fa_left,fa_middle)
+                    draw_text_transformed(114,275+y_view_cur,format_datetime(global.profiles[#2,i]),scale+0.1,scale+0.1,0)
+                    
+                    // Best Time (surplus)
+                    draw_config(fnt_profiles,4142654,fa_left,fa_middle) // Kalamata
+                    draw_text_transformed(314,230+y_view_cur,format_time(global.profiles[#1,i]-global.profiles[#1,i-1],true),scale,scale,0)
+                } 
+                else if i=2
+                {
+                    scale=0.55
+                    
+                    // Profile
+                    draw_area(1,300+y_view_cur,598,379+y_view_cur,5150699,c_black,1)    // Bronze
+                    
+                    // Rank
+                    draw_area(8,307+y_view_cur,72,372+y_view_cur,4621262,c_black,1)     // Darker Bronze
+                    draw_config(fnt_profiles_big,c_black,fa_middle,fa_middle)
+                    draw_text_transformed(45,337+y_view_cur,'3',1.1,1.1,0)
+                    
+                    // Username
+                    draw_config(fnt_profiles_big,c_black,fa_middle,fa_middle)
+                    draw_text_transformed(470,340+y_view_cur,global.profiles[#0,i],string_scale(global.profiles[#0,i],3.5),string_scale(global.profiles[#0,i],3.5),0)
+                    
+                    // Best Time
+                    draw_config(fnt_profiles_big,c_black,fa_left,fa_middle)
+                    draw_text_transformed(95,324+y_view_cur,format_time(global.profiles[#1,i],false),scale+0.1,scale+0.1,0)
+                    
+                    // Best Time (date)
+                    draw_config(fnt_profiles,c_black,fa_left,fa_middle)
+                    draw_text_transformed(95,360+y_view_cur,format_datetime(global.profiles[#2,i]),0.8,0.8,0)          
+                    
+                    // Best Time (surplus)
+                    draw_config(fnt_profiles,4142654,fa_left,fa_middle) // Kalamata
+                    draw_text_transformed(254,324+y_view_cur,format_time(global.profiles[#1,i]-global.profiles[#1,i-1],true),0.8,0.8,0)                               
+                }
+                else
+                {
+                    scale=0.45
+                    
+                    // Profile
+                    draw_area(1,200+i*60+y_view_cur,598,259+i*60+y_view_cur,3961266,c_black,1)      // Dirt
+                    
+                    // Rank
+                    draw_area(8,207+i*60+y_view_cur,53,253+i*60+y_view_cur,3564704,c_black,1)       // Darker Dirt
+                    draw_config(fnt_profiles_big,c_black,fa_middle,fa_middle)
+                    
+                    if string_length(i+1)=1
+                    {
+                        r_scale=0.9
+                    }
+                    
+                    if string_length(i+1)=2
+                    {
+                        r_scale=0.65
+                    }
+                    
+                    if string_length(i+1)=3
+                    {
+                        r_scale=0.48
+                    }
+                    
+                    draw_text_transformed(34,227+i*60+y_view_cur,i+1,r_scale,r_scale,0)
+                    
+                    // Username
+                    draw_config(fnt_profiles_big,c_black,fa_middle,fa_middle)
+                    draw_text_transformed(460,230+i*60+y_view_cur,global.profiles[#0,i],scale+string_scale(global.profiles[#0,i],7.5),scale+string_scale(global.profiles[#0,i],7.5),0)
+                    
+                    // Best Time
+                    draw_config(fnt_profiles_big,c_black,fa_left,fa_middle)
+                    draw_text_transformed(75,218+i*60+y_view_cur,format_time(global.profiles[#1,i],false),scale+0.05,scale+0.05,0)
+                    
+                    // Best Time (date)
+                    draw_config(fnt_profiles,c_black,fa_left,fa_middle)
+                    draw_text_transformed(75,245+i*60+y_view_cur,format_datetime(global.profiles[#2,i]),0.7,0.7,0)
+                    
+                    // Best Time (surplus)
+                    draw_config(fnt_profiles,4142654,fa_left,fa_middle) // Kalamata
+                    draw_text_transformed(211,218+i*60+y_view_cur,format_time(global.profiles[#1,i]-global.profiles[#1,i-1],true),0.7,0.7,0)
+                }
+                
+                scale=0.45
+            }
+     
+            // Title
+            draw_area(0,0,599,79,c_ltgray,c_black,1)
+            draw_config(fnt_profiles_medium,c_search,fa_middle,fa_middle)
+            if string_length(keyboard_string)&gt;0
+            {
+                draw_text(300,40-y_match,'{ '+keyboard_string+' }')
+            }
+            else
+            {
+                draw_text(300,40-y_match,'{ Profile Search }')
+            }
+            
+            if profile_match&lt;-0.2
+            {   
+                draw_config(fnt_profiles,c_search,fa_middle,fa_middle)
+                draw_text(300,55,'This profile does not exist!')
+            }
+            
+            // Selection Box
+            if select=0
+            {
+                draw_select(300,140+y_view_cur,600,120,4)
+            }
+            else if select=1
+            {
+                draw_select(300,250+y_view_cur,600,100,4)
+            }
+            else if select=2
+            {
+                draw_select(300,340+y_view_cur,600,80,4)
+            }
+            else
+            {
+                draw_select(300,230+select*60+y_view_cur,600,60,4)
+            }
+            
+            // User Input
+            if keyboard_check_pressed(vk_enter)
+            {
+                if string_length(keyboard_string)&gt;0
+                {
+                    none=true
+                    
+                    for (z=0;z!=profile_count;z+=1)
+                    {                      
+                        if string_lower(keyboard_string)=global.profiles[#0,z]
+                        {
+                            if z=select
+                            {                    
+                                entry_select=undefined
+                                gui_state=s.profile
+                                user=select
+                                select=0
+                                y_view_cur=0
+                                y_view_tar=0
+                                break
+                            }    
+                                                    
+                            select=z
+                            none=false  
+                            break
+                        }
+                    }
+                    
+                    if none
+                    {
+                        profile_match=-1
+                    }
+                    else
+                    {
+                        profile_match=1
+                    }                      
+                }
+                else
+                {                    
+                    entry_select=undefined
+                    gui_state=s.profile
+                    user=select
+                    select=0
+                    y_view_cur=0
+                    y_view_tar=0
+                }
+            }
+            
+            if keyboard_check_pressed(vk_escape)
+            {
+                if string_length(keyboard_string)&gt;0
+                {
+                    keyboard_string=''
+                }
+                else
+                {                    
+                    gui_state=s.pause
+                }
+            }
+        }break
+        
+        case s.profile:
+        {
+            select=clamp(select,0,global.profiles[#3,user])
+    
+            // Configuring scrolling
+            if -50*(select-2)&lt;=0 and global.profiles[#3,user]&gt;3
+            {
+                y_view_tar=-50*(select-2)
+                
+                if select=global.profiles[#3,user]
+                {
+                    y_view_tar+=50
+                }
+            }
+            
+            // Smooth
+            y_view_cur+=(y_view_tar-y_view_cur)/3
+            if abs(y_view_tar-y_view_cur)&lt;5
+            {
+                y_view_cur=y_view_tar
+            }
+            
+            
+            // Background
+            draw_area(0,0,599,599,c_white,c_black,1)
+                        
+            // Bot area
+            draw_area(1,450,598,598,6581117,c_black,1)     // Kalamata
+                                    
+            // Precalculations for graph
+            lo=global.profiles[#10,user]
+            hi=global.profiles[#10,user]
+            
+            // Run log
+            for (i=0;i!=global.profiles[#3,user]*6;i+=6)
+            {
+                // Run
+                draw_area(2,450+i/6*50+y_view_cur,598,500+i/6*50+y_view_cur,10595785,c_black,2)     // Kalamata White
+                
+                // Number
+                draw_area(6,454+i/6*50+y_view_cur,50,496+i/6*50+y_view_cur,10595785,c_black,2)      // Kalamata White
+                draw_config(fnt_profile_small,c_black,fa_middle,fa_middle)
+                draw_text(28,475+i/6*50+y_view_cur,i/6+1)
+                
+                // Time
+                draw_config(fnt_profile_small,c_black,fa_left,fa_middle)
+                draw_text(60,475+i/6*50+y_view_cur,format_time(global.profiles[#i+4,user],false))
+                
+                // Time (surplus)
+                if i&gt;0
+                {
+                    draw_config(fnt_profile_tiny,4142654,fa_left,fa_middle)                         // Kalamata
+                    draw_text(160,475+i/6*50+y_view_cur,format_time(global.profiles[#i+4,user]-global.profiles[#(i-6)+4,user],true))
+                }
+                
+                // Time (date)
+                draw_config(fnt_profile_small,c_black,fa_right,fa_middle)
+                draw_text(535,475+i/6*50+y_view_cur,format_datetime(global.profiles[#i+5,user]))
+                
+                // Delete Button
+                draw_area(550,454+i/6*50+y_view_cur,594,496+i/6*50+y_view_cur,4142654,c_black,2)    // Kalamata
+                draw_config(fnt_profile_small,c_white,fa_middle,fa_middle)
+                draw_text(573,475+i/6*50+y_view_cur,'del')
+                
+                if global.profiles[#i+4,user]&lt;lo
+                {
+                    lo=global.profiles[#i+4,user]
+                }
+                
+                if global.profiles[#i+4,user]&gt;hi
+                {
+                    hi=global.profiles[#i+4,user]
+                }                
+            }
+            
+            // Rank
+            if user=0
+            {
+                c_rank=3118552
+            }
+            else if user=1
+            {
+                c_rank=11184288
+            }
+            else if user=2
+            {
+                c_rank=4621262
+            }
+            else
+            {
+                c_rank=3564704
+            }
+            
+            if string_length(user+1)=1
+            {
+                r_scale=1
+            }
+            
+            if string_length(user+1)=2
+            {
+                r_scale=0.75
+            }
+            
+            if string_length(user+1)=3
+            {
+                r_scale=0.55
+            }  
+                      
+            draw_area(0,0,76,76,c_rank,c_black,2)      // Gray Turquoise
+            draw_config(fnt_profile_big,c_black,fa_middle,fa_middle)
+            draw_text_transformed(40,38,user+1,r_scale,r_scale,0)
+
+            // Mid area
+            draw_area(1,150,598,449,13426922,c_black,2) // Limestone White            
+
+            if entry_select=undefined
+            {     
+                // Graph
+                draw_graph(lo,hi) 
+            }
+            else
+            {
+                // Final Runtime
+                draw_config(fnt_entry_big,c_black,fa_middle,fa_middle)
+                draw_text(300,185,format_time(global.profiles[#(entry_select-1)*6+4,user],false))
+                draw_config(fnt_entry_tiny,c_black,fa_middle,fa_middle)
+                draw_text(300,225,'Final Runtime')
+                
+                // Surplus (world record)
+                draw_config(fnt_entry_small,4995380,fa_middle,fa_middle)    // Grayish
+                draw_text(150,254,format_time(global.best_time,false))
+                draw_config(fnt_entry_tiny,4079406,fa_middle,fa_middle)     // Murky Turquoise
+                draw_text(150,274,'World Record')
+                
+                if global.profiles[#(entry_select-1)*6+4,user]-global.best_time&gt;0
+                {
+                    draw_config(fnt_entry_small,3018673,fa_middle,fa_middle)    // Crimson
+                    draw_text(450,254,format_time(global.profiles[#(entry_select-1)*6+4,user]-global.best_time,true))
+                }
+                else
+                {
+                    draw_config(fnt_entry_small,2852688,fa_middle,fa_middle)    // Radioactive
+                    draw_text(450,254,format_time(global.profiles[#(entry_select-1)*6+4,user]-global.best_time,true))
+                }
+                
+                // Surplus (personal record)
+                draw_config(fnt_entry_small,4995380,fa_middle,fa_middle)    // Grayish
+                draw_text(150,311,format_time(global.profiles[#1,user],false))
+                draw_config(fnt_entry_tiny,4079406,fa_middle,fa_middle)     // Murky Turquoise
+                draw_text(150,331,'Personal Record')
+                
+                if global.profiles[#(entry_select-1)*6+4,user]-global.profiles[#1,user]&gt;0
+                {
+                    draw_config(fnt_entry_small,3018673,fa_middle,fa_middle)    // Crimson
+                    draw_text(450,311,format_time(global.profiles[#(entry_select-1)*6+4,user]-global.profiles[#1,user],true))
+                }
+                else
+                {
+                    draw_config(fnt_entry_small,2852688,fa_middle,fa_middle)    // Radioactive
+                    draw_text(450,311,format_time(global.profiles[#(entry_select-1)*6+4,user]-global.profiles[#1,user],true))
+                }
+            
+                // Stats
+                draw_config(fnt_entry,4995380,fa_middle,fa_middle)          // Grayish
+                draw_text(90,375,global.profiles[#(entry_select-1)*6+6,user])
+                draw_text(230,375,global.profiles[#(entry_select-1)*6+7,user])
+                draw_text(370,375,global.profiles[#(entry_select-1)*6+8,user])
+                draw_text(510,375,global.profiles[#(entry_select-1)*6+9,user])
+                
+                draw_config(fnt_entry_tiny,4079406,fa_middle,fa_middle)    // Murky Turquoise
+                draw_text(90,405,'Kills')
+                draw_text(230,405,'Deaths')
+                draw_text(370,405,'Jumps')
+                draw_text(510,405,'Dashes')    
+                
+                // Prompt
+                draw_config(fnt_entry_tiny,c_black,fa_middle,fa_middle)
+                draw_text(300,430,'ESC to go back')            
+            }
+            
+            // Login Banner
+            draw_area(76,0,599,76,6713446,c_black,2)    // Gray Green
+            draw_config(fnt_profile_big,c_black,fa_middle,fa_middle)
+            draw_text(339,38,"Profile Login")
+            
+            // Username
+            draw_area(1,76,598,149,8626336,c_black,1)    // Limestone
+            draw_config(fnt_profile_big,4142654,fa_middle,fa_middle) // Kalamata
+            draw_text_transformed(150,113,global.profiles[#0,user],0.9,0.9,0)
+                        
+            // Best Time
+            draw_config(fnt_profile,c_black,fa_middle,fa_middle)
+            draw_text_transformed(450,105,format_time(global.profiles[#1,user],false),0.9,0.9,0)
+            
+            // Best Time (surplus)
+            draw_config(fnt_profile,4142654,fa_middle,fa_middle) // Kalamata
+            if user!=0
+            {
+                draw_text_transformed(450,130,format_time(global.profiles[#1,user]-global.profiles[#1,user-1],true),0.5,0.5,0)
+            }
+            else
+            {
+                draw_text_transformed(450,130,format_time(0,true),0.5,0.5,0)
+            }
+           
+            // Selection Box
+            if select=0
+            {
+                draw_select(339,38+y_view_cur,523,76,5)
+            }
+            else
+            {
+                draw_select(300,475+(select-1)*50+y_view_cur,600,50,3)
+            }
+            
+            if keyboard_check_pressed(vk_enter)
+            {
+                if select=0
+                {
+                    global.selected_profile=global.profiles[#0,user]
+                    set_bindings()
+                }
+                else
+                {
+                    entry_select=select
+                    prev_select=select
+                }
+            }
+            
+            if keyboard_check_pressed(vk_escape)
+            {
+                if entry_select=undefined
+                {
+                    gui_state=s.profiles
+                    keyboard_string=''
+                    select=0
+                    y_view_cur=0
+                    y_view_tar=0
+                }
+                else
+                {
+                    entry_select=undefined
+                }
+            }                    
+        }break
+        
+        case s.keybind:
+        {
+            select=clamp(select,0,6)
+
+            if binding_select!=undefined
+            {
+                select=prev_select
+            }
+            
+            draw_area(0,0,599,599,6581117,c_black,3)    // Kalamata
+            
+            draw_config(fnt_keybind_big,c_black,fa_middle,fa_middle)
+            draw_text(300,50,'KEYBINDINGS')
+            draw_config(fnt_keybind,4995380,fa_middle,fa_middle)    // Grayish
+            draw_text(300,90,'ESC to exit')
+            
+            draw_config(fnt_keybind_big,c_black,fa_middle,fa_middle)
+            draw_text(150,163,'up')
+            draw_text(150,225,'down')
+            draw_text(150,288,'left')
+            draw_text(150,350,'right')
+            draw_text(150,413,'jump')
+            draw_text(150,475,'throw axe')
+            draw_text(150,538,'dash')
+            
+            draw_config(fnt_keybind,c_black,fa_middle,fa_middle)
+            draw_key(450,163,global.k[? 'up'])
+            draw_key(450,225,global.k[? 'down'])
+            draw_key(450,288,global.k[? 'left'])
+            draw_key(450,350,global.k[? 'right'])
+            draw_key(450,413,global.k[? 'jump'])
+            draw_key(450,475,global.k[? 'throw'])
+            draw_key(450,538,global.k[? 'dash'])
+            
+            if binding_select=undefined
+            {
+                if select=0
+                {
+                    draw_select(450,163,string_width(string_key(global.k[? 'up']))+20,string_height(string_key(global.k[? 'left']))+20,4)
+                }
+            
+                if select=1
+                {
+                    draw_select(450,225,string_width(string_key(global.k[? 'down']))+20,string_height(string_key(global.k[? 'right']))+20,4)
+                }
+    
+                if select=2
+                {
+                    draw_select(450,288,string_width(string_key(global.k[? 'left']))+20,string_height(string_key(global.k[? 'up']))+20,4)
+                }
+            
+                if select=3
+                {
+                    draw_select(450,350,string_width(string_key(global.k[? 'right']))+20,string_height(string_key(global.k[? 'down']))+20,4)
+                }
+    
+                if select=4
+                {
+                    draw_select(450,413,string_width(string_key(global.k[? 'jump']))+20,string_height(string_key(global.k[? 'throw']))+20,4)
+                }
+            
+                if select=5
+                {
+                    draw_select(450,475,string_width(string_key(global.k[? 'throw']))+20,string_height(string_key(global.k[? 'jump']))+20,4)
+                }
+                
+                if select=6
+                {
+                    draw_select(450,538,string_width(string_key(global.k[? 'dash']))+20,string_height(string_key(global.k[? 'dash']))+20,4)
+                }
+                
+                prev_select=select
+            }
+            else
+            {
+                draw_area(330,133+63*binding_select,570,193+63*binding_select,6581117,0,0)    // Kalamata
+                
+                if prompt_timer&gt;0
+                {
+                    prompt_timer-=1
+                }
+                else
+                {
+                    binding_prompt='Press new key'  
+                }
+                              
+                if keyboard_key and keyboard_key!=vk_enter
+                {
+                    user=get_user_from_name(global.selected_profile)
+                    
+                    if keyboard_key!=vk_escape and keyboard_key!=vk_backspace and !binding_taken()
+                    {
+                        if user!="Anonymous"
+                        {
+                            global.profiles[#4+(global.profiles[#3,user]+1)*6+binding_select,user]=keyboard_key
+                            set_bindings()
+                        }
+                        else
+                        {
+                            if binding_select=0
+                            {
+                                global.k[? 'up']=keyboard_key
+                            }
+
+                            if binding_select=1
+                            {
+                                global.k[? 'down']=keyboard_key
+                            }
+
+                            if binding_select=2
+                            {
+                                global.k[? 'left']=keyboard_key
+                            }
+
+                            if binding_select=3
+                            {
+                                global.k[? 'right']=keyboard_key
+                            }
+
+                            if binding_select=4
+                            {
+                                global.k[? 'jump']=keyboard_key
+                            }
+
+                            if binding_select=5
+                            {
+                                global.k[? 'throw']=keyboard_key
+                            }
+
+                            if binding_select=6
+                            {
+                                global.k[? 'dash']=keyboard_key
+                            }
+                        }
+                        binding_select=undefined
+                    }
+                    else if binding_taken()
+                    {
+                        prompt_timer=50
+                        binding_prompt='Already taken'
+                    }
+                    else
+                    {
+                        prompt_timer=50
+                        binding_prompt='Invalid Key'
+                    }
+                }                              
+            }
+            
+            if binding_select!=undefined
+            {
+                draw_config(fnt_keybind,c_black,fa_middle,fa_middle)
+                draw_text(450,163+63*binding_select,binding_prompt)
+                draw_select(450,163+63*binding_select,string_width(binding_prompt)+20,string_height(binding_prompt)+20,4)
+            }
+            
+            if keyboard_check_pressed(vk_enter)
+            {
+                binding_select=select
+            }
+                
+            if keyboard_check_pressed(vk_escape)
+            {
+                gui_state=s.options
+                select=0
+            }                        
+        }break        
+    }
+}   
+
+if room=rm_end
+{   
+    // Background
+    draw_area(0,0,599,599,12640234,c_black,2)                   // Lighter Mocha
+    
+    // Dividers
+    draw_config(fnt_end_big,c_black,fa_middle,fa_middle)
+    draw_rectangle(300-1,200-25,300+1,200+30,0)
+    draw_rectangle(300-1,280-25,300+1,280+30,0)
+    draw_rectangle(300-1,370-25,300+1,370+30,0)
+    draw_rectangle(20,435,579,435+1,0)
+    
+    // Top
+    draw_area(0,0,599,64,10401985,c_black,2)                    // Light Mocha
+    
+    // Title
+    draw_config(fnt_end_medium,4995380,fa_middle,fa_middle)     // Grayish
+    draw_text(300,32,'Run Completed!')
+    
+    // Runtime
+    draw_config(fnt_end_big,c_black,fa_middle,fa_middle)
+    draw_text(300,110,format_time(global.game_time,false))
+    draw_config(fnt_end_tiny,4079406,fa_middle,fa_middle)       // Murky Turquoise
+    draw_text(300,156,'Final Runtime')
+    
+    // World Record
+    draw_config(fnt_end_medium,4995380,fa_middle,fa_middle)     // Grayish
+    draw_text(150,200,format_time(global.best_time,false))
+    draw_config(fnt_end_tiny,4079406,fa_middle,fa_middle)       // Murky Turquoise
+    draw_text(150,230,'World Record')
+    
+    if global.game_time-global.best_time&gt;0
+    {
+        draw_config(fnt_end_small,3018673,fa_middle,fa_middle)  // Crimson
+        draw_text(450,200,format_time(global.game_time-global.best_time,true))
+    }
+    else
+    {
+        draw_config(fnt_end_small,2852688,fa_middle,fa_middle)  // Radioactive
+        draw_text(450,200,format_time(global.game_time-global.best_time,true))    
+    }
+        
+    // Personal Record
+    draw_config(fnt_end_medium,4995380,fa_middle,fa_middle)     // Grayish
+    draw_text(150,280,format_time(global.profiles[#1,selected_profile],false))
+    draw_config(fnt_end_tiny,4079406,fa_middle,fa_middle)       // Murky Turquoise
+    draw_text(150,310,'Personal Record')
+
+    if global.game_time-global.profiles[#1,selected_profile]&gt;0
+    {
+        draw_config(fnt_end_small,3018673,fa_middle,fa_middle)  // Crimson
+        draw_text(450,280,format_time(global.game_time-global.profiles[#1,selected_profile],true))
+    }
+    else
+    {
+        draw_config(fnt_end_small,2852688,fa_middle,fa_middle)  // Radioactive
+        draw_text(450,280,format_time(global.game_time-global.profiles[#1,selected_profile],true))    
+    }        
+    
+    // Rank
+    
+    new_rank=clamp(calculate_rank(),1,selected_profile+1)
+    
+    if new_rank=1
+    {
+        c_rank=3118552
+    }
+    else if new_rank=2
+    {
+        c_rank=11184288
+    }
+    else if new_rank=3
+    {
+        c_rank=4621262
+    }
+    else
+    {
+        c_rank=3564704
+    }
+   
+    draw_area(149-35,370-35,149+35,370+35,c_rank,c_black,2)
+    draw_config(fnt_end_tiny,4079406,fa_middle,fa_middle)       // Murky Turquoise
+    draw_text(150,416,'New Rank')
+    draw_config(fnt_end_medium,c_black,fa_middle,fa_middle)
+    draw_text(152,369,new_rank)
+    draw_config(fnt_end_small,27357,fa_middle,fa_middle)        // Dirty Orange
+    draw_text_transformed(450,370,string(clamp(selected_profile+1-new_rank,0,10000))+' Ranks Gained!',0.75,0.75,0)
+    
+    // Stats
+    draw_config(fnt_end_medium,4995380,fa_middle,fa_middle)     // Grayish
+    draw_text(90,475,global.kill_count)
+    draw_text(230,475,global.death_count)
+    draw_text(370,475,global.jump_count)
+    draw_text(510,475,global.dash_count)
+   
+    draw_config(fnt_end_tiny,4079406,fa_middle,fa_middle)       // Murky Turquoise
+    draw_text(90,505,'Kills')
+    draw_text(230,505,'Deaths')
+    draw_text(370,505,'Jumps')
+    draw_text(510,505,'Dashes')
+
+    // Buttons
+    draw_area(0,530,200,599,9743541,c_black,3)                  // Sandstone Mocha
+    draw_area(200,530,400,599,9743541,c_black,3)                // Sandstone Mocha
+    draw_area(400,530,599,599,9743541,c_black,3)                // Sandstone Mocha
+    
+    draw_config(fnt_end_small,c_black,fa_middle,fa_middle)
+    draw_text_transformed(100,565,'New Run',0.8,0.8,0)
+    draw_text_transformed(300,565,'Exit to Menu',0.8,0.8,0)
+    draw_text_transformed(500,565,'Exit Game',0.8,0.8,0)
+    
+    if select=0
+    {
+        draw_select(100,565,200,70,4)
+    }
+    
+    if select=1
+    {
+        draw_select(300,565,200,70,4)
+    }
+    
+    if select=2
+    {
+        draw_select(500,565,200,70,4)
+    }
+    
+    if keyboard_check_pressed(vk_enter)
+    {
+        if select=0
+        {
+            room=rm_main
+        }
+        if select=1
+        {
+            room=rm_title
+        }
+        if select=2
+        {
+            game_end()
         }
     }
+
 }
 
 // User Input
-
-if keyboard_check_pressed(vk_up) or keyboard_check_pressed(vk_left)
+if keyboard_check(global.k[? 'up'])
 {
-    select-=1
+    if hold_up=0 or (hold_up&gt;15 and hold_up mod 5=0)
+    {
+        select-=1
+    }
+    hold_up+=1
+}
+else
+{
+    hold_up=0
 }
 
-if keyboard_check_pressed(vk_down) or keyboard_check_pressed(vk_right)
+if keyboard_check(global.k[? 'down'])
 {
-    select+=1
+    if hold_dn=0 or (hold_dn&gt;15 and hold_dn mod 5=0)
+    {
+        select+=1
+    }
+    hold_dn+=1
+}
+else
+{
+    hold_dn=0
+}
+</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>/// Profile Animations
+if room=rm_main
+{
+    if profile_match&gt;0
+    {
+        c_search=merge_colour(c_black,c_lime,profile_match)
+    }
+    
+    if profile_match&lt;0
+    {
+        c_search=merge_colour(c_black,c_red,abs(profile_match))
+    }
+    
+    if profile_match=0
+    {
+        c_search=0
+    }
+    
+    if profile_match=-1
+    {
+        y_match=20
+    }
+    
+    if profile_match=0
+    {
+        y_match=0
+    }
+    
+    if profile_match&gt;-0.1 and profile_match&lt;0
+    {
+        y_match-=4
+    }
+    
+    if profile_match!=0
+    {
+        profile_match-=sign(profile_match)*0.02
+    }
 }
 </string>
           </argument>

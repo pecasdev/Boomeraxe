@@ -29,12 +29,13 @@
 
 prev_state=0
 timer=0
+player_invincible=false
 </string>
           </argument>
         </arguments>
       </action>
     </event>
-    <event eventtype="8" enumb="0">
+    <event eventtype="8" enumb="64">
       <action>
         <libid>1</libid>
         <id>603</id>
@@ -52,26 +53,60 @@ timer=0
           <argument>
             <kind>1</kind>
             <string>/// Debug
-
-/*
-if instance_exists(obj_player)
+if instance_exists(obj_player) and obj_host.gui_state=s.idle
 {
-    draw_config(fnt_debug,c_dkgray,fa_left,fa_top)
-    draw_rectangle(0,0,100,120,0)
-    
-    
-    draw_config(fnt_debug,c_white,fa_left,fa_top)
-    draw_text(10,10,'S : '+state_string(obj_player.state))
-    draw_text(10,30,'JMP : '+string(obj_player.jump_count)+'/'+string(obj_player.jump_max))
-    draw_text(10,50,'DSH : '+string(obj_player.dash_count)+'/'+string(obj_player.dash_max))
-    draw_text(10,70,'X : '+string(obj_player.x))
-    draw_text(10,90,'Y : '+string(obj_player.y))
+    draw_area(450,450,600,600,c_white,c_black,2)
+    draw_config(fnt_debug,c_black,fa_middle,fa_middle)
+    draw_text(525,470,'(x,y) : ('+string(obj_player.x)+','+string(obj_player.y)+')')
+    draw_text(525,490,'state : ('+string(obj_player.state)+')')
+    draw_text(525,510,'kills : ('+string(global.kill_count)+')')
+    draw_text(525,530,'deaths : ('+string(global.death_count)+')')
+    draw_text(525,550,'jumps : ('+string(global.jump_count)+')')
+    draw_text(525,570,'dashes : ('+string(global.dash_count)+')')
 }
-*/
-    
-if keyboard_check(ord('R'))
+
+if keyboard_check_pressed(vk_home)
 {
     room_restart()
+}
+
+if keyboard_check_pressed(vk_insert)
+{
+    if player_invincible
+    {
+        player_invincible=false
+    }
+    else
+    {
+        player_invincible=true
+    }
+}
+
+if instance_exists(obj_player)
+{
+    if player_invincible=true
+    {
+        obj_player.image_alpha=0.4
+        obj_player.move_speed=12
+        
+        if mouse_check_button_pressed(mb_left)
+        {
+            obj_player.x=mouse_x
+            obj_player.y=mouse_y
+        }
+        x=mouse_x
+        y=mouse_y
+    }
+    else
+    {
+        obj_player.image_alpha=1
+        obj_player.move_speed=6
+    }
+}
+
+if keyboard_check_pressed(vk_end)
+{
+    obj_host.run_over=true
 }
 </string>
           </argument>

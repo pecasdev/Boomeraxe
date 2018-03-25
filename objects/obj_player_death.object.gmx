@@ -27,7 +27,7 @@
             <kind>1</kind>
             <string>/// Initialize
 
-savepoint=undefined
+target=undefined
 </string>
           </argument>
         </arguments>
@@ -52,7 +52,7 @@ savepoint=undefined
             <kind>1</kind>
             <string>/// Savepoint Finding Movement
 
-if savepoint=undefined
+if target=undefined
 {
     for (i=0;i!=instance_number(obj_savepoint);i++)
     {
@@ -60,24 +60,38 @@ if savepoint=undefined
         
         if sp.state=s.open
         {
-            savepoint=sp
+            target=sp
             break
         }
     }
     
-    if savepoint=undefined
+    if target=undefined
     {
-        savepoint=instance_nearest(x,y,obj_savepoint)
+        target=instance_nearest(x,y,obj_savepoint)
     }
 }
 
-move_towards_point(savepoint.x+10,savepoint.y+10,point_distance(x,y,savepoint.x+10,savepoint.y+10)/20+8)
+move_towards_point(target.x+10,target.y+10,point_distance(x,y,target.x+10,target.y+10)/20+8)
 
-if point_distance(x,y,savepoint.x+10,savepoint.y+10)&lt;5
+if point_distance(x,y,target.x+10,target.y+10)&lt;5
 {
-    instance_create(x,y-5,obj_player)
+    instance_create(target.x+10,target.y+5,obj_player)
     instance_destroy()
     create_particles(x,y,'death_end')
+    
+    if target.object_index=obj_savepoint
+    {
+        reset_crumble_and_telepoint()
+    }
+    
+    if target.object_index=obj_telepoint
+    {
+        with(target)
+        {
+            instance_destroy()
+        }
+    }
+    
 }
 
 create_particles(x,y,'death')

@@ -23,5 +23,4 @@ for (i=0;i!=instance_number(argument0);i++)
     }
 }
 
-show_debug_message('Axe Collisions: '+string(ds_list_size(collisions)))
 return collisions

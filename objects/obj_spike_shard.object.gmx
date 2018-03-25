@@ -30,6 +30,8 @@
 retract=false
 timer=60
 image_speed=0
+
+blend=0
 </string>
           </argument>
         </arguments>
@@ -52,7 +54,7 @@ image_speed=0
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>/// Physics
+            <string>/// Physics and Tinting
 
 if retract
 {
@@ -71,6 +73,30 @@ if retract
     
     timer-=1
 }
+
+if blend=0
+{
+    up=true
+    dn=false
+}
+
+if blend=1
+{
+    dn=true
+    up=false
+}
+
+if up
+{
+    blend+=0.02
+}
+
+if dn
+{
+    blend-=0.02
+}
+
+image_blend=merge_colour(c_white,c_red,blend)
 </string>
           </argument>
         </arguments>

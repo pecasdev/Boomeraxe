@@ -114,39 +114,42 @@ switch(state)
 
 draw_self()
 
-if peek&gt;0
+//if peek&gt;0
 {
-    draw_set_alpha(peek/60)
+//    draw_set_alpha(peek/60)
     
     draw_sprite(spr_savepoint_background,0,x+10,y-15)
     draw_config(fnt_savepoint,c_white,fa_middle,fa_middle)
-    draw_text(x+10,y-15,format_time_full(obj_host.game_time))
+    draw_text(x+10,y-15,format_time(global.game_time,false))
       
     draw_set_alpha(1)
     
     peek-=1
-
-    if x=2080 and y=180
-    {
-        if place_meeting(x,y,obj_player) or place_meeting(x,y,obj_axe)
-        {
-            obj_host.running=false
-        }
-        
-        split_time=format_time_split(obj_host.game_time-obj_host.best_time)
-    
-        if sign(obj_host.game_time-obj_host.best_time)&gt;0
-        {
-            draw_config(fnt_savepoint,c_red,fa_middle,fa_middle)
-            draw_text(x+10,y-30,'+'+split_time)   
-        }
-        
-        if sign(obj_host.game_time-obj_host.best_time)&lt;0
-        {
-            draw_config(fnt_savepoint,c_green,fa_middle,fa_middle)
-            draw_text(x+10,y-30,split_time)
-        }     
-    }    
+}
+</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>/// Final Checkpoint
+if x=1800 and y=80 and state=s.open
+{
+    obj_host.run_over=true
 }
 </string>
           </argument>

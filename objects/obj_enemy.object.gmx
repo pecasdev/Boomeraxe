@@ -34,8 +34,9 @@ x+=10
 y+=10
 
 // Other Variables
-state=s.idle
+state=s.attack
 timer=50
+death=false
 </string>
           </argument>
         </arguments>
@@ -66,6 +67,12 @@ if dmg_tint&gt;0
 }
 
 image_blend=merge_colour(c_white,c_black,dmg_tint)
+
+if death=true
+{
+    global.kill_count+=1
+    instance_destroy()
+}
 </string>
           </argument>
         </arguments>

@@ -26,7 +26,6 @@
           <argument>
             <kind>1</kind>
             <string>/// Initialize
-create_enum()
 
 // Movement Variables
 dash_max=1
@@ -46,12 +45,38 @@ grav=0.6
 // Other
 can_throw=true
 state=s.idle
-move_speed=5
+move_speed=6
 jump_speed=10
 dash_timer=0
 move_timer=0
 wall_timer=0
 
+
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="1" enumb="0">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>/// obj_host.death_count
+
+global.death_count+=1
 </string>
           </argument>
         </arguments>
@@ -74,18 +99,51 @@ wall_timer=0
         <arguments>
           <argument>
             <kind>1</kind>
+            <string>/// Pause Check
+
+if obj_host.paused
+{
+    image_speed=0
+    exit
+}
+</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
             <string>/// Movement Physics
 
 // Variable Binding
-k_left      =keyboard_check(vk_left)
-k_right     =keyboard_check(vk_right)
-k_up        =keyboard_check(vk_up)
-k_down      =keyboard_check(vk_down)
-k_attack    =keyboard_check(ord('X'))
-k_jump      =keyboard_check_pressed(ord('Z'))
-k_dash      =keyboard_check_pressed(vk_shift)
+k_left      =keyboard_check(global.k[? 'left'])
+k_right     =keyboard_check(global.k[? 'right'])
+k_up        =keyboard_check(global.k[? 'up'])
+k_down      =keyboard_check(global.k[? 'down'])
+k_attack    =keyboard_check_pressed(global.k[? 'throw'])
+k_jump      =keyboard_check_pressed(global.k[? 'jump'])
+k_dash      =keyboard_check_pressed(global.k[? 'dash'])
 
 move_x      =k_right-k_left
+
+// Direction
+if move_x!=0
+{
+    image_xscale=move_x
+}
 
 // State Machine
 switch(state)
@@ -194,6 +252,7 @@ switch(state)
         
         //create_particles(x,y,'jump')
         state=s.fall
+        global.jump_count+=1
         
     break}
     
@@ -238,11 +297,21 @@ switch(state)
             dash_count-=1
             dash_timer=6
             dash_dir=image_xscale
+            global.dash_count+=1
         }
         
+        if (place_meeting(x+1,y,obj_collision) and move_x=1) or (place_meeting(x-1,y,obj_collision) and move_x=-1)
+        {
+            dash_count=dash_max
+            jump_count=jump_max
+            
+            state=s.wall
+        }
+
         vsp=0
         
         sprite_index=spr_player_dash
+        image_xscale=dash_dir
         
         dash_hsp=dash_dir*16
         
@@ -259,11 +328,13 @@ switch(state)
             state=s.jump
         }
         
-        create_particles(x,y,'dash')
-        
         if place_meeting(x,y+1,obj_collision)
         {
             create_particles(x,y+10,'move')
+        }
+        else
+        {
+            create_particles(x,y,'dash')
         }
           
     break}
@@ -424,11 +495,6 @@ if sprite_index=spr_player_fall or sprite_index=spr_player_jump
         image_speed=0.5
     }
 }
-// Direction
-if move_x!=0
-{
-    image_xscale=move_x
-}
 
 // Applying speeds to position
 combine_hsp()
@@ -462,7 +528,6 @@ else
 
 move_snap(1,1)
 
-
 </string>
           </argument>
         </arguments>
@@ -494,21 +559,36 @@ if sp!=noone and sp.state=s.close
     create_particles(sp.x+10,sp.y+10,'savepoint_get')
 }
 
-if place_meeting(x,y,obj_spike)
+if obj_debug.player_invincible!=true
 {
-    instance_destroy()
-    instance_create(x,y,obj_player_death)
-}
-
-db=instance_place(x,y,obj_dirtball)
-if db!=noone
-{
-    instance_destroy()
-    instance_create(x,y,obj_player_death)
-    with(db)
+    if place_meeting(x,y,obj_spike_shard)
     {
         instance_destroy()
-        //create_particles('dirtball_hit')
+        instance_create(x,y,obj_player_death)
+    }
+    
+    db=instance_place(x,y,obj_dirtball)
+    if db!=noone
+    {
+        instance_destroy()
+        instance_create(x,y,obj_player_death)
+        with(db)
+        {
+            instance_destroy()
+            //create_particles('dirtball_hit')
+        }
+    }
+}
+
+tp=instance_place(x,y,obj_telepoint)
+if tp!=noone
+{
+    jump_count=jump_max
+    dash_count=dash_max
+    
+    with(tp)
+    {
+        instance_destroy()
     }
 }
 </string>
