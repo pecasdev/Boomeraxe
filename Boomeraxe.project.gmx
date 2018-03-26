@@ -118,6 +118,10 @@
     <font>fonts\fnt_entry</font>
     <font>fonts\fnt_entry_tiny</font>
     <font>fonts\fnt_entry_small</font>
+    <font>fonts\fnt_profile_create_big</font>
+    <font>fonts\fnt_profile_create</font>
+    <font>fonts\fnt_login_big</font>
+    <font>fonts\fnt_login</font>
   </fonts>
   <objects name="objects">
     <objects name="visible">

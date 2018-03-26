@@ -284,12 +284,14 @@ if room=rm_title
     
     global.volume_effects=10
     global.volume_music=10
+    global.leaderboard_overlay=false
     
     // Time
     global.unix_start=date_create_datetime(1970,1,1,0,0,0)
     
     // Other
     global.udp_socket=network_create_socket(network_socket_udp) 
+    exit_confirm=false
 }
 
 if room=rm_main
@@ -323,7 +325,6 @@ if room=rm_main
     gui_state=s.idle
     network_state=s.idle
     paused=false
-    leaderboard_overlay=false
         
     // Scrolling
     y_view_cur=0
@@ -423,31 +424,39 @@ if room=rm_title
             draw_config(fnt_title_big,c_white,fa_middle,fa_middle)
             draw_text(300,75,'- BOOMERAXE -')
             draw_config(fnt_title,c_white,fa_middle,fa_middle)
-            draw_text(300,300,'New Game')
+            draw_text(300,300,'New Run')
             draw_text(300,375,'New Profile')
             draw_text(300,450,'Options')
-            draw_text(300,525,'Quit')
+            
+            if !exit_confirm
+            {
+                draw_text(300,525,'Exit Game')
+            }
+            else
+            {
+                draw_text(300,525,'Confirm?')
+            }
             
             select=clamp(select,0,3)
             
             if select=0
             {
-                draw_select(300,300,string_width('New Game'),string_height('New Game'),3)
+                draw_select(300,300,100,20,3)
             }
             
             if select=1
             {
-                draw_select(300,375,string_width('New Profile'),string_height('New Profile'),3)
+                draw_select(300,375,150,20,3)
             }
             
             if select=2
             {
-                draw_select(300,450,string_width('Options'),string_height('Options'),3)
+                draw_select(300,450,90,20,3)
             }
             
             if select=3
             {
-                draw_select(300,525,string_width('Quit'),string_height('Quit'),3)
+                draw_select(300,525,120,20,3)
             } 
             
             if keyboard_check_pressed(vk_enter)
@@ -459,20 +468,110 @@ if room=rm_title
                 
                 if select=1
                 {
-                    // new profile
+                    gui_state=s.profile_create
                 }
                 
                 if select=2
                 {
-                    // options
+                    gui_state=s.options
                 }
                 
                 if select=3
                 {
-                    game_end()
+                    if exit_confirm
+                    {                    
+                        game_end()
+                    }
+                    else
+                    {
+                        exit_confirm=true
+                    }
+                }
+            }                    
+        }break
+        
+        case s.profile_create:
+        {
+            draw_config(fnt_profile_create_big,c_black,fa_middle,fa_middle)
+            draw_text(300,50,"Create Profile")
+            
+            draw_config(fnt_profile_create,c_black,fa_middle,fa_middle)
+            draw_text(300,180,"Username")
+            
+            draw_config(fnt_profile_create,c_black,fa_middle,fa_middle)
+            draw_text(300,280,"Password")
+            draw_text(300,330,"Password")
+            
+            draw_text(300,430,"Keybindings")
+            
+            draw_config(fnt_profile_create_big,c_black,fa_middle,fa_middle)
+            draw_text(200,550,"Create")
+            draw_text(400,550,"Cancel")            
+        }break
+        
+        case s.options:
+        {
+            draw_config(fnt_title_big,c_white,fa_middle,fa_middle)
+            draw_text(300,75,'- Options -')
+            
+            draw_config(fnt_title,c_white,fa_middle,fa_middle)
+            draw_text(300,300,'SFX : ')
+            draw_text(300,375,'MUSIC : ')
+            draw_text(300,450,'Overlay: ')
+            draw_text(300,525,'Back')
+            
+            draw_config(fnt_title_big,c_white,fa_left,fa_middle)
+            draw_text(400,300,string(global.volume_effects))
+            draw_text(400,375,string(global.volume_music))
+
+            if global.leaderboard_overlay
+            {
+                draw_text(410,450,"On")
+            }
+            else
+            {
+                draw_text(410,450,"Off")
+            }    
+            
+            // User Input
+            select=clamp(select,0,4)
+            draw_select(300,300+select*75,195,45,2)
+            
+            if keyboard_check_pressed(global.k[? 'left']) or keyboard_check_pressed(global.k[? 'right']) or keyboard_check_pressed(vk_enter)
+            {
+                if select=0
+                {
+                    global.volume_effects+=keyboard_check_pressed(global.k[? 'right']) - keyboard_check_pressed(global.k[? 'left'])
+                }
+                
+                if select=1
+                {
+                    global.volume_music+=keyboard_check_pressed(global.k[? 'right']) - keyboard_check_pressed(global.k[? 'left'])
+                }
+                
+                if select=2
+                {
+                    global.leaderboard_overlay=(global.leaderboard_overlay==false) // quick switcher from true/false
+                }
+                
+                if select=3
+                {
+                    binding_select=undefined
+                    gui_state=s.keybind
+                }
+                
+                if select=4
+                {
+                    gui_state=s.title
                 }
             }
-                    
+            
+            if keyboard_check_pressed(vk_escape)
+            {
+                gui_state=s.title
+            }
+            
+            
         }break
     }   
 }
@@ -487,6 +586,7 @@ if room=rm_main
             {
                 pause_x=-200
                 gui_state=s.pause
+                exit_confirm=false
                 paused=true
                 select=0
             }
@@ -512,11 +612,19 @@ if room=rm_main
             draw_text(100+pause_x,100,"- Paused -")
             
             draw_config(fnt_title,c_black,fa_left,fa_middle)
-            draw_text(25+pause_x,190,"Continue")
+            draw_text(25+pause_x,180,"Continue")
             draw_text(25+pause_x,240,"New Run")
-            draw_text(25+pause_x,290,"Profiles")
-            draw_text(25+pause_x,340,"Options")
-            draw_text(25+pause_x,390,"Title Screen")
+            draw_text(25+pause_x,300,"Profiles")
+            draw_text(25+pause_x,360,"Options")
+            
+            if exit_confirm
+            {
+                draw_text(25+pause_x,420,"Confirm?")
+            }
+            else
+            {            
+                draw_text(25+pause_x,420,"Title Screen")
+            }
             
             draw_area(5+pause_x,489,195+pause_x,525,c_ltgray,c_black,3)
             draw_config(fnt_title,c_black,fa_middle,fa_middle)
@@ -539,7 +647,7 @@ if room=rm_main
             
             // User Input
             select=clamp(select,0,4)
-            draw_select(100+pause_x,190+select*50,195,45,2)
+            draw_select(100+pause_x,180+select*60,195,45,2)
             
             if keyboard_check_pressed(vk_enter)
             {
@@ -568,7 +676,14 @@ if room=rm_main
                 
                 if select=4
                 {
-                    room=rm_title
+                    if exit_confirm=true
+                    {
+                        room=rm_title
+                    }
+                    else
+                    {
+                        exit_confirm=true
+                    }
                 }
             }            
         }break
@@ -592,7 +707,7 @@ if room=rm_main
             draw_text(125,180,string(global.volume_effects))
             draw_text(125,240,string(global.volume_music))
             
-            if leaderboard_overlay
+            if global.leaderboard_overlay
             {
                 draw_text(135,300,"On")
             }
@@ -638,7 +753,7 @@ if room=rm_main
                 
                 if select=2
                 {
-                    leaderboard_overlay=(leaderboard_overlay==false) // quick switcher from true/false
+                    global.leaderboard_overlay=(global.leaderboard_overlay==false) // quick switcher from true/false
                 }
                 
                 if select=3
@@ -650,12 +765,14 @@ if room=rm_main
                 if select=4
                 {
                     gui_state=s.pause
+                    exit_confirm=false
                 }
             }
             
             if keyboard_check_pressed(vk_escape)
             {
                 gui_state=s.pause
+                exit_confirm=false
             }
         }break
         
@@ -912,6 +1029,7 @@ if room=rm_main
                 else
                 {                    
                     gui_state=s.pause
+                    exit_confirm=false    
                 }
             }
         }break
@@ -1099,7 +1217,15 @@ if room=rm_main
             // Login Banner
             draw_area(76,0,599,76,6713446,c_black,2)    // Gray Green
             draw_config(fnt_profile_big,c_black,fa_middle,fa_middle)
-            draw_text(339,38,"Profile Login")
+            
+            if global.selected_profile!=global.profiles[#0,user]
+            {
+                draw_text(339,38,"Profile Login")
+            }
+            else
+            {
+                draw_text(339,39,"Logged In!")
+            }
             
             // Username
             draw_area(1,76,598,149,8626336,c_black,1)    // Limestone
@@ -1135,8 +1261,7 @@ if room=rm_main
             {
                 if select=0
                 {
-                    global.selected_profile=global.profiles[#0,user]
-                    set_bindings()
+                    gui_state=s.login
                 }
                 else
                 {
@@ -1158,6 +1283,34 @@ if room=rm_main
                 else
                 {
                     entry_select=undefined
+                }
+            }                    
+        }break
+        
+        case s.login:
+        {
+            draw_config(fnt_login_big,c_black,fa_middle,fa_middle)
+            draw_text(300,200,'Profile Login')
+            
+            draw_config(fnt_login,c_black,fa_middle,fa_middle)
+            draw_text(300,400,global.profiles[#0,user])
+            
+            draw_text(300,450,"password")
+            
+            draw_config(fnt_login_big,c_black,fa_middle,fa_middle)
+            draw_text(300,550,'Back')
+            
+            if keyboard_check_pressed(vk_enter)
+            {
+                if login_pass
+                {
+                    global.selected_profile=global.profiles[#0,user]
+                    set_bindings()
+                    gui_state=s.profile
+                }
+                else
+                {
+                    // incorrect password
                 }
             }                    
         }break
