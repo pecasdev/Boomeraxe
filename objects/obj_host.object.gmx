@@ -8,6 +8,61 @@
   <parentName>&lt;undefined&gt;</parentName>
   <maskName>&lt;undefined&gt;</maskName>
   <events>
+    <event eventtype="3" enumb="2">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>/// Background Scrolling
+if room=rm_main and global.bg_enabled
+{
+    background_x[0]=view_xview[0]/1.0
+    background_x[1]=view_xview[0]/1.2
+    background_x[2]=view_xview[0]/1.4
+    background_x[3]=view_xview[0]/1.6
+    background_x[4]=view_xview[0]/1.8
+    background_x[5]=view_xview[0]/2.0
+    
+    background_y[0]=view_yview[0]/1.0
+    background_y[1]=view_yview[0]/1.1
+    background_y[2]=view_yview[0]/1.1
+    background_y[3]=view_yview[0]/1.1
+    background_y[4]=view_yview[0]/1.1
+    background_y[5]=view_yview[0]/1.1
+    
+    background_alpha[6]=global.bg_alpha/10
+    background_blend[6]=merge_colour(c_white,c_black,global.bg_value/10)
+}
+
+switch(global.bg_enabled)
+{
+    default:
+    {
+        background_visible[0]=global.bg_enabled
+        background_visible[1]=global.bg_enabled
+        background_visible[2]=global.bg_enabled
+        background_visible[3]=global.bg_enabled
+        background_visible[4]=global.bg_enabled
+        background_visible[5]=global.bg_enabled
+    }
+}
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
     <event eventtype="3" enumb="0">
       <action>
         <libid>1</libid>
@@ -160,36 +215,6 @@ if room=rm_main
           </argument>
         </arguments>
       </action>
-      <action>
-        <libid>1</libid>
-        <id>603</id>
-        <kind>7</kind>
-        <userelative>0</userelative>
-        <isquestion>0</isquestion>
-        <useapplyto>-1</useapplyto>
-        <exetype>2</exetype>
-        <functionname></functionname>
-        <codestring></codestring>
-        <whoName>self</whoName>
-        <relative>0</relative>
-        <isnot>0</isnot>
-        <arguments>
-          <argument>
-            <kind>1</kind>
-            <string>/// Background Scrolling
-/*
-if room=rm_main
-{
-    background_x[0]=obj_player.x/1.5
-    background_x[1]=obj_player.x/2
-    background_x[2]=obj_player.x/2.5
-    background_x[3]=obj_player.x/3
-}
-*/
-</string>
-          </argument>
-        </arguments>
-      </action>
     </event>
     <event eventtype="7" enumb="68">
       <action>
@@ -282,9 +307,13 @@ if room=rm_title
     gui_state=s.title
     select_offset=2
     
-    global.volume_effects=10
-    global.volume_music=10
+    global.volume_mute=false
+    global.volume_effects=5
+    global.volume_music=5
     global.leaderboard_overlay=false
+    global.bg_enabled=true
+    global.bg_value=4
+    global.bg_alpha=5.5
     
     // Time
     global.unix_start=date_create_datetime(1970,1,1,0,0,0)
@@ -306,12 +335,28 @@ if room=rm_main
     create_spike_and_enemy()
     
     // Backgrounds
-    /*
-    background_yscale[0]=room_height/background_get_height(bg_forest_0)/1.5
-    background_yscale[1]=room_height/background_get_height(bg_forest_1)/2
-    background_yscale[2]=room_height/background_get_height(bg_forest_2)/2.5
-    background_yscale[3]=room_height/background_get_height(bg_forest_3)/3
-    */
+    background_xscale[0]=2
+    background_xscale[1]=2
+    background_xscale[2]=2
+    background_xscale[3]=2
+    background_xscale[4]=2
+    background_xscale[5]=2
+    
+    background_yscale[0]=2
+    background_yscale[1]=2
+    background_yscale[2]=2
+    background_yscale[3]=2
+    background_yscale[4]=2
+    background_yscale[5]=2
+    
+    background_alpha[0]=1
+    background_alpha[1]=1
+    background_alpha[2]=1
+    background_alpha[3]=1
+    background_alpha[4]=1
+    background_alpha[5]=1
+    background_alpha[6]=0.75
+    
     // Create starting objects
     instance_create(100,160,obj_player)
     instance_create(64,64,obj_camera)
@@ -343,7 +388,7 @@ if room=rm_main
     global.kill_count=0
     global.death_count=0
     global.jump_count=0
-    global.dash_count=0   
+    global.dash_count=0  
 }
 
 if room=rm_end
@@ -537,18 +582,19 @@ if room=rm_title
             select=clamp(select,0,4)
             draw_select(300,300+select*75,195,45,2)
             
-            if keyboard_check_pressed(global.k[? 'left']) or keyboard_check_pressed(global.k[? 'right']) or keyboard_check_pressed(vk_enter)
+            if select=0
             {
-                if select=0
-                {
-                    global.volume_effects+=keyboard_check_pressed(global.k[? 'right']) - keyboard_check_pressed(global.k[? 'left'])
-                }
+                global.volume_effects+=keyboard_check_pressed(global.k[? 'right']) - keyboard_check_pressed(global.k[? 'left'])
+            }
+            
+            if select=1
+            {
+                global.volume_music+=keyboard_check_pressed(global.k[? 'right']) - keyboard_check_pressed(global.k[? 'left'])
+            }
+
                 
-                if select=1
-                {
-                    global.volume_music+=keyboard_check_pressed(global.k[? 'right']) - keyboard_check_pressed(global.k[? 'left'])
-                }
-                
+            if keyboard_check_pressed(vk_enter)
+            {                
                 if select=2
                 {
                     global.leaderboard_overlay=(global.leaderboard_overlay==false) // quick switcher from true/false
@@ -697,15 +743,13 @@ if room=rm_main
             draw_text(100,100,"- Options -")
             
             draw_config(fnt_title,c_black,fa_left,fa_middle)
-            draw_text(25,180,"SFX : ")            
-            draw_text(25,240,"MUSIC : ")
+            draw_text(25,180,"Video")            
+            draw_text(25,240,"Audio")
             draw_text(25,300,"Overlay: ")
             draw_text(25,360,"Keybindings")
             draw_text(25,420,"Back")
             
             draw_config(fnt_title_big,c_black,fa_left,fa_middle)
-            draw_text(125,180,string(global.volume_effects))
-            draw_text(125,240,string(global.volume_music))
             
             if global.leaderboard_overlay
             {
@@ -739,18 +783,17 @@ if room=rm_main
             select=clamp(select,0,4)
             draw_select(100+pause_x,180+select*60,195,45,2)
             
-            if keyboard_check_pressed(global.k[? 'left']) or keyboard_check_pressed(global.k[? 'right']) or keyboard_check_pressed(vk_enter)
+            if keyboard_check_pressed(vk_enter)
             {
                 if select=0
                 {
-                    global.volume_effects+=keyboard_check_pressed(global.k[? 'right']) - keyboard_check_pressed(global.k[? 'left'])
+                    gui_state=s.options_video
                 }
                 
                 if select=1
                 {
-                    global.volume_music+=keyboard_check_pressed(global.k[? 'right']) - keyboard_check_pressed(global.k[? 'left'])
-                }
-                
+                    gui_state=s.options_audio
+                }               
                 if select=2
                 {
                     global.leaderboard_overlay=(global.leaderboard_overlay==false) // quick switcher from true/false
@@ -774,6 +817,233 @@ if room=rm_main
                 gui_state=s.pause
                 exit_confirm=false
             }
+        }break
+        
+        case s.options_video:
+        {
+            // Display
+            draw_area(0,0,200,600,c_white,c_black,3)
+            
+            draw_config(fnt_title_big,c_black,fa_middle,fa_middle)
+            draw_text(100,100,"- Video -")
+            
+            draw_config(fnt_title,c_black,fa_left,fa_middle)
+            draw_text(25,180,"BG : ")
+            
+            if global.bg_enabled
+            {
+                draw_text(25,240,"Sat : ")            
+                draw_text(25,300,"Alpha : ")
+                draw_text(25,360,"Back")
+            }
+            else
+            {
+                draw_text(25,240,"Back")
+            }
+
+            draw_config(fnt_title_big,c_black,fa_left,fa_middle)
+
+            if global.bg_enabled
+            {
+                draw_text(125,180,'on')
+                draw_text(125,240,string(global.bg_value/10))
+                draw_text(125,300,string(global.bg_alpha/10)) 
+            }
+            else
+            {
+                draw_text(125,180,'off')
+            }
+            
+            draw_area(5,489,195,525,c_ltgray,c_black,3)
+            draw_config(fnt_title,c_black,fa_middle,fa_middle)
+            
+            if global.selected_profile='Anonymous'
+            {
+                draw_text_transformed(100+pause_x,508,'No Profile Selected',0.75,1,0)
+            }
+            else
+            {
+                draw_text(100+pause_x,508,global.selected_profile)
+            }
+            
+            draw_area(5+pause_x,529,195+pause_x,595,c_ltgray,c_black,3)
+            draw_config(fnt_title_big,c_black,fa_middle,fa_middle)
+            draw_text_transformed(100+pause_x,552,format_time(global.game_time,false),1.1,1.1,0)
+            
+            draw_config(fnt_title_big,c_black,fa_middle,fa_middle)
+            draw_text_transformed(100+pause_x,578,"Current Time",0.56,0.56,0)
+            
+            if global.bg_enabled
+            {
+                // User Input
+                select=clamp(select,0,3)
+                draw_select(100+pause_x,180+select*60,195,45,2)
+                
+                if select=1
+                {
+                    global.bg_value+=(keyboard_check_pressed(global.k[? 'right'])-keyboard_check_pressed(global.k[? 'left']))*0.5
+                }
+                
+                if select=2
+                {
+                    global.bg_alpha+=(keyboard_check_pressed(global.k[? 'right'])-keyboard_check_pressed(global.k[? 'left']))*0.5
+                }
+                
+                global.bg_value=clamp(global.bg_value,0,10)
+                global.bg_alpha=clamp(global.bg_alpha,0,10)
+    
+                if keyboard_check_pressed(vk_enter)
+                {
+                    if select=0
+                    {
+                        global.bg_enabled=(global.bg_enabled==false)
+                    }
+                    
+                    if select=3
+                    {            
+                        gui_state=s.options
+                        exit_confirm=false
+                    }
+                }
+            }
+            else
+            {
+                select=clamp(select,0,1)
+                draw_select(100+pause_x,180+select*60,195,45,2)
+                
+                if keyboard_check_pressed(vk_enter)
+                {
+                    if select=0
+                    {
+                        global.bg_enabled=(global.bg_enabled==false)
+                    }
+                    
+                    if select=1
+                    {            
+                        gui_state=s.options
+                        exit_confirm=false
+                    }
+                }
+            }
+            if keyboard_check_pressed(vk_escape)
+            {
+                gui_state=s.options
+                exit_confirm=false
+            }
+        }break
+        
+        case s.options_audio:
+        {
+            // Display
+            draw_area(0,0,200,600,c_white,c_black,3)
+            
+            draw_config(fnt_title_big,c_black,fa_middle,fa_middle)
+            draw_text(100,100,"- Audio -")
+            
+            draw_config(fnt_title,c_black,fa_left,fa_middle)
+            draw_text(25,180,"MUTE: ")
+            
+            if !global.volume_mute
+            {
+                draw_text(25,240,"SFX : ")            
+                draw_text(25,300,"BG : ")
+                draw_text(25,360,"Back")
+            }
+            else
+            {
+                draw_text(25,240,"Back")
+            }
+            
+            draw_config(fnt_title_big,c_black,fa_left,fa_middle)
+            
+            if global.volume_mute
+            {
+                draw_text(105,180,'True')
+            }
+            else
+            {
+                draw_text(105,180,'False')
+                draw_text(125,240,string(global.volume_effects))
+                draw_text(125,300,string(global.volume_music))  
+            }
+                        
+            draw_area(5,489,195,525,c_ltgray,c_black,3)
+            draw_config(fnt_title,c_black,fa_middle,fa_middle)
+            
+            if global.selected_profile='Anonymous'
+            {
+                draw_text_transformed(100+pause_x,508,'No Profile Selected',0.75,1,0)
+            }
+            else
+            {
+                draw_text(100+pause_x,508,global.selected_profile)
+            }
+            
+            draw_area(5+pause_x,529,195+pause_x,595,c_ltgray,c_black,3)
+            draw_config(fnt_title_big,c_black,fa_middle,fa_middle)
+            draw_text_transformed(100+pause_x,552,format_time(global.game_time,false),1.1,1.1,0)
+            
+            draw_config(fnt_title_big,c_black,fa_middle,fa_middle)
+            draw_text_transformed(100+pause_x,578,"Current Time",0.56,0.56,0)
+            
+            // User Input
+            if !global.volume_mute
+            {
+                select=clamp(select,0,3)
+                draw_select(100+pause_x,180+select*60,195,45,2)
+
+                if select=1
+                {
+                    global.volume_effects+=keyboard_check_pressed(global.k[? 'right'])-keyboard_check_pressed(global.k[? 'left'])
+                }
+                
+                if select=2
+                {
+                    global.volume_music+=keyboard_check_pressed(global.k[? 'right'])-keyboard_check_pressed(global.k[? 'left'])
+                }
+                
+                global.volume_effects=clamp(global.volume_effects,0,10)
+                global.volume_music=clamp(global.volume_music,0,10)
+    
+                if keyboard_check_pressed(vk_enter)
+                {
+                    if select=0
+                    {
+                        global.volume_mute=(global.volume_mute==false)
+                    }
+                    
+                    if select=3
+                    {            
+                        gui_state=s.options
+                        exit_confirm=false
+                    }
+                }
+            }
+            else
+            {
+                select=clamp(select,0,1)
+                draw_select(100+pause_x,180+select*60,195,45,2)
+            
+                if keyboard_check_pressed(vk_enter)
+                {
+                    if select=0
+                    {
+                        global.volume_mute=(global.volume_mute==false)
+                    }
+                    
+                    if select=1
+                    {
+                        gui_state=s.options
+                        exit_confirm=false
+                    }
+                }
+            }                
+            if keyboard_check_pressed(vk_escape)
+            {
+                gui_state=s.options
+                exit_confirm=false
+            }
+   
         }break
         
         case s.profiles:
@@ -1262,6 +1532,7 @@ if room=rm_main
                 if select=0
                 {
                     gui_state=s.login
+                    keyboard_string=''
                 }
                 else
                 {
@@ -1289,20 +1560,36 @@ if room=rm_main
         
         case s.login:
         {
+            // Background
+            draw_config(fnt_login_big,4210752,fa_middle,fa_middle)  // Graphite
+            draw_area(0,0,599,599,4210752,c_black,3)    // Graphite
+            
+            // Profile Login Title
+            draw_config(fnt_login,14803425,fa_middle,fa_middle)     // Pastel
+            draw_text_transformed(300,50,'Profile Login',1.4,1.4,0)
+            
+            // Cancel Prompt
+            draw_config(fnt_login_small,9868950,fa_middle,fa_middle)    // Pastel
+            draw_text(300,100,'ESC to Cancel')
+            
+            // Username
+            draw_config(fnt_login_big,c_white,fa_middle,fa_middle)     // Pastel
+            draw_text(300,260,global.profiles[#0,user])
+            
+            // Password Box
             draw_config(fnt_login_big,c_black,fa_middle,fa_middle)
-            draw_text(300,200,'Profile Login')
+            draw_area(300-150,330-28,300+150,330+28,4210752,c_white,2)  // Graphite
+
+            draw_config(fnt_login_big,c_white,fa_middle,fa_middle)
+            draw_text(300,320,string_repeat('.',clamp(string_length(keyboard_string),0,30)))
             
-            draw_config(fnt_login,c_black,fa_middle,fa_middle)
-            draw_text(300,400,global.profiles[#0,user])
-            
-            draw_text(300,450,"password")
-            
-            draw_config(fnt_login_big,c_black,fa_middle,fa_middle)
-            draw_text(300,550,'Back')
+            // Enter Prompt
+            draw_config(fnt_login,14803425,fa_middle,fa_middle)     // Pastel
+            draw_text(300,550,'ENTER to Confirm')
             
             if keyboard_check_pressed(vk_enter)
             {
-                if login_pass
+                if true //login_pass
                 {
                     global.selected_profile=global.profiles[#0,user]
                     set_bindings()
@@ -1312,6 +1599,11 @@ if room=rm_main
                 {
                     // incorrect password
                 }
+            }
+            
+            if keyboard_check_pressed(vk_escape)
+            {
+                gui_state=s.profile
             }                    
         }break
         
@@ -1593,8 +1885,11 @@ if room=rm_end
     
     draw_config(fnt_end_small,c_black,fa_middle,fa_middle)
     draw_text_transformed(100,565,'New Run',0.8,0.8,0)
-    draw_text_transformed(300,565,'Exit to Menu',0.8,0.8,0)
+    draw_text_transformed(300,565,'Title Screen',0.8,0.8,0)
     draw_text_transformed(500,565,'Exit Game',0.8,0.8,0)
+    
+    select+=keyboard_check_pressed(global.k[? 'left'])-keyboard_check_pressed(global.k[? 'right'])
+    select=clamp(select,0,2)
     
     if select=0
     {
@@ -1626,7 +1921,6 @@ if room=rm_end
             game_end()
         }
     }
-
 }
 
 // User Input

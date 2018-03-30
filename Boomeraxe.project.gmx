@@ -54,10 +54,21 @@
     </sprites>
   </sprites>
   <backgrounds name="background">
-    <background>background\bg_forest_0</background>
-    <background>background\bg_forest_1</background>
-    <background>background\bg_forest_2</background>
-    <background>background\bg_forest_3</background>
+    <backgrounds name="bg_forest">
+      <background>background\bg_forest_0</background>
+      <background>background\bg_forest_1</background>
+      <background>background\bg_forest_2</background>
+      <background>background\bg_forest_3</background>
+    </backgrounds>
+    <backgrounds name="bg_forest_new">
+      <background>background\bg_forest_new_0</background>
+      <background>background\bg_forest_new_1</background>
+      <background>background\bg_forest_new_2</background>
+      <background>background\bg_forest_new_3</background>
+      <background>background\bg_forest_new_4</background>
+      <background>background\bg_forest_new_5</background>
+      <background>background\bg_forest_new_filter</background>
+    </backgrounds>
   </backgrounds>
   <paths name="paths"/>
   <scripts name="scripts">
@@ -122,6 +133,7 @@
     <font>fonts\fnt_profile_create</font>
     <font>fonts\fnt_login_big</font>
     <font>fonts\fnt_login</font>
+    <font>fonts\fnt_login_small</font>
   </fonts>
   <objects name="objects">
     <objects name="visible">
@@ -130,8 +142,6 @@
         <objects name="enemy">
           <object>objects\obj_enemy</object>
           <object>objects\obj_enemy0</object>
-          <object>objects\obj_enemy1</object>
-          <object>objects\obj_enemy2</object>
           <objects name="props">
             <object>objects\obj_dirtball</object>
           </objects>

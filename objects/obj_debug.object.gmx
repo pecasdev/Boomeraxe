@@ -30,6 +30,7 @@
 prev_state=0
 timer=0
 player_invincible=false
+
 </string>
           </argument>
         </arguments>
@@ -108,6 +109,7 @@ if keyboard_check_pressed(vk_end)
 {
     obj_host.run_over=true
 }
+
 </string>
           </argument>
         </arguments>

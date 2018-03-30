@@ -19,6 +19,8 @@ enum s
     title           ,
     pause           ,
     options         ,
+    options_video   ,
+    options_audio   ,
     entry           ,
     run_over        ,
     profile_create  ,
