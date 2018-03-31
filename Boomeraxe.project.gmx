@@ -112,8 +112,8 @@
   <fonts name="fonts">
     <font>fonts\fnt_debug</font>
     <font>fonts\fnt_savepoint</font>
-    <font>fonts\fnt_title</font>
     <font>fonts\fnt_title_big</font>
+    <font>fonts\fnt_title</font>
     <font>fonts\fnt_profiles</font>
     <font>fonts\fnt_profiles_medium</font>
     <font>fonts\fnt_profiles_big</font>
@@ -133,6 +133,7 @@
     <font>fonts\fnt_entry_small</font>
     <font>fonts\fnt_profile_create_big</font>
     <font>fonts\fnt_profile_create</font>
+    <font>fonts\fnt_profile_create_small</font>
     <font>fonts\fnt_login_big</font>
     <font>fonts\fnt_login</font>
     <font>fonts\fnt_login_small</font>

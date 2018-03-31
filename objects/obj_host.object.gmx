@@ -46,6 +46,19 @@ if room=rm_main and global.bg_enabled
     background_blend[6]=merge_colour(c_white,c_black,global.bg_value/10)
 }
 
+if room=rm_title
+{
+    background_x[0]+=0.00
+    background_x[1]+=0.05
+    background_x[2]+=0.05
+    background_x[3]+=0.20
+    background_x[4]+=0.35
+    background_x[5]+=0.50
+    
+    background_alpha[6]=0.8
+    background_blend[6]=merge_colour(c_white,c_black,0.75)
+}
+
 switch(global.bg_enabled)
 {
     default:
@@ -308,6 +321,21 @@ if room=rm_title
     gui_state=s.title
     select_offset=2
     
+    // Backgrounds
+    background_xscale[0]=2
+    background_xscale[1]=2
+    background_xscale[2]=2
+    background_xscale[3]=2
+    background_xscale[4]=2
+    background_xscale[5]=2
+    
+    background_yscale[0]=2
+    background_yscale[1]=2
+    background_yscale[2]=2
+    background_yscale[3]=2
+    background_yscale[4]=2
+    background_yscale[5]=2 
+       
     global.volume_mute=false
     global.volume_effects=5
     global.volume_music=5
@@ -470,9 +498,9 @@ if room=rm_title
             draw_config(fnt_title_big,c_white,fa_middle,fa_middle)
             draw_text(300,75,'- BOOMERAXE -')
             draw_config(fnt_title,c_white,fa_middle,fa_middle)
-            draw_text(300,300,'New Run')
-            draw_text(300,375,'New Profile')
-            draw_text(300,450,'Options')
+            draw_text(300,230,'New Run')
+            draw_text(300,320,'New Profile')
+            draw_text(300,410,'Options')
             
             if !exit_confirm
             {
@@ -487,22 +515,22 @@ if room=rm_title
             
             if select=0
             {
-                draw_select(300,300,100,20,3)
+                draw_select(300,230,180,52,4)
             }
             
             if select=1
             {
-                draw_select(300,375,150,20,3)
+                draw_select(300,320,230,52,4)
             }
             
             if select=2
             {
-                draw_select(300,450,90,20,3)
+                draw_select(300,410,160,52,4)
             }
             
             if select=3
             {
-                draw_select(300,525,120,20,3)
+                draw_select(300,525,180,52,4)
             } 
             
             if keyboard_check_pressed(vk_enter)
@@ -538,21 +566,44 @@ if room=rm_title
         
         case s.profile_create:
         {
-            draw_config(fnt_profile_create_big,c_black,fa_middle,fa_middle)
-            draw_text(300,50,"Create Profile")
+            // Background
+            draw_area(0,0,599,599,4210752,c_black,0)    // Graphite
             
-            draw_config(fnt_profile_create,c_black,fa_middle,fa_middle)
-            draw_text(300,180,"Username")
+            // Profile Title
+            draw_config(fnt_profile_create_big,c_white,fa_middle,fa_middle)
+            draw_text(300,40,"Profile Create")
             
-            draw_config(fnt_profile_create,c_black,fa_middle,fa_middle)
-            draw_text(300,280,"Password")
-            draw_text(300,330,"Password")
+            // Username Box
+            draw_area(300-150,135-26,300+150,135+26,4210752,c_white,2)  // Graphite
+                      
+            draw_config(fnt_profile_create_small,c_white,fa_middle,fa_middle)
+            draw_text(300,177,"Choose a Username")
+
+            // Password Box
+            draw_area(300-150,270-26,300+150,270+26,4210752,c_white,2)  // Graphite
             
-            draw_text(300,430,"Keybindings")
+            draw_config(fnt_profile_create_small,c_white,fa_middle,fa_middle)
+            draw_text(300,312,"Enter a Password")
             
-            draw_config(fnt_profile_create_big,c_black,fa_middle,fa_middle)
-            draw_text(200,550,"Create")
-            draw_text(400,550,"Cancel")            
+            // Confirm Password Box
+            draw_area(300-150,362-26,300+150,362+26,4210752,c_white,2)  // Graphite
+            
+            draw_config(fnt_profile_create_small,c_white,fa_middle,fa_middle)
+            draw_text(300,402,"Confirm Password")
+            
+            // Keybindings Button
+            draw_area(300-105,478-25,300+105,478+25,4210752,c_white,2)  // Graphite
+            
+            draw_config(fnt_profile_create_small,c_white,fa_middle,fa_middle)
+            draw_text(300,478,"Change Bindings")
+
+            // Create/Cancel Buttons
+            draw_area(210-70,552-26,210+70,552+26,4210752,c_white,2)    // Graphite
+            draw_area(390-70,552-26,390+70,552+26,4210752,c_white,2)    // Graphite
+            
+            draw_config(fnt_profile_create_small,c_white,fa_middle,fa_middle)
+            draw_text(210,552,"Create")
+            draw_text(390,552,"Cancel")            
         }break
         
         case s.options:
