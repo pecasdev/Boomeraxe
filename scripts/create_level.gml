@@ -6760,7 +6760,7 @@ block=instance_create(3140,660,obj_spike); block.variant=6
 //(3180,660,empty)
 //(3200,660,empty)
 //(3220,660,empty)
-block=instance_create(3240,660,obj_pendulum); block.variant="00"
+block=instance_create(3240,660,obj_pendulum); block.variant="01"
 //(3260,660,empty)
 //(3280,660,empty)
 //(3300,660,empty)
@@ -6960,7 +6960,7 @@ block=instance_create(3140,680,obj_spike); block.variant=6
 //(3180,680,empty)
 //(3200,680,empty)
 //(3220,680,empty)
-block=instance_create(3240,680,obj_pendulum); block.variant="00"
+block=instance_create(3240,680,obj_pendulum); block.variant="01"
 //(3260,680,empty)
 //(3280,680,empty)
 //(3300,680,empty)
@@ -7160,7 +7160,7 @@ block=instance_create(3140,700,obj_spike); block.variant=6
 //(3180,700,empty)
 //(3200,700,empty)
 //(3220,700,empty)
-block=instance_create(3240,700,obj_pendulum); block.variant="00"
+block=instance_create(3240,700,obj_pendulum); block.variant="01"
 //(3260,700,empty)
 //(3280,700,empty)
 //(3300,700,empty)
@@ -7360,7 +7360,7 @@ block=instance_create(3140,720,obj_spike); block.variant=6
 //(3180,720,empty)
 //(3200,720,empty)
 //(3220,720,empty)
-block=instance_create(3240,720,obj_pendulum); block.variant="00"
+block=instance_create(3240,720,obj_pendulum); block.variant="01"
 //(3260,720,empty)
 //(3280,720,empty)
 //(3300,720,empty)
@@ -7560,7 +7560,7 @@ block=instance_create(3140,740,obj_spike); block.variant=6
 //(3180,740,empty)
 //(3200,740,empty)
 //(3220,740,empty)
-block=instance_create(3240,740,obj_pendulum); block.variant="00"
+block=instance_create(3240,740,obj_pendulum); block.variant="01"
 //(3260,740,empty)
 //(3280,740,empty)
 //(3300,740,empty)
@@ -7760,7 +7760,7 @@ block=instance_create(3140,760,obj_spike); block.variant=6
 //(3180,760,empty)
 //(3200,760,empty)
 //(3220,760,empty)
-block=instance_create(3240,760,obj_pendulum); block.variant="00"
+block=instance_create(3240,760,obj_pendulum); block.variant="01"
 //(3260,760,empty)
 //(3280,760,empty)
 //(3300,760,empty)
@@ -7960,7 +7960,7 @@ block=instance_create(3140,780,obj_spike); block.variant=6
 //(3180,780,empty)
 //(3200,780,empty)
 //(3220,780,empty)
-block=instance_create(3240,780,obj_pendulum); block.variant="00"
+block=instance_create(3240,780,obj_pendulum); block.variant="01"
 //(3260,780,empty)
 //(3280,780,empty)
 //(3300,780,empty)
@@ -8160,7 +8160,7 @@ block=instance_create(3140,800,obj_spike); block.variant=6
 //(3180,800,empty)
 //(3200,800,empty)
 //(3220,800,empty)
-block=instance_create(3240,800,obj_pendulum); block.variant="00"
+block=instance_create(3240,800,obj_pendulum); block.variant="01"
 //(3260,800,empty)
 //(3280,800,empty)
 //(3300,800,empty)
@@ -8360,7 +8360,7 @@ block=instance_create(3140,820,obj_spike); block.variant=6
 //(3180,820,empty)
 //(3200,820,empty)
 //(3220,820,empty)
-block=instance_create(3240,820,obj_pendulum); block.variant="00"
+block=instance_create(3240,820,obj_pendulum); block.variant="01"
 //(3260,820,empty)
 //(3280,820,empty)
 //(3300,820,empty)
@@ -8560,7 +8560,7 @@ block=instance_create(3140,840,obj_spike); block.variant=6
 //(3180,840,empty)
 //(3200,840,empty)
 //(3220,840,empty)
-block=instance_create(3240,840,obj_pendulum); block.variant="00"
+block=instance_create(3240,840,obj_pendulum); block.variant="01"
 //(3260,840,empty)
 //(3280,840,empty)
 //(3300,840,empty)
@@ -8760,7 +8760,7 @@ block=instance_create(3140,860,obj_spike); block.variant=6
 //(3180,860,empty)
 //(3200,860,empty)
 //(3220,860,empty)
-block=instance_create(3240,860,obj_pendulum); block.variant="00"
+block=instance_create(3240,860,obj_pendulum); block.variant="01"
 //(3260,860,empty)
 //(3280,860,empty)
 //(3300,860,empty)
@@ -8960,7 +8960,7 @@ block=instance_create(3140,880,obj_spike); block.variant=6
 //(3180,880,empty)
 //(3200,880,empty)
 //(3220,880,empty)
-block=instance_create(3240,880,obj_pendulum); block.variant="00"
+block=instance_create(3240,880,obj_pendulum); block.variant="01"
 //(3260,880,empty)
 //(3280,880,empty)
 //(3300,880,empty)
@@ -9160,7 +9160,7 @@ block=instance_create(3140,900,obj_spike); block.variant=9
 //(3180,900,empty)
 //(3200,900,empty)
 //(3220,900,empty)
-block=instance_create(3240,900,obj_pendulum); block.variant="00"
+block=instance_create(3240,900,obj_pendulum); block.variant="01"
 //(3260,900,empty)
 //(3280,900,empty)
 //(3300,900,empty)
@@ -9360,7 +9360,7 @@ block=instance_create(2980,920,obj_spike); block.variant=9
 //(3180,920,empty)
 //(3200,920,empty)
 //(3220,920,empty)
-block=instance_create(3240,920,obj_pendulum); block.variant="00"
+block=instance_create(3240,920,obj_pendulum); block.variant="01"
 //(3260,920,empty)
 //(3280,920,empty)
 //(3300,920,empty)
@@ -10161,7 +10161,7 @@ block=instance_create(2980,1000,obj_pendulum); block.variant="10"
 //(3200,1000,empty)
 //(3220,1000,empty)
 block=instance_create(3240,1000,obj_spike); block.variant=4
-block=instance_create(3260,1000,obj_savepoint)
+//(3260,1000,empty)
 //(3280,1000,empty)
 //(3300,1000,empty)
 //(3320,1000,empty)
@@ -10962,7 +10962,7 @@ block=instance_create(3120,1080,obj_spike); block.variant=6
 //(3220,1080,empty)
 //(3240,1080,empty)
 //(3260,1080,empty)
-//(3280,1080,empty)
+block=instance_create(3280,1080,obj_savepoint)
 //(3300,1080,empty)
 //(3320,1080,empty)
 block=instance_create(3340,1080,obj_spike); block.variant=6
@@ -11162,7 +11162,7 @@ block=instance_create(3120,1100,obj_spike); block.variant=6
 //(3220,1100,empty)
 //(3240,1100,empty)
 //(3260,1100,empty)
-block=instance_create(3280,1100,obj_wall_crumble)
+block=instance_create(3280,1100,obj_wall)
 //(3300,1100,empty)
 //(3320,1100,empty)
 block=instance_create(3340,1100,obj_spike); block.variant=6
@@ -19305,7 +19305,7 @@ block=instance_create(1040,1920,obj_wall)
 //(2080,1920,empty)
 //(2100,1920,empty)
 //(2120,1920,empty)
-block=instance_create(2140,1920,obj_savepoint)
+//(2140,1920,empty)
 block=instance_create(2160,1920,obj_spike); block.variant=9
 //(2180,1920,empty)
 //(2200,1920,empty)
@@ -19705,7 +19705,7 @@ block=instance_create(1040,1960,obj_spike); block.variant=0
 //(2080,1960,empty)
 //(2100,1960,empty)
 //(2120,1960,empty)
-//(2140,1960,empty)
+block=instance_create(2140,1960,obj_savepoint)
 block=instance_create(2160,1960,obj_spike); block.variant=9
 //(2180,1960,empty)
 //(2200,1960,empty)
@@ -19905,7 +19905,7 @@ block=instance_create(2060,1980,obj_spike); block.variant=0
 block=instance_create(2080,1980,obj_spike); block.variant=0
 block=instance_create(2100,1980,obj_spike); block.variant=0
 block=instance_create(2120,1980,obj_spike); block.variant=0
-block=instance_create(2140,1980,obj_spike); block.variant=0
+block=instance_create(2140,1980,obj_wall)
 block=instance_create(2160,1980,obj_spike); block.variant=0
 block=instance_create(2180,1980,obj_spike); block.variant=0
 block=instance_create(2200,1980,obj_spike); block.variant=0

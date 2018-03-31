@@ -105,6 +105,8 @@
       <script>scripts\set_bindings.gml</script>
       <script>scripts\string_key.gml</script>
       <script>scripts\get_user_from_name.gml</script>
+      <script>scripts\draw_cursor.gml</script>
+      <script>scripts\create_ring.gml</script>
     </scripts>
   </scripts>
   <fonts name="fonts">
@@ -175,6 +177,7 @@
       <object>objects\obj_host</object>
       <object>objects\obj_camera</object>
       <object>objects\obj_debug</object>
+      <object>objects\obj_ring</object>
     </objects>
   </objects>
   <rooms name="rooms">

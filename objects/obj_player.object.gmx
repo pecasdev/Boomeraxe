@@ -51,6 +51,8 @@ dash_timer=0
 move_timer=0
 wall_timer=0
 
+ring_reset=true
+
 
 </string>
           </argument>
@@ -527,6 +529,7 @@ else
 }
 
 move_snap(1,1)
+ 
 
 </string>
           </argument>

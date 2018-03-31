@@ -301,6 +301,7 @@ if game_time&lt;best_time and !running
 
 if room=rm_title
 {
+    draw_set_circle_precision(64)
     create_enum()
     
     // GUI
@@ -1412,7 +1413,7 @@ if room=rm_main
                 r_scale=0.55
             }  
                       
-            draw_area(0,0,76,76,c_rank,c_black,2)      // Gray Turquoise
+            draw_area(0,0,76,76,c_rank,c_black,2)
             draw_config(fnt_profile_big,c_black,fa_middle,fa_middle)
             draw_text_transformed(40,38,user+1,r_scale,r_scale,0)
 
@@ -1533,6 +1534,7 @@ if room=rm_main
                 {
                     gui_state=s.login
                     keyboard_string=''
+                    cursor_blink=0
                 }
                 else
                 {
@@ -1579,7 +1581,26 @@ if room=rm_main
             // Password Box
             draw_config(fnt_login_big,c_black,fa_middle,fa_middle)
             draw_area(300-150,330-28,300+150,330+28,4210752,c_white,2)  // Graphite
-
+            
+            if keyboard_string=""
+            {
+                draw_cursor(300,330,4,28,cursor_blink)
+                
+                if cursor_blink&lt;=0
+                {
+                    up=true
+                    down=false
+                }
+                
+                if cursor_blink&gt;=1
+                {
+                    up=false
+                    down=true
+                }
+                
+                cursor_blink+=(up-down)*0.033
+            }
+            
             draw_config(fnt_login_big,c_white,fa_middle,fa_middle)
             draw_text(300,320,string_repeat('.',clamp(string_length(keyboard_string),0,30)))
             
