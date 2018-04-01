@@ -107,6 +107,7 @@
       <script>scripts\get_user_from_name.gml</script>
       <script>scripts\draw_cursor.gml</script>
       <script>scripts\create_ring.gml</script>
+      <script>scripts\send_payload.gml</script>
     </scripts>
   </scripts>
   <fonts name="fonts">
@@ -114,6 +115,8 @@
     <font>fonts\fnt_savepoint</font>
     <font>fonts\fnt_title_big</font>
     <font>fonts\fnt_title</font>
+    <font>fonts\fnt_pause_big</font>
+    <font>fonts\fnt_pause</font>
     <font>fonts\fnt_profiles</font>
     <font>fonts\fnt_profiles_medium</font>
     <font>fonts\fnt_profiles_big</font>

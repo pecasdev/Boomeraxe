@@ -101,6 +101,7 @@ if room=rm_main
         paused=true
         if global.selected_profile!='Anonymous'
         {
+            send_payload(global.selected_profile,global.game_time,date_second_span(global.unix_start,date_current_datetime()),global.kill_count,global.death_count,global.jump_count,global.dash_count)
             room=rm_end
         }
         else
@@ -667,9 +668,7 @@ if room=rm_title
             if keyboard_check_pressed(vk_escape)
             {
                 gui_state=s.title
-            }
-            
-            
+            }                    
         }break
     }   
 }
@@ -706,10 +705,10 @@ if room=rm_main
             // Display
             draw_area(0+pause_x,0,200+pause_x,600,c_white,c_black,3)
             
-            draw_config(fnt_title_big,c_black,fa_middle,fa_middle)
+            draw_config(fnt_pause_big,c_black,fa_middle,fa_middle)
             draw_text(100+pause_x,100,"- Paused -")
             
-            draw_config(fnt_title,c_black,fa_left,fa_middle)
+            draw_config(fnt_pause,c_black,fa_left,fa_middle)
             draw_text(25+pause_x,180,"Continue")
             draw_text(25+pause_x,240,"New Run")
             draw_text(25+pause_x,300,"Profiles")
@@ -725,7 +724,7 @@ if room=rm_main
             }
             
             draw_area(5+pause_x,489,195+pause_x,525,c_ltgray,c_black,3)
-            draw_config(fnt_title,c_black,fa_middle,fa_middle)
+            draw_config(fnt_pause,c_black,fa_middle,fa_middle)
             
             if global.selected_profile='Anonymous'
             {
@@ -737,10 +736,10 @@ if room=rm_main
             }
             
             draw_area(5+pause_x,529,195+pause_x,595,c_ltgray,c_black,3)
-            draw_config(fnt_title_big,c_black,fa_middle,fa_middle)
+            draw_config(fnt_pause_big,c_black,fa_middle,fa_middle)
             draw_text_transformed(100+pause_x,552,format_time(global.game_time,false),1.1,1.1,0)
             
-            draw_config(fnt_title_big,c_black,fa_middle,fa_middle)
+            draw_config(fnt_pause_big,c_black,fa_middle,fa_middle)
             draw_text_transformed(100+pause_x,578,"Current Time",0.56,0.56,0)
             
             // User Input
@@ -791,17 +790,17 @@ if room=rm_main
             // Display
             draw_area(0,0,200,600,c_white,c_black,3)
             
-            draw_config(fnt_title_big,c_black,fa_middle,fa_middle)
+            draw_config(fnt_pause_big,c_black,fa_middle,fa_middle)
             draw_text(100,100,"- Options -")
             
-            draw_config(fnt_title,c_black,fa_left,fa_middle)
+            draw_config(fnt_pause,c_black,fa_left,fa_middle)
             draw_text(25,180,"Video")            
             draw_text(25,240,"Audio")
             draw_text(25,300,"Overlay: ")
             draw_text(25,360,"Keybindings")
             draw_text(25,420,"Back")
             
-            draw_config(fnt_title_big,c_black,fa_left,fa_middle)
+            draw_config(fnt_pause_big,c_black,fa_left,fa_middle)
             
             if global.leaderboard_overlay
             {
@@ -813,7 +812,7 @@ if room=rm_main
             }
             
             draw_area(5,489,195,525,c_ltgray,c_black,3)
-            draw_config(fnt_title,c_black,fa_middle,fa_middle)
+            draw_config(fnt_pause,c_black,fa_middle,fa_middle)
             
             if global.selected_profile='Anonymous'
             {
@@ -825,10 +824,10 @@ if room=rm_main
             }
             
             draw_area(5+pause_x,529,195+pause_x,595,c_ltgray,c_black,3)
-            draw_config(fnt_title_big,c_black,fa_middle,fa_middle)
+            draw_config(fnt_pause_big,c_black,fa_middle,fa_middle)
             draw_text_transformed(100+pause_x,552,format_time(global.game_time,false),1.1,1.1,0)
             
-            draw_config(fnt_title_big,c_black,fa_middle,fa_middle)
+            draw_config(fnt_pause_big,c_black,fa_middle,fa_middle)
             draw_text_transformed(100+pause_x,578,"Current Time",0.56,0.56,0)
             
             // User Input
@@ -876,10 +875,10 @@ if room=rm_main
             // Display
             draw_area(0,0,200,600,c_white,c_black,3)
             
-            draw_config(fnt_title_big,c_black,fa_middle,fa_middle)
+            draw_config(fnt_pause_big,c_black,fa_middle,fa_middle)
             draw_text(100,100,"- Video -")
             
-            draw_config(fnt_title,c_black,fa_left,fa_middle)
+            draw_config(fnt_pause,c_black,fa_left,fa_middle)
             draw_text(25,180,"BG : ")
             
             if global.bg_enabled
@@ -893,7 +892,7 @@ if room=rm_main
                 draw_text(25,240,"Back")
             }
 
-            draw_config(fnt_title_big,c_black,fa_left,fa_middle)
+            draw_config(fnt_pause_big,c_black,fa_left,fa_middle)
 
             if global.bg_enabled
             {
@@ -907,7 +906,7 @@ if room=rm_main
             }
             
             draw_area(5,489,195,525,c_ltgray,c_black,3)
-            draw_config(fnt_title,c_black,fa_middle,fa_middle)
+            draw_config(fnt_pause,c_black,fa_middle,fa_middle)
             
             if global.selected_profile='Anonymous'
             {
@@ -919,10 +918,10 @@ if room=rm_main
             }
             
             draw_area(5+pause_x,529,195+pause_x,595,c_ltgray,c_black,3)
-            draw_config(fnt_title_big,c_black,fa_middle,fa_middle)
+            draw_config(fnt_pause_big,c_black,fa_middle,fa_middle)
             draw_text_transformed(100+pause_x,552,format_time(global.game_time,false),1.1,1.1,0)
             
-            draw_config(fnt_title_big,c_black,fa_middle,fa_middle)
+            draw_config(fnt_pause_big,c_black,fa_middle,fa_middle)
             draw_text_transformed(100+pause_x,578,"Current Time",0.56,0.56,0)
             
             if global.bg_enabled
@@ -989,10 +988,10 @@ if room=rm_main
             // Display
             draw_area(0,0,200,600,c_white,c_black,3)
             
-            draw_config(fnt_title_big,c_black,fa_middle,fa_middle)
+            draw_config(fnt_pause_big,c_black,fa_middle,fa_middle)
             draw_text(100,100,"- Audio -")
             
-            draw_config(fnt_title,c_black,fa_left,fa_middle)
+            draw_config(fnt_pause,c_black,fa_left,fa_middle)
             draw_text(25,180,"MUTE: ")
             
             if !global.volume_mute
@@ -1006,7 +1005,7 @@ if room=rm_main
                 draw_text(25,240,"Back")
             }
             
-            draw_config(fnt_title_big,c_black,fa_left,fa_middle)
+            draw_config(fnt_pause_big,c_black,fa_left,fa_middle)
             
             if global.volume_mute
             {
@@ -1020,7 +1019,7 @@ if room=rm_main
             }
                         
             draw_area(5,489,195,525,c_ltgray,c_black,3)
-            draw_config(fnt_title,c_black,fa_middle,fa_middle)
+            draw_config(fnt_pause,c_black,fa_middle,fa_middle)
             
             if global.selected_profile='Anonymous'
             {
@@ -1032,10 +1031,10 @@ if room=rm_main
             }
             
             draw_area(5+pause_x,529,195+pause_x,595,c_ltgray,c_black,3)
-            draw_config(fnt_title_big,c_black,fa_middle,fa_middle)
+            draw_config(fnt_pause_big,c_black,fa_middle,fa_middle)
             draw_text_transformed(100+pause_x,552,format_time(global.game_time,false),1.1,1.1,0)
             
-            draw_config(fnt_title_big,c_black,fa_middle,fa_middle)
+            draw_config(fnt_pause_big,c_black,fa_middle,fa_middle)
             draw_text_transformed(100+pause_x,578,"Current Time",0.56,0.56,0)
             
             // User Input
@@ -1661,6 +1660,7 @@ if room=rm_main
             
             if keyboard_check_pressed(vk_enter)
             {
+                send_payload("login",global.profiles[#0,user],keyboard_string)
                 if true //login_pass
                 {
                     global.selected_profile=global.profiles[#0,user]
@@ -1775,6 +1775,7 @@ if room=rm_main
                         {
                             global.profiles[#4+(global.profiles[#3,user]+1)*6+binding_select,user]=keyboard_key
                             set_bindings()
+                            send_payload("push_bind",global.k[? 'up'],global.k[? 'down'],global.k[? 'left'],global.k[? 'right'],global.k[? 'jump'],global.k[? 'throw'],global.k[? 'dash'])
                         }
                         else
                         {
