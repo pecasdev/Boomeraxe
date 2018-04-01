@@ -1,15 +1,38 @@
 (0,0,0)       = obj_wall
-(0,0,100)     = obj_wall_crumble
-(0,0,200)     = obj_platform
+(0,0,200)     = obj_wall_crumble
 
-(100,0,0)     = obj_spike
-(200,0,0)     = obj_spike_retract
+(100,0,0)     = obj_spike		(up)
+(100,0,10)    = obj_spike		(up+left)
+(100,0,20)    = obj_spike		(up+down)
+(100,0,30)    = obj_spike		(up+right)
+(100,0,40)    = obj_spike          	(left)
+(100,0,50)    = obj_spike		(left+down)
+(100,0,60)    = obj_spike		(left+right)
+(100,0,70)    = obj_spike		(down)
+(100,0,80)    = obj_spike		(down+right)
+(100,0,90)    = obj_spike		(right)
+(100,0,100)   = obj_spike		(up+left+down)
+(100,0,110)   = obj_spike		(left+down+right)
+(100,0,120)   = obj_spike		(down+right+up)
+(100,0,130)   = obj_spike		(right+up+left)
+(100,0,140)   = obj_spike		(up+down+left+right)
+
+(200,0,0)     = obj_pendulum		(clockwise - up position)
+(200,50,0)    = obj_pendulum		(clockwise - down position)
+(200,100,0)   = obj_pendulum		(clockwise - left position)
+(200,150,0)   = obj_pendulum		(clockwise - right position)
+(200,0,100)   = obj_pendulum		(counter_clockwise - up position)
+(200,50,100)  = obj_pendulum		(counter_clockwise - down position)
+(200,100,100) = obj_pendulum		(counter_clockwise - left position)
+(200,150,100) = obj_pendulum		(counter_clockwise - right position)
 
 (0,200,0)     = obj_savepoint
-(200,200,0)   = obj_torch
+(0,200,200)   = obj_telepoint
 
 (250,0,0)     = obj_enemy0
-(250,0,50)    = obj_enemy1
-(250,0,100)   = obj_enemy2
-(250,0,150)   = obj_enemy3
+(250,0,100)   = obj_enemy1
 
+lime is player movement
+pink is player jump
+cyan is player dash
+orange is axe throw

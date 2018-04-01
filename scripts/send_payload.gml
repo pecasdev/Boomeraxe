@@ -9,7 +9,7 @@ date_set_timezone(timezone_utc)
 
 for(i=0;i!=argument_count;i++)
 {
-    buffer_write(payload,buffer_string,argument[i]+'#')
+    buffer_write(payload,buffer_string,string(argument[i])+'#')
 }
 
 network_send_udp_raw(global.udp_socket,"192.168.0.200",9000,payload,buffer_tell(payload))

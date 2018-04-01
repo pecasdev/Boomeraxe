@@ -1,6 +1,6 @@
 # INI READING
-ini=configparser.ConfigParser()
-ini.read('boomeraxe.ini')
+config=configparser.ConfigParser()
+config.read('boomeraxe.ini')
 profile_count=int(float(ini_read('meta','profile_count')))
 
 # SOCKET CREATE

@@ -1775,7 +1775,7 @@ if room=rm_main
                         {
                             global.profiles[#4+(global.profiles[#3,user]+1)*6+binding_select,user]=keyboard_key
                             set_bindings()
-                            send_payload("push_bind",global.k[? 'up'],global.k[? 'down'],global.k[? 'left'],global.k[? 'right'],global.k[? 'jump'],global.k[? 'throw'],global.k[? 'dash'])
+                            send_payload("push_bind",global.selected_profile,global.k[? 'up'],global.k[? 'down'],global.k[? 'left'],global.k[? 'right'],global.k[? 'jump'],global.k[? 'throw'],global.k[? 'dash'])
                         }
                         else
                         {
@@ -1961,7 +1961,7 @@ if room=rm_end
     draw_text_transformed(300,565,'Title Screen',0.8,0.8,0)
     draw_text_transformed(500,565,'Exit Game',0.8,0.8,0)
     
-    select+=keyboard_check_pressed(global.k[? 'left'])-keyboard_check_pressed(global.k[? 'right'])
+    select+=keyboard_check_pressed(global.k[? 'right'])-keyboard_check_pressed(global.k[? 'left'])
     select=clamp(select,0,2)
     
     if select=0

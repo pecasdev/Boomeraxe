@@ -3,7 +3,8 @@ execfile('boomeraxe_server_functions.py')
 execfile('boomeraxe_server_variables.py')
 
 while True:
-    data=client_recieve()
+    data,client=client_recieve()
+    print data
     msg_id=data[0]
 
     if msg_id=='pull':
@@ -66,7 +67,9 @@ while True:
         ini_write(name,'dash',data[8])
 
     if msg_id=='login':
-        if hashlib.sha356(data[2]).hexdigest()==ini_read(name,'pass'):
+        name=data[1]
+        
+        if hashlib.sha256(data[2]).hexdigest()==ini_read(name,'pass'):
             print "<{}> -- <LOGIN PASS> - ({}) - [{}][{}]".format(time.strftime("%d/%m/%y - %H:%M:%S"),client[0],name,data[2])
             # SEND BACK 'PASS' TO CLIENT
 
