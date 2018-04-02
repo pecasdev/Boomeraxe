@@ -5,15 +5,12 @@ def ini_read(key,value):
 def ini_write(key,value,data):
     global config
     config.set(key,value,'"{}"'.format(data+'.000000'))
-    
-    with open('boomeraxe.ini','w') as f:
-        config.write(f)
-
+      
 def client_recieve():
     s_data,client=s.recvfrom(1024)    
     data=s_data.replace('\x00','').split('#')
     return data,client
-	
+
 def log(*a):
     output='[BOOMERAXE] - {} - ({})'.format(a[0],a[1]).ljust(35)
 

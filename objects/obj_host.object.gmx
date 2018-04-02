@@ -101,7 +101,7 @@ if room=rm_main
         paused=true
         if global.selected_profile!='Anonymous'
         {
-            send_payload(global.selected_profile,global.game_time,date_second_span(global.unix_start,date_current_datetime()),global.kill_count,global.death_count,global.jump_count,global.dash_count)
+            send_payload('push_run',global.selected_profile,global.game_time,date_second_span(global.unix_start,date_current_datetime()),global.kill_count,global.death_count,global.jump_count,global.dash_count)
             room=rm_end
         }
         else
@@ -351,6 +351,12 @@ if room=rm_title
     // Other
     global.udp_socket=network_create_socket(network_socket_udp) 
     exit_confirm=false
+    
+    // Animations
+    name_oversized=false
+    pass_mismatch=false
+    pass_oversized=false
+    name_taken=false
 }
 
 if room=rm_main
@@ -441,6 +447,7 @@ w_cur=100
 h_cur=100
 
 mix=0.2
+cursor_blink=0.2
 </string>
           </argument>
         </arguments>
@@ -464,6 +471,7 @@ mix=0.2
             <string>/// Read Data
 if room=rm_main
 {
+    download_data()
     read_data()
 }
 </string>
@@ -544,6 +552,11 @@ if room=rm_title
                 if select=1
                 {
                     gui_state=s.profile_create
+                    
+                    mix=0.2                    
+                    create_name=''
+                    create_pass0=''
+                    create_pass1=''
                 }
                 
                 if select=2
@@ -575,36 +588,138 @@ if room=rm_title
             draw_text(300,40,"Profile Create")
             
             // Username Box
-            draw_area(300-150,135-26,300+150,135+26,4210752,c_white,2)  // Graphite
-                      
+            draw_area(300-150,135-26,300+150,135+26,4210752,c_white,2)          // Graphite
+            draw_config(fnt_profile_create_small,9868950,fa_middle,fa_middle)   // Pastel
+            draw_text(300,135,create_name)    
+
             draw_config(fnt_profile_create_small,c_white,fa_middle,fa_middle)
             draw_text(300,177,"Choose a Username")
 
             // Password Box
-            draw_area(300-150,270-26,300+150,270+26,4210752,c_white,2)  // Graphite
+            draw_area(300-150,270-26,300+150,270+26,4210752,c_white,2)          // Graphite
+            draw_config(fnt_profile_create_small,9868950,fa_middle,fa_middle)   // Pastel
+            draw_text(300,270,create_pass0)
             
             draw_config(fnt_profile_create_small,c_white,fa_middle,fa_middle)
             draw_text(300,312,"Enter a Password")
             
             // Confirm Password Box
-            draw_area(300-150,362-26,300+150,362+26,4210752,c_white,2)  // Graphite
+            draw_area(300-150,362-26,300+150,362+26,4210752,c_white,2)          // Graphite
+            draw_config(fnt_profile_create_small,9868950,fa_middle,fa_middle)   // Pastel
+            draw_text(300,362,create_pass1)
             
-            draw_config(fnt_profile_create_small,c_white,fa_middle,fa_middle)
+            draw_config(fnt_profile_create_small,c_white,fa_middle,fa_middle)            
             draw_text(300,402,"Confirm Password")
             
             // Keybindings Button
-            draw_area(300-105,478-25,300+105,478+25,4210752,c_white,2)  // Graphite
+            draw_area(300-105,478-25,300+105,478+25,4210752,c_white,2)          // Graphite
             
             draw_config(fnt_profile_create_small,c_white,fa_middle,fa_middle)
             draw_text(300,478,"Change Bindings")
 
             // Create/Cancel Buttons
-            draw_area(210-70,552-26,210+70,552+26,4210752,c_white,2)    // Graphite
-            draw_area(390-70,552-26,390+70,552+26,4210752,c_white,2)    // Graphite
+            draw_area(210-70,552-26,210+70,552+26,4210752,c_white,2)            // Graphite
+            draw_area(390-70,552-26,390+70,552+26,4210752,c_white,2)            // Graphite
             
             draw_config(fnt_profile_create_small,c_white,fa_middle,fa_middle)
             draw_text(210,552,"Create")
-            draw_text(390,552,"Cancel")            
+            draw_text(390,552,"Cancel")  
+                        
+            if prev_select!=select
+            {
+                keyboard_string='!@#$%^&amp;*()'    // must be a string that noone will likely use, hopefully noone wants this as their username
+                prev_select=select
+            }
+            
+            select+=(keyboard_check_pressed(global.k[? 'right']) or keyboard_check_pressed(vk_tab))-keyboard_check_pressed(global.k[? 'left'])
+            select=clamp(select,0,5)
+                                            
+            if cursor_blink=0.2
+            {
+                up=true
+                down=false
+            }
+            
+            if cursor_blink=0.8
+            {
+                up=false
+                down=true
+            }
+            
+            if select=0
+            {
+                draw_select(300,135,300,52,3)
+                if create_name=''
+                {
+                    draw_cursor(300,135,4,28,cursor_blink)
+                }
+                
+                if string_length(keyboard_string)&gt;10
+                {
+                    keyboard_string=string_copy(keyboard_string,1,10)
+                    name_oversized=true
+                }
+                
+                if keyboard_string='!@#$%^&amp;*()'  
+                {
+                    keyboard_string=create_name
+                }
+                else
+                {
+                    create_name=keyboard_string
+                }          
+            }
+            
+            if select=1
+            {
+                draw_select(300,270,300,52,3)
+                if create_name=''
+                {
+                    draw_cursor(300,270,4,28,cursor_blink)
+                }
+                
+                if keyboard_string='!@#$%^&amp;*()'
+                {
+                    keyboard_string=create_pass0
+                }
+                else
+                {
+                    create_pass0=keyboard_string
+                }          
+            }
+            
+            if select=2
+            {
+                draw_select(300,362,300,52,3)
+                if create_name=''
+                {
+                    draw_cursor(300,362,4,28,cursor_blink)
+                }
+
+                if keyboard_string='!@#$%^&amp;*()'
+                {
+                    keyboard_string=create_pass1
+                }
+                else
+                {
+                    create_pass1=keyboard_string
+                }          
+            }
+            
+            if select=3
+            {
+                draw_select(300,478,210,50,3)
+            }
+            
+            if select=4
+            {
+                draw_select(210,552,140,52,3)
+            }
+            
+            if select=5
+            {
+                draw_select(390,552,140,52,3)
+            }                                  
         }break
         
         case s.options:
@@ -1584,7 +1699,7 @@ if room=rm_main
                 {
                     gui_state=s.login
                     keyboard_string=''
-                    cursor_blink=0
+                    mix=0.2                    
                 }
                 else
                 {
@@ -1613,11 +1728,10 @@ if room=rm_main
         case s.login:
         {
             // Background
-            draw_config(fnt_login_big,4210752,fa_middle,fa_middle)  // Graphite
             draw_area(0,0,599,599,4210752,c_black,3)    // Graphite
             
             // Profile Login Title
-            draw_config(fnt_login,14803425,fa_middle,fa_middle)     // Pastel
+            draw_config(fnt_login,14803425,fa_middle,fa_middle) // Wisp   
             draw_text_transformed(300,50,'Profile Login',1.4,1.4,0)
             
             // Cancel Prompt
@@ -1625,7 +1739,7 @@ if room=rm_main
             draw_text(300,100,'ESC to Cancel')
             
             // Username
-            draw_config(fnt_login_big,c_white,fa_middle,fa_middle)     // Pastel
+            draw_config(fnt_login_big,c_white,fa_middle,fa_middle)
             draw_text(300,260,global.profiles[#0,user])
             
             // Password Box
@@ -1636,26 +1750,26 @@ if room=rm_main
             {
                 draw_cursor(300,330,4,28,cursor_blink)
                 
-                if cursor_blink&lt;=0
+                if cursor_blink=0.2
                 {
                     up=true
                     down=false
                 }
                 
-                if cursor_blink&gt;=1
+                if cursor_blink=0.8
                 {
                     up=false
                     down=true
                 }
                 
-                cursor_blink+=(up-down)*0.033
+                cursor_blink+=(up-down)*0.03
             }
             
             draw_config(fnt_login_big,c_white,fa_middle,fa_middle)
             draw_text(300,320,string_repeat('.',clamp(string_length(keyboard_string),0,30)))
             
             // Enter Prompt
-            draw_config(fnt_login,14803425,fa_middle,fa_middle)     // Pastel
+            draw_config(fnt_login,14803425,fa_middle,fa_middle)     // Wisp
             draw_text(300,550,'ENTER to Confirm')
             
             if keyboard_check_pressed(vk_enter)

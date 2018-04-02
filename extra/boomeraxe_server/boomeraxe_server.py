@@ -26,7 +26,7 @@ while True:
 
         # APPEND NEW RUN TO boomeraxe.ini
         name=data[1]
-        new_run=int(float(ini_read(data[1],'run_count')))
+        new_run=str(int(float(ini_read(data[1],'run_count'))))
 
         ini_write(name,new_run+'0',data[2])
         ini_write(name,new_run+'1',data[3])
@@ -35,11 +35,16 @@ while True:
         ini_write(name,new_run+'4',data[6])
         ini_write(name,new_run+'5',data[7])
 
-        if ini_read(name,'best_time')<data[2]:
+        if ini_read(name,'best_time')>data[2]:
             ini_write(name,'best_time',data[2])
             ini_write(name,'best_date',data[3])
 
-        ini_write(name,'run_count',new_run+1)
+            ini_write('meta','best',data[2])
+
+        ini_write(name,'run_count',str(int(new_run)+1))
+            
+        with open('boomeraxe.ini','w') as f:
+            config.write(f)
 
     if msg_id=='push_bind':
         print "Push request from client, accepting data"
@@ -65,6 +70,9 @@ while True:
         ini_write(name,'jump',data[6])
         ini_write(name,'throw',data[7])
         ini_write(name,'dash',data[8])
+           
+        with open('boomeraxe.ini','w') as f:
+            config.write(f)
 
     if msg_id=='login':
         name=data[1]

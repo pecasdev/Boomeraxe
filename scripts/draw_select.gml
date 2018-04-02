@@ -45,10 +45,10 @@ if mix=0.8
 
 mix+=(up-dn)*0.03
 
-c1=merge_colour(c_aqua,c_blue,mix)
-c2=merge_colour(c_aqua,c_blue,mix)
-c3=merge_colour(c_aqua,c_blue,mix)
-c4=merge_colour(c_aqua,c_blue,mix)
+c1=merge_colour(c_blue,c_aqua,mix)
+c2=merge_colour(c_blue,c_aqua,mix)
+c3=merge_colour(c_blue,c_aqua,mix)
+c4=merge_colour(c_blue,c_aqua,mix)
 
 for (i=0;i!=thick;i++)
 {

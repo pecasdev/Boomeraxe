@@ -57,6 +57,14 @@ with open('boomeraxe.ini','r+') as f:
         f.write('best_time="{}"'.format(str(profiles[i][2])+'.000000')+'\n')
         f.write('best_date="{}"'.format(str(profiles[i][3])+'.000000')+'\n')
         f.write('run_count="{}"'.format(str(profiles[i][4])+'.000000')+'\n')
+        
+        f.write('up="38.000000"\n')
+        f.write('down="40.000000"\n')
+        f.write('left="37.000000"\n')
+        f.write('right="39.000000"\n')
+        f.write('jump="90.000000"\n')
+        f.write('throw="88.000000"\n')
+        f.write('dash="16.000000"\n') 
 
         for x in range(profiles[i][4]):
             f.write(str(x)+'0="{}"'.format(str(profiles[i][5][x][0])+'.000000')+'\n')
@@ -65,11 +73,4 @@ with open('boomeraxe.ini','r+') as f:
             f.write(str(x)+'3="{}"'.format(str(profiles[i][5][x][3])+'.000000')+'\n')
             f.write(str(x)+'4="{}"'.format(str(profiles[i][5][x][4])+'.000000')+'\n')
             f.write(str(x)+'5="{}"'.format(str(profiles[i][5][x][5])+'.000000')+'\n')
-
-        f.write('up="38.000000"\n')
-        f.write('down="40.000000"\n')
-        f.write('left="37.000000"\n')
-        f.write('right="39.000000"\n')
-        f.write('jump="90.000000"\n')
-        f.write('throw="88.000000"\n')
-        f.write('dash="16.000000"\n')           
+          
