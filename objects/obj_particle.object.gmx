@@ -28,13 +28,13 @@
             <string>/// Initialize
 
 life_start=0
-image_alpha=0
+image_alpha=0 // Stay invisible until create_particles assigns a colour
 </string>
           </argument>
         </arguments>
       </action>
     </event>
-    <event eventtype="3" enumb="0">
+    <event eventtype="8" enumb="0">
       <action>
         <libid>1</libid>
         <id>603</id>
@@ -53,18 +53,21 @@ image_alpha=0
             <kind>1</kind>
             <string>/// Effects
 
-image_alpha=1 // Stay invisible until create_particles assigns a colour
+image_alpha=1 // Become visible now that create_particles has assigned colour
 
 if life_start=0
 {
     life_start=life
+    init_scale=scale
 }
 
 life-=1
 
-image_xscale=life/life_start
-image_yscale=life/life_start
-image_blend=colour
+draw_set_colour(colour)
+draw_circle(x,y,scale,0)
+
+scale=life/life_start*init_scale
+scale=life/life_start*init_scale
 
 if life=0{instance_destroy()}
 </string>

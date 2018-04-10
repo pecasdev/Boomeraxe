@@ -12,6 +12,7 @@ if type=='dash'
         p.gravity=0.05
         p.colour=c_aqua
         p.life=irandom_range(10,30)
+        p.scale=2
     }
 }
 
@@ -25,6 +26,7 @@ if type=='blood' and instance_exists(obj_axe)
         p.gravity=0.05
         p.colour=merge_colour(c_red,c_black,random_range(0,0.5))
         p.life=irandom_range(10,40)
+        p.scale=2
     }
 }
 
@@ -38,6 +40,7 @@ if type=='axe_hit' and instance_exists(obj_axe)
         p.gravity=0.05
         p.colour=merge_colour(72246,c_black,random_range(0,0.4))    // First colour is brown
         p.life=irandom_range(10,40)
+        p.scale=2
     }
 }
 
@@ -51,6 +54,7 @@ if type=='jump'
         p.gravity=0.05
         p.colour=c_white//merge_colour(c_white,random_range(0,0.4))
         p.life=irandom_range(20,30)
+        p.scale=2
     }
 }
 
@@ -73,6 +77,7 @@ if type=='wall'
         p.gravity=0.05
         p.colour=merge_colour(72246,c_black,random_range(0,0.6)) // First colour is brown
         p.life=irandom_range(20,30)
+        p.scale=2
     }
 }
 
@@ -95,6 +100,7 @@ if type=='wall_jump'
         p.gravity=0.05
         p.colour=merge_colour(72246,c_black,random_range(0,0.6)) // First colour is brown
         p.life=irandom_range(20,30)
+        p.scale=2
     }
 }
 
@@ -125,6 +131,7 @@ if type=='move'
         p.gravity=0.05
         p.colour=merge_colour(72246,c_green,random_range(0,0.6)) // First colour is brown
         p.life=irandom_range(20,30)
+        p.scale=2
     }
 }
 
@@ -138,6 +145,7 @@ if type=='savepoint_get'
         p.gravity=0
         p.colour=merge_colour(c_silver,c_lime,random_range(0,0.6))
         p.life=irandom_range(10,40)
+        p.scale=2
     }
 }
 
@@ -151,6 +159,7 @@ if type=='savepoint'
         p.gravity=0
         p.colour=merge_colour(c_silver,c_lime,random_range(0,0.6))
         p.life=irandom_range(20,30)
+        p.scale=2
     }
 }
 
@@ -161,9 +170,9 @@ if type=='death'
         p=instance_create(x_spawn,y_spawn,obj_particle)
         p.direction=random_range(0,360)
         p.speed=random_range(0.5,1)
-        p.gravity=0.1
         p.colour=merge_colour(choose(c_maroon,c_navy),c_black,random_range(0,0.2))
-        p.life=irandom_range(20,40)
+        p.life=irandom_range(40,80)
+        p.scale=random_range(1.5,2)
     }
 }
 
@@ -173,9 +182,10 @@ if type=='death_end'
     {
         p=instance_create(x_spawn,y_spawn,obj_particle)
         p.direction=random_range(0,360)
-        p.speed=random_range(0.5,1)
+        p.speed=random_range(1,3)
         p.gravity=0
         p.colour=merge_colour(choose(c_maroon,c_navy),c_black,random_range(0,0.2))
         p.life=irandom_range(10,40)
+        p.scale=random_range(1,3)
     }
 }

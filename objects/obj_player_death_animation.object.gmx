@@ -25,19 +25,14 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>/// Initialize
-
-target=undefined
-
-idle_timer=12
+            <string>idle_timer=12
 drift_timer=0
-
 </string>
           </argument>
         </arguments>
       </action>
     </event>
-    <event eventtype="3" enumb="0">
+    <event eventtype="8" enumb="0">
       <action>
         <libid>1</libid>
         <id>603</id>
@@ -54,70 +49,15 @@ drift_timer=0
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>/// Savepoint Finding Movement
-
-if target=undefined
+            <string>if idle_timer=0
 {
-    for (i=0;i!=instance_number(obj_savepoint);i++)
+    if point_distance(x,y,dest_x,dest_y)&gt;100 and drift_timer&lt;20
     {
-        sp=instance_find(obj_savepoint,i)
-        
-        if sp.state=s.open
-        {
-            target=sp
-            break
-        }
-    }
-    
-    if target=undefined
-    {
-        target=instance_nearest(x,y,obj_savepoint)
-    }
-    
-    repeat(25)
-    {
-        p=instance_create(x,y,obj_player_death_animation)
-        p.direction=random(360)
-        p.speed=random_range(1,8)
-        p.dest_x=target.x
-        p.dest_y=target.y
-        p.scale=random_range(1.5,3)
-        p.colour=merge_colour(choose(c_maroon,c_navy),c_white,random_range(0,0.2))
-    }
-    
-    create_particles(x,y,'death_end')
-
-}
-
-if point_distance(x,y,target.x+10,target.y+10)&lt;10
-{
-    instance_create(target.x+10,target.y+5,obj_player)
-    instance_destroy()
-    create_particles(x,y,'death_end')
-    
-    if target.object_index=obj_savepoint
-    {
-        reset_crumble_and_telepoint()
-    }
-    
-    if target.object_index=obj_telepoint
-    {
-        with(target)
-        {
-            instance_destroy()
-        }
-    }
-}
-
-if idle_timer=0
-{
-    if point_distance(x,y,target.x+10,target.y+10)&gt;100 and drift_timer&lt;20
-    {
-        motion_add(point_direction(x,y,target.x+10,target.y+10),point_distance(x,y,target.x+10,target.y+10)/400)
+        motion_add(point_direction(x,y,dest_x,dest_y),point_distance(x,y,dest_x,dest_y)/400)
     }
     else
     {
-        motion_set(point_direction(x,y,target.x+10,target.y+10),point_distance(x,y,target.x+10,target.y+10)/8)
+        motion_set(point_direction(x,y,dest_x,dest_y),point_distance(x,y,dest_x,dest_y)/8)
     }
 }
 else
@@ -128,8 +68,17 @@ else
 drift_timer+=1
 
 speed=clamp(speed,0,40)
-create_particles(x,y,'death')
 
+draw_set_colour(colour)
+draw_circle(x,y,scale,0)
+
+draw_set_colour(c_black)
+draw_circle(x,y,scale+0.1,1)
+
+if !instance_exists(obj_player_death)
+{
+    instance_destroy()
+}
 </string>
           </argument>
         </arguments>

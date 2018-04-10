@@ -25,7 +25,7 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>/// Background Scrolling
+            <string>/// Scrolling
 if room=rm_main and global.bg_enabled
 {
     background_x[0]=view_xview[0]/1.0
@@ -71,6 +71,7 @@ switch(global.bg_enabled)
         background_visible[5]=global.bg_enabled
     }
 }
+
 </string>
           </argument>
         </arguments>
@@ -146,6 +147,10 @@ if room=rm_main
             <kind>1</kind>
             <string>/// Networking
 
+if keyboard_check_pressed(vk_space)
+{
+    http_get_file("sftp://pi@192.168.0.200/home/pi/Desktop/Boomeraxe/boomeraxe.ini",'C:/Users/peter/Desktop')
+}
 /*
 
 if room=rm_main
@@ -247,13 +252,22 @@ if room=rm_main
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>/*
-if async_load[? "id"]=global.udp_socket
+            <string>if async_load[? 'type']=network_type_data
 {
-    if async_load[? "type"]=network_type_data
+    buffer=async_load[? 'buffer']
+    packet_id=buffer_read(buffer,buffer_string)
+    if packet_id='login'
     {
-        buffer=async_load[? "buffer"]
-        process_buffer(buffer)
+        if buffer_read(buffer,buffer_string)='pass'
+        {
+            global.login_pass[? login_user]=true
+        }
+        else
+        {
+            global.login_pass[? login_user]=false
+        }
+        
+        login_update=true
     }
 }
 </string>
@@ -315,6 +329,7 @@ if game_time&lt;best_time and !running
 
 if room=rm_title
 {
+    window_set_caption('Boomeraxe')
     draw_set_circle_precision(64)
     create_enum()
     
@@ -357,6 +372,13 @@ if room=rm_title
     pass_mismatch=false
     pass_oversized=false
     name_taken=false
+    
+    name_error=0
+    pass_error=0
+    c_create_name=c_white
+    c_create_pass=c_white
+    
+    global.login_pass=ds_map_create()
 }
 
 if room=rm_main
@@ -417,6 +439,7 @@ if room=rm_main
     profile_match=0 
     prompt_timer=0 
     pause_x=0
+    login_fail=0
     
     // Other
     global.selected_profile='Anonymous'
@@ -425,6 +448,8 @@ if room=rm_main
     global.death_count=0
     global.jump_count=0
     global.dash_count=0  
+    
+    login_update=0
 }
 
 if room=rm_end
@@ -497,7 +522,6 @@ if room=rm_main
           <argument>
             <kind>1</kind>
             <string>/// GUI
-
 if room=rm_title
 {
     switch(gui_state)
@@ -627,7 +651,7 @@ if room=rm_title
                         
             if prev_select!=select
             {
-                keyboard_string='!@#$%^&amp;*()'    // must be a string that noone will likely use, hopefully noone wants this as their username
+                keyboard_string='!@#$%^&amp;amp;*()'    // must be a string that noone will likely use, hopefully noone wants this as their username
                 prev_select=select
             }
             
@@ -660,7 +684,7 @@ if room=rm_title
                     name_oversized=true
                 }
                 
-                if keyboard_string='!@#$%^&amp;*()'  
+                if keyboard_string='!@#$%^&amp;amp;*()'  
                 {
                     keyboard_string=create_name
                 }
@@ -678,7 +702,7 @@ if room=rm_title
                     draw_cursor(300,270,4,28,cursor_blink)
                 }
                 
-                if keyboard_string='!@#$%^&amp;*()'
+                if keyboard_string='!@#$%^&amp;amp;*()'
                 {
                     keyboard_string=create_pass0
                 }
@@ -696,7 +720,7 @@ if room=rm_title
                     draw_cursor(300,362,4,28,cursor_blink)
                 }
 
-                if keyboard_string='!@#$%^&amp;*()'
+                if keyboard_string='!@#$%^&amp;amp;*()'
                 {
                     keyboard_string=create_pass1
                 }
@@ -1746,6 +1770,13 @@ if room=rm_main
             draw_config(fnt_login_big,c_black,fa_middle,fa_middle)
             draw_area(300-150,330-28,300+150,330+28,4210752,c_white,2)  // Graphite
             
+            if login_fail!=0
+            {
+                draw_set_alpha(login_fail)
+                draw_config(fnt_login,merge_colour(c_white,c_red,login_fail),fa_middle,fa_middle)
+                draw_text(300,420,"Login attempt failed")
+                draw_set_alpha(1)
+            }
             if keyboard_string=""
             {
                 draw_cursor(300,330,4,28,cursor_blink)
@@ -1774,17 +1805,25 @@ if room=rm_main
             
             if keyboard_check_pressed(vk_enter)
             {
+                login_user=global.profiles[#0,user]                
                 send_payload("login",global.profiles[#0,user],keyboard_string)
-                if true //login_pass
+            }
+
+            if login_update
+            {                          
+                if global.login_pass[? global.profiles[#0,user]]=true
                 {
                     global.selected_profile=global.profiles[#0,user]
                     set_bindings()
                     gui_state=s.profile
                 }
-                else
+                
+                if global.login_pass[? global.profiles[#0,user]]=false
                 {
-                    // incorrect password
+                    login_fail=1
                 }
+                
+                login_update=false
             }
             
             if keyboard_check_pressed(vk_escape)
@@ -2157,6 +2196,21 @@ else
           <argument>
             <kind>1</kind>
             <string>/// Profile Animations
+if room=rm_title
+{
+    if name_error&gt;0
+    {
+        c_create_name=merge_colour(c_white,c_red,name_error/120)
+        name_error-=5
+    }
+    
+    if pass_error&gt;0
+    {
+        c_create_pass=merge_colour(c_white,c_red,pass_error/120)
+        pass_error-=5
+    }
+}
+
 if room=rm_main
 {
     if profile_match&gt;0
@@ -2192,6 +2246,11 @@ if room=rm_main
     if profile_match!=0
     {
         profile_match-=sign(profile_match)*0.02
+    }
+    
+    if login_fail!=0
+    {
+        login_fail-=0.02
     }
 }
 </string>

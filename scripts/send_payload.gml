@@ -5,7 +5,6 @@
 // (push_bind)  - user,up,down,left,right,jump,throw,dash
 
 payload=buffer_create(1,buffer_grow,1)
-date_set_timezone(timezone_utc)
 
 for(i=0;i!=argument_count;i++)
 {

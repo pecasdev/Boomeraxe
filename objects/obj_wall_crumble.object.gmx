@@ -30,30 +30,8 @@
 image_speed=0
 reset=false
 crumble=false
-</string>
-          </argument>
-        </arguments>
-      </action>
-    </event>
-    <event eventtype="1" enumb="0">
-      <action>
-        <libid>1</libid>
-        <id>603</id>
-        <kind>7</kind>
-        <userelative>0</userelative>
-        <isquestion>0</isquestion>
-        <useapplyto>-1</useapplyto>
-        <exetype>2</exetype>
-        <functionname></functionname>
-        <codestring></codestring>
-        <whoName>self</whoName>
-        <relative>0</relative>
-        <isnot>0</isnot>
-        <arguments>
-          <argument>
-            <kind>1</kind>
-            <string>/// Add to crumble_spawns
-ds_list_add(obj_host.crumble_spawns,x,y)
+crumble_delay=8
+added=false
 </string>
           </argument>
         </arguments>
@@ -81,7 +59,7 @@ ds_list_add(obj_host.crumble_spawns,x,y)
 if obj_host.paused
 {
     image_speed=0
-    exit
+    exit    
 }
 </string>
           </argument>
@@ -108,9 +86,23 @@ if obj_host.paused
 if place_meeting(x,y-1,obj_player) or place_meeting(x-1,y,obj_player) or place_meeting(x+1,y,obj_player) or place_meeting(x,y+1,obj_player) or place_meeting(x,y-1,obj_axe) or place_meeting(x-1,y,obj_axe) or place_meeting(x+1,y,obj_axe) or place_meeting(x,y+1,obj_axe)
 {
     crumble=true
+    
+    if !added
+    {
+        ds_list_add(obj_host.crumble_spawns,x,y)
+        added=true
+    }
 }
 
-image_speed=crumble*0.2
+if crumble=true
+{
+    crumble_delay-=1
+    
+    if crumble_delay=0
+    {
+        image_speed=0.25
+    }
+}
 
 if image_index=7
 {

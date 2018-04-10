@@ -50,6 +50,7 @@
     <sprites name="else">
       <sprite>sprites\spr_particle</sprite>
       <sprite>sprites\spr_axe</sprite>
+      <sprite>sprites\spr_axe_new</sprite>
       <sprite>sprites\spr_savepoint_background</sprite>
     </sprites>
   </sprites>
@@ -176,6 +177,7 @@
         <object>objects\obj_axe</object>
         <object>objects\obj_particle</object>
         <object>objects\obj_player_death</object>
+        <object>objects\obj_player_death_animation</object>
       </objects>
     </objects>
     <objects name="invisible">

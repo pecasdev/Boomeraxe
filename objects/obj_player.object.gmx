@@ -42,6 +42,7 @@ hsp=0
 vsp=0
 grav=0.6
 
+dash_dir=0
 // Other
 can_throw=true
 state=s.idle
@@ -159,15 +160,11 @@ switch(state)
         {
             state=s.move
         }
-        
-        if k_attack and can_throw
-        {
-            state=s.attack
-        }
-        
+                
         if k_dash and dash_count&gt;0
         {
             state=s.dash
+            dash_dir=image_xscale
         }
         
         if k_jump and jump_count&gt;0
@@ -175,12 +172,17 @@ switch(state)
             state=s.jump
         }
         
-        if (k_up-k_down)&gt;0
+        if k_attack and can_throw
+        {
+            state=s.attack
+        }
+        
+        if (k_up-k_down)&lt;0
         {
             sprite_index=spr_player_down
         }
         
-        if (k_up-k_down)&lt;0
+        if (k_up-k_down)&gt;0
         {
             sprite_index=spr_player_up
         }
@@ -203,7 +205,6 @@ switch(state)
         if move_x=0
         {
             state=s.idle
-            break
         }
         
         if !place_meeting(x,y+1,obj_collision)
@@ -216,6 +217,12 @@ switch(state)
         
         sprite_index=spr_player_move
         
+        if k_dash and dash_count&gt;0
+        {
+            state=s.dash
+            dash_dir=image_xscale
+        }
+        
         if k_jump and jump_count&gt;0
         {
             state=s.jump
@@ -224,11 +231,6 @@ switch(state)
         if k_attack and can_throw
         {
             state=s.attack
-        }
-        
-        if k_dash and dash_count&gt;0
-        {
-            state=s.dash
         }
         
         move_hsp=move_speed*move_x
@@ -284,10 +286,7 @@ switch(state)
             axe.vsp=0
             axe.hsp=12*image_xscale
         }
-        
-        //axe.hsp+=hsp//*sign(axe.hsp)
-        //axe.vsp+=vsp//*sign(axe.vsp)
-        
+               
         state=s.fall
         
     break}
@@ -297,8 +296,7 @@ switch(state)
         if dash_timer=0
         {
             dash_count-=1
-            dash_timer=6
-            dash_dir=image_xscale
+            dash_timer=5
             global.dash_count+=1
         }
         
@@ -315,7 +313,7 @@ switch(state)
         sprite_index=spr_player_dash
         image_xscale=dash_dir
         
-        dash_hsp=dash_dir*16
+        dash_hsp=dash_dir*19
         
         dash_timer-=1
         
@@ -372,20 +370,21 @@ switch(state)
             }
         }
         
+        if k_dash and dash_count&gt;0
+        {
+            state=s.dash
+            dash_dir=image_xscale
+        }
+        
         if k_jump and jump_count&gt;0
         {
             state=s.jump
         }
         
-        if k_dash and dash_count&gt;0
-        {
-            state=s.dash
-        }
-        
         if k_attack and can_throw
         {
             state=s.attack
-        }  
+        }
              
     break}
     
@@ -444,8 +443,9 @@ switch(state)
         if k_dash and dash_count&gt;0
         {
             state=s.dash
+            dash_dir=image_xscale
         }
-        
+                
         if k_attack and can_throw
         {
             state=s.attack
