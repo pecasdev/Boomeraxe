@@ -5,14 +5,21 @@ profile_count=ini_read_real('meta','profile_count',1)
 
 global.profiles=ds_grid_create(11,profile_count)
 
+new_profiles=ds_list_create()
+
 for (i=0;i!=profile_count;i++)
 {
     name=ini_read_string('meta',string(i),'')
     
     global.profiles[#0,i]=name
-    global.profiles[#1,i]=ini_read_real(name,'best_time',2000)
-    global.profiles[#2,i]=ini_read_string(name,'best_date',2000)
+    global.profiles[#1,i]=ini_read_real(name,'best_time',0)
+    global.profiles[#2,i]=ini_read_string(name,'best_date',0)
     global.profiles[#3,i]=ini_read_real(name,'run_count',0)
+    
+    if global.profiles[#3,i]=0
+    {
+        ds_list_add(new_profiles,name)
+    }
     
     ds_grid_resize(global.profiles,max(ds_grid_width(global.profiles),(global.profiles[#3,i]+1)*6+11),profile_count)
 
@@ -37,6 +44,21 @@ for (i=0;i!=profile_count;i++)
 
 ds_grid_sort(global.profiles,1,1)
 
+for (i=0;i!=ds_list_size(new_profiles);i+=1)
+{
+    for (z=0;z!=profile_count;z+=1)
+    {
+        if global.profiles[#0,z]=new_profiles[| i]
+        {
+            ds_grid_set_grid_region(global.profiles,global.profiles,0,z,ds_grid_width(global.profiles)-1,ds_grid_height(global.profiles)-1,0,-1)
+        }
+        
+        ds_grid_set_region(global.profiles,0,ds_grid_height(global.profiles)-1,ds_grid_width(global.profiles)-1,ds_grid_height(global.profiles)-1,0)
+        global.profiles[#0,ds_grid_height(global.profiles)-1]=new_profiles[| i]
+        break
+    }
+    show_debug_message('SHIFTED!')
+}
 ini_close()
 
 

@@ -252,7 +252,8 @@ if room=rm_main
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>if async_load[? 'type']=network_type_data
+            <string>/// Receive and Process Buffer
+if async_load[? 'type']=network_type_data
 {
     buffer=async_load[? 'buffer']
     packet_id=buffer_read(buffer,buffer_string)
@@ -370,8 +371,8 @@ if room=rm_title
     // Animations
     name_oversized=false
     pass_mismatch=false
-    pass_oversized=false
     name_taken=false
+    name_invalid=false
     
     name_error=0
     pass_error=0
@@ -577,6 +578,9 @@ if room=rm_title
                 {
                     gui_state=s.profile_create
                     
+                    select=0
+                    
+                    keyboard_string=''                    
                     mix=0.2                    
                     create_name=''
                     create_pass0=''
@@ -615,26 +619,87 @@ if room=rm_title
             draw_area(300-150,135-26,300+150,135+26,4210752,c_white,2)          // Graphite
             draw_config(fnt_profile_create_small,9868950,fa_middle,fa_middle)   // Pastel
             draw_text(300,135,create_name)    
-
-            draw_config(fnt_profile_create_small,c_white,fa_middle,fa_middle)
-            draw_text(300,177,"Choose a Username")
-
+            
+            draw_config(fnt_profile_create_small,c_create_name,fa_middle,fa_middle)
+                        
+            if name_invalid
+            {
+                draw_text(300,190,"add \ in front of \##to properly format it")
+            }
+            else if name_oversized
+            {
+                draw_text(300,190,"Name must be 10#characters or less")
+            }
+            else if name_taken
+            {
+                draw_text(300,190,"Name is unavailable")
+            }
+            else
+            {
+                draw_text(300,177,"Choose a Username")
+            }
+            
             // Password Box
             draw_area(300-150,270-26,300+150,270+26,4210752,c_white,2)          // Graphite
-            draw_config(fnt_profile_create_small,9868950,fa_middle,fa_middle)   // Pastel
-            draw_text(300,270,create_pass0)
+            draw_config(fnt_profile_create,9868950,fa_middle,fa_middle)   // Pastel
+            draw_text_transformed(300,260,string_repeat('.',string_length(create_pass0)),1.25,1.5,0)
             
             draw_config(fnt_profile_create_small,c_white,fa_middle,fa_middle)
-            draw_text(300,312,"Enter a Password")
+            draw_text(300,307,"Enter a Password")
             
             // Confirm Password Box
             draw_area(300-150,362-26,300+150,362+26,4210752,c_white,2)          // Graphite
-            draw_config(fnt_profile_create_small,9868950,fa_middle,fa_middle)   // Pastel
-            draw_text(300,362,create_pass1)
+            draw_config(fnt_profile_create,9868950,fa_middle,fa_middle)   // Pastel
+            draw_text_transformed(300,352,string_repeat('.',string_length(create_pass1)),1.25,1.5,0)
             
-            draw_config(fnt_profile_create_small,c_white,fa_middle,fa_middle)            
-            draw_text(300,402,"Confirm Password")
+            draw_config(fnt_profile_create_small,c_create_pass,fa_middle,fa_middle)            
+
+            if pass_mismatch
+            {
+                draw_text(300,402,"passwords do not match")
+            }
+            else
+            {
+                draw_text(300,402,"Confirm Password")
+            }
             
+            // Error Checking
+            if string_length(create_name)&gt;10+string_count('\#',create_name)
+            {
+                name_oversized=true
+                name_error=120
+            }
+            else
+            {
+                name_oversized=false
+            }
+
+            if name_taken
+            {
+                name_error=120
+                name_taken=false
+            }
+                        
+            if string_count('#',create_name)!=string_count('\#',create_name)
+            {
+                name_error=120
+                name_invalid=true
+            }
+            else
+            {
+                name_invalid=false
+            }
+                        
+            if create_pass0 != create_pass1
+            {
+                pass_mismatch=true
+                pass_error=120
+            }
+            else
+            {
+                pass_mismatch=false
+            }
+        
             // Keybindings Button
             draw_area(300-105,478-25,300+105,478+25,4210752,c_white,2)          // Graphite
             
@@ -648,16 +713,16 @@ if room=rm_title
             draw_config(fnt_profile_create_small,c_white,fa_middle,fa_middle)
             draw_text(210,552,"Create")
             draw_text(390,552,"Cancel")  
-                        
-            if prev_select!=select
-            {
-                keyboard_string='!@#$%^&amp;amp;*()'    // must be a string that noone will likely use, hopefully noone wants this as their username
-                prev_select=select
-            }
-            
+                                    
             select+=(keyboard_check_pressed(global.k[? 'right']) or keyboard_check_pressed(vk_tab))-keyboard_check_pressed(global.k[? 'left'])
             select=clamp(select,0,5)
-                                            
+
+            if prev_select!=select
+            {
+                keyboard_string='placehold'    // must be a string that noone will likely use, hopefully noone wants this as their username
+                prev_select=select
+            }
+                                                        
             if cursor_blink=0.2
             {
                 up=true
@@ -670,6 +735,8 @@ if room=rm_title
                 down=true
             }
             
+            cursor_blink+=(up-down)*0.03
+            
             if select=0
             {
                 draw_select(300,135,300,52,3)
@@ -677,14 +744,8 @@ if room=rm_title
                 {
                     draw_cursor(300,135,4,28,cursor_blink)
                 }
-                
-                if string_length(keyboard_string)&gt;10
-                {
-                    keyboard_string=string_copy(keyboard_string,1,10)
-                    name_oversized=true
-                }
-                
-                if keyboard_string='!@#$%^&amp;amp;*()'  
+                                
+                if keyboard_string='placehold'  
                 {
                     keyboard_string=create_name
                 }
@@ -697,12 +758,12 @@ if room=rm_title
             if select=1
             {
                 draw_select(300,270,300,52,3)
-                if create_name=''
+                if create_pass0=''
                 {
                     draw_cursor(300,270,4,28,cursor_blink)
                 }
                 
-                if keyboard_string='!@#$%^&amp;amp;*()'
+                if keyboard_string='placehold'
                 {
                     keyboard_string=create_pass0
                 }
@@ -715,12 +776,12 @@ if room=rm_title
             if select=2
             {
                 draw_select(300,362,300,52,3)
-                if create_name=''
+                if create_pass1=''
                 {
                     draw_cursor(300,362,4,28,cursor_blink)
                 }
 
-                if keyboard_string='!@#$%^&amp;amp;*()'
+                if keyboard_string='placehold'
                 {
                     keyboard_string=create_pass1
                 }
@@ -743,7 +804,34 @@ if room=rm_title
             if select=5
             {
                 draw_select(390,552,140,52,3)
-            }                                  
+            }  
+            
+            if keyboard_check_pressed(vk_enter)
+            {
+                if select=3
+                {
+                    // keybindings
+                }
+                
+                if select=4
+                {
+                    if !name_taken and !name_invalid and !name_oversized and !pass_mismatch
+                    {
+                        send_payload('create',create_name,create_pass0,global.k[? 'up'],global.k[? 'down'],global.k[? 'left'],global.k[? 'right'],global.k[? 'jump'],global.k[? 'throw'],global.k[? 'dash'])
+                    }
+                }
+                
+                if select=5
+                {
+                    gui_state=s.title
+                }
+            } 
+            
+            if keyboard_check_pressed(vk_escape)
+            {
+                gui_state=s.title
+            } 
+                                          
         }break
         
         case s.options:
@@ -1269,131 +1357,153 @@ if room=rm_main
             draw_area(1,80,598,599,c_dkgray,c_black,1)
     
             for (i=0;i!=profile_count;i++)
-            {             
-                if i=0
+            {         
+                if global.profiles[#3,i]!=0    
                 {
-                    // Profile
-                    draw_area(1,80+y_view_cur,598,199+y_view_cur,3517429,c_black,1)     // Gold
-                    
-                    // Rank
-                    draw_area(8,87+y_view_cur,114,193+y_view_cur,3118552,c_black,1)     // Darker Gold
-                    draw_config(fnt_profiles_big,c_black,fa_middle,fa_middle)
-                    draw_text_transformed(64,137+y_view_cur,'1',2,2,0)
-                    
-                    // Username
-                    draw_config(fnt_profiles_big,c_black,fa_middle,fa_middle)
-                    draw_text_transformed(500,140+y_view_cur,global.profiles[#0,i],string_scale(global.profiles[#0,i],4.5),string_scale(global.profiles[#0,i],4.5),0)
-                    
-                    // Best Time
-                    draw_config(fnt_profiles_big,c_black,fa_left,fa_middle)
-                    draw_text_transformed(135,120+y_view_cur,format_time(global.profiles[#1,i],false),1.1,1.1,0)
-                    
-                    // Best Time (date)
-                    draw_config(fnt_profiles,c_black,fa_left,fa_middle)
-                    draw_text(135,165+y_view_cur,format_datetime(global.profiles[#2,i]))
-                }
-                else if i=1
-                {
-                    scale=0.8
-                                    
-                    // Profile
-                    draw_area(1,200+y_view_cur,598,299+y_view_cur,13157819,c_black,1)   // Silver
-                    
-                    // Rank
-                    draw_area(8,207+y_view_cur,92,292+y_view_cur,11184288,c_black,1)    // Darker Silver
-                    draw_config(fnt_profiles_big,c_black,fa_middle,fa_middle)
-                    draw_text_transformed(54,247+y_view_cur,'2',1.2,1.2,0)
-                    
-                    // Username
-                    draw_config(fnt_profiles_big,c_black,fa_middle,fa_middle)
-                    draw_text_transformed(480,250+y_view_cur,global.profiles[#0,i],string_scale(global.profiles[#0,i],5),string_scale(global.profiles[#0,i],5),0)
-                    
-                    // Best Time
-                    draw_config(fnt_profiles_big,c_black,fa_left,fa_middle)
-                    draw_text_transformed(114,230+y_view_cur,format_time(global.profiles[#1,i],false),scale,scale,0)
-                    
-                    // Best Time (date)
-                    draw_config(fnt_profiles,c_black,fa_left,fa_middle)
-                    draw_text_transformed(114,275+y_view_cur,format_datetime(global.profiles[#2,i]),scale+0.1,scale+0.1,0)
-                    
-                    // Best Time (surplus)
-                    draw_config(fnt_profiles,4142654,fa_left,fa_middle) // Kalamata
-                    draw_text_transformed(314,230+y_view_cur,format_time(global.profiles[#1,i]-global.profiles[#1,i-1],true),scale,scale,0)
-                } 
-                else if i=2
-                {
-                    scale=0.55
-                    
-                    // Profile
-                    draw_area(1,300+y_view_cur,598,379+y_view_cur,5150699,c_black,1)    // Bronze
-                    
-                    // Rank
-                    draw_area(8,307+y_view_cur,72,372+y_view_cur,4621262,c_black,1)     // Darker Bronze
-                    draw_config(fnt_profiles_big,c_black,fa_middle,fa_middle)
-                    draw_text_transformed(45,337+y_view_cur,'3',1.1,1.1,0)
-                    
-                    // Username
-                    draw_config(fnt_profiles_big,c_black,fa_middle,fa_middle)
-                    draw_text_transformed(470,340+y_view_cur,global.profiles[#0,i],string_scale(global.profiles[#0,i],3.5),string_scale(global.profiles[#0,i],3.5),0)
-                    
-                    // Best Time
-                    draw_config(fnt_profiles_big,c_black,fa_left,fa_middle)
-                    draw_text_transformed(95,324+y_view_cur,format_time(global.profiles[#1,i],false),scale+0.1,scale+0.1,0)
-                    
-                    // Best Time (date)
-                    draw_config(fnt_profiles,c_black,fa_left,fa_middle)
-                    draw_text_transformed(95,360+y_view_cur,format_datetime(global.profiles[#2,i]),0.8,0.8,0)          
-                    
-                    // Best Time (surplus)
-                    draw_config(fnt_profiles,4142654,fa_left,fa_middle) // Kalamata
-                    draw_text_transformed(254,324+y_view_cur,format_time(global.profiles[#1,i]-global.profiles[#1,i-1],true),0.8,0.8,0)                               
+                    if i=0
+                    {
+                        // Profile
+                        draw_area(1,80+y_view_cur,598,199+y_view_cur,3517429,c_black,1)     // Gold
+                        
+                        // Rank
+                        draw_area(8,87+y_view_cur,114,193+y_view_cur,3118552,c_black,1)     // Darker Gold
+                        draw_config(fnt_profiles_big,c_black,fa_middle,fa_middle)
+                        draw_text_transformed(64,137+y_view_cur,'1',2,2,0)
+                        
+                        // Username
+                        draw_config(fnt_profiles_big,c_black,fa_middle,fa_middle)
+                        draw_text_transformed(500,140+y_view_cur,global.profiles[#0,i],string_scale(global.profiles[#0,i],4.5),string_scale(global.profiles[#0,i],4.5),0)
+                        
+                        // Best Time
+                        draw_config(fnt_profiles_big,c_black,fa_left,fa_middle)
+                        draw_text_transformed(135,120+y_view_cur,format_time(global.profiles[#1,i],false),1.1,1.1,0)
+                        
+                        // Best Time (date)
+                        draw_config(fnt_profiles,c_black,fa_left,fa_middle)
+                        draw_text(135,165+y_view_cur,format_datetime(global.profiles[#2,i]))
+                    }
+                    else if i=1
+                    {
+                        scale=0.8
+                                        
+                        // Profile
+                        draw_area(1,200+y_view_cur,598,299+y_view_cur,13157819,c_black,1)   // Silver
+                        
+                        // Rank
+                        draw_area(8,207+y_view_cur,92,292+y_view_cur,11184288,c_black,1)    // Darker Silver
+                        draw_config(fnt_profiles_big,c_black,fa_middle,fa_middle)
+                        draw_text_transformed(54,247+y_view_cur,'2',1.2,1.2,0)
+                        
+                        // Username
+                        draw_config(fnt_profiles_big,c_black,fa_middle,fa_middle)
+                        draw_text_transformed(480,250+y_view_cur,global.profiles[#0,i],string_scale(global.profiles[#0,i],5),string_scale(global.profiles[#0,i],5),0)
+                        
+                        // Best Time
+                        draw_config(fnt_profiles_big,c_black,fa_left,fa_middle)
+                        draw_text_transformed(114,230+y_view_cur,format_time(global.profiles[#1,i],false),scale,scale,0)
+                        
+                        // Best Time (date)
+                        draw_config(fnt_profiles,c_black,fa_left,fa_middle)
+                        draw_text_transformed(114,275+y_view_cur,format_datetime(global.profiles[#2,i]),scale+0.1,scale+0.1,0)
+                        
+                        // Best Time (surplus)
+                        draw_config(fnt_profiles,4142654,fa_left,fa_middle) // Kalamata
+                        draw_text_transformed(314,230+y_view_cur,format_time(global.profiles[#1,i]-global.profiles[#1,i-1],true),scale,scale,0)
+                    } 
+                    else if i=2
+                    {
+                        scale=0.55
+                        
+                        // Profile
+                        draw_area(1,300+y_view_cur,598,379+y_view_cur,5150699,c_black,1)    // Bronze
+                        
+                        // Rank
+                        draw_area(8,307+y_view_cur,72,372+y_view_cur,4621262,c_black,1)     // Darker Bronze
+                        draw_config(fnt_profiles_big,c_black,fa_middle,fa_middle)
+                        draw_text_transformed(45,337+y_view_cur,'3',1.1,1.1,0)
+                        
+                        // Username
+                        draw_config(fnt_profiles_big,c_black,fa_middle,fa_middle)
+                        draw_text_transformed(470,340+y_view_cur,global.profiles[#0,i],string_scale(global.profiles[#0,i],3.5),string_scale(global.profiles[#0,i],3.5),0)
+                        
+                        // Best Time
+                        draw_config(fnt_profiles_big,c_black,fa_left,fa_middle)
+                        draw_text_transformed(95,324+y_view_cur,format_time(global.profiles[#1,i],false),scale+0.1,scale+0.1,0)
+                        
+                        // Best Time (date)
+                        draw_config(fnt_profiles,c_black,fa_left,fa_middle)
+                        draw_text_transformed(95,360+y_view_cur,format_datetime(global.profiles[#2,i]),0.8,0.8,0)          
+                        
+                        // Best Time (surplus)
+                        draw_config(fnt_profiles,4142654,fa_left,fa_middle) // Kalamata
+                        draw_text_transformed(254,324+y_view_cur,format_time(global.profiles[#1,i]-global.profiles[#1,i-1],true),0.8,0.8,0)                               
+                    }
+                    else
+                    {
+                        scale=0.45
+                        
+                        // Profile
+                        draw_area(1,200+i*60+y_view_cur,598,259+i*60+y_view_cur,3961266,c_black,1)      // Dirt
+                        
+                        // Rank
+                        draw_area(8,207+i*60+y_view_cur,53,253+i*60+y_view_cur,3564704,c_black,1)       // Darker Dirt
+                        draw_config(fnt_profiles_big,c_black,fa_middle,fa_middle)
+                        
+                        if string_length(i+1)=1
+                        {
+                            r_scale=0.9
+                        }
+                        
+                        if string_length(i+1)=2
+                        {
+                            r_scale=0.65
+                        }
+                        
+                        if string_length(i+1)=3
+                        {
+                            r_scale=0.48
+                        }
+                        
+                        draw_text_transformed(34,227+i*60+y_view_cur,i+1,r_scale,r_scale,0)
+                        
+                        // Username
+                        draw_config(fnt_profiles_big,c_black,fa_middle,fa_middle)
+                        draw_text_transformed(460,230+i*60+y_view_cur,global.profiles[#0,i],scale+string_scale(global.profiles[#0,i],7.5),scale+string_scale(global.profiles[#0,i],7.5),0)
+                        
+                        // Best Time
+                        draw_config(fnt_profiles_big,c_black,fa_left,fa_middle)
+                        draw_text_transformed(75,218+i*60+y_view_cur,format_time(global.profiles[#1,i],false),scale+0.05,scale+0.05,0)
+                        
+                        // Best Time (date)
+                        draw_config(fnt_profiles,c_black,fa_left,fa_middle)
+                        draw_text_transformed(75,245+i*60+y_view_cur,format_datetime(global.profiles[#2,i]),0.7,0.7,0)
+                        
+                        // Best Time (surplus)
+                        draw_config(fnt_profiles,4142654,fa_left,fa_middle) // Kalamata
+                        draw_text_transformed(211,218+i*60+y_view_cur,format_time(global.profiles[#1,i]-global.profiles[#1,i-1],true),0.7,0.7,0)
+                    }
                 }
                 else
                 {
                     scale=0.45
                     
                     // Profile
-                    draw_area(1,200+i*60+y_view_cur,598,259+i*60+y_view_cur,3961266,c_black,1)      // Dirt
+                    draw_area(1,200+i*60+y_view_cur,598,259+i*60+y_view_cur,4605510,c_black,1)      // Void
                     
                     // Rank
-                    draw_area(8,207+i*60+y_view_cur,53,253+i*60+y_view_cur,3564704,c_black,1)       // Darker Dirt
-                    draw_config(fnt_profiles_big,c_black,fa_middle,fa_middle)
+                    draw_area(8,207+i*60+y_view_cur,53,253+i*60+y_view_cur,2632748,c_black,1)       // Darker Void
+                    draw_config(fnt_profiles_big,c_white,fa_middle,fa_middle)
                     
-                    if string_length(i+1)=1
-                    {
-                        r_scale=0.9
-                    }
-                    
-                    if string_length(i+1)=2
-                    {
-                        r_scale=0.65
-                    }
-                    
-                    if string_length(i+1)=3
-                    {
-                        r_scale=0.48
-                    }
-                    
-                    draw_text_transformed(34,227+i*60+y_view_cur,i+1,r_scale,r_scale,0)
+                    draw_text_transformed(34,227+i*60+y_view_cur,"?",0.9,0.9,0)
                     
                     // Username
-                    draw_config(fnt_profiles_big,c_black,fa_middle,fa_middle)
+                    draw_config(fnt_profiles_big,c_white,fa_middle,fa_middle)
                     draw_text_transformed(460,230+i*60+y_view_cur,global.profiles[#0,i],scale+string_scale(global.profiles[#0,i],7.5),scale+string_scale(global.profiles[#0,i],7.5),0)
                     
-                    // Best Time
-                    draw_config(fnt_profiles_big,c_black,fa_left,fa_middle)
-                    draw_text_transformed(75,218+i*60+y_view_cur,format_time(global.profiles[#1,i],false),scale+0.05,scale+0.05,0)
-                    
-                    // Best Time (date)
-                    draw_config(fnt_profiles,c_black,fa_left,fa_middle)
-                    draw_text_transformed(75,245+i*60+y_view_cur,format_datetime(global.profiles[#2,i]),0.7,0.7,0)
-                    
-                    // Best Time (surplus)
-                    draw_config(fnt_profiles,4142654,fa_left,fa_middle) // Kalamata
-                    draw_text_transformed(211,218+i*60+y_view_cur,format_time(global.profiles[#1,i]-global.profiles[#1,i-1],true),0.7,0.7,0)
+                    // No Information
+                    draw_config(fnt_profiles,c_white,fa_left,fa_middle)
+                    draw_text(75,230+i*60+y_view_cur,"No run data found")
                 }
-                
-                scale=0.45
             }
      
             // Title
@@ -1522,6 +1632,12 @@ if room=rm_main
                         
             // Bot area
             draw_area(1,450,598,598,6581117,c_black,1)     // Kalamata
+            
+            if global.profiles[#3,user]=0
+            {
+                draw_config(fnt_profile_small,c_black,fa_middle,fa_middle)
+                draw_text(300,520,"(And also here)")
+            }
                                     
             // Precalculations for graph
             lo=global.profiles[#10,user]
@@ -1569,46 +1685,61 @@ if room=rm_main
                 }                
             }
             
-            // Rank
-            if user=0
+            // Rank            
+            if global.profiles[#3,user]!=0
             {
-                c_rank=3118552
-            }
-            else if user=1
-            {
-                c_rank=11184288
-            }
-            else if user=2
-            {
-                c_rank=4621262
+                if user=0
+                {
+                    c_rank=3118552
+                }
+                else if user=1
+                {
+                    c_rank=11184288
+                }
+                else if user=2
+                {
+                    c_rank=4621262
+                }
+                else
+                {
+                    c_rank=3564704
+                }
+                
+                if string_length(user+1)=1
+                {
+                    r_scale=1
+                }
+                
+                if string_length(user+1)=2
+                {
+                    r_scale=0.75
+                }
+                
+                if string_length(user+1)=3
+                {
+                    r_scale=0.55
+                }  
+                          
+                draw_area(0,0,76,76,c_rank,c_black,2)
+                draw_config(fnt_profile_big,c_black,fa_middle,fa_middle)
+                draw_text_transformed(40,38,user+1,r_scale,r_scale,0)
             }
             else
             {
-                c_rank=3564704
+                draw_area(0,0,76,76,2632748,c_black,2)  // Darker Void
+                draw_config(fnt_profile_big,c_white,fa_middle,fa_middle)
+                draw_text(40,38,'?')
             }
-            
-            if string_length(user+1)=1
-            {
-                r_scale=1
-            }
-            
-            if string_length(user+1)=2
-            {
-                r_scale=0.75
-            }
-            
-            if string_length(user+1)=3
-            {
-                r_scale=0.55
-            }  
-                      
-            draw_area(0,0,76,76,c_rank,c_black,2)
-            draw_config(fnt_profile_big,c_black,fa_middle,fa_middle)
-            draw_text_transformed(40,38,user+1,r_scale,r_scale,0)
 
             // Mid area
             draw_area(1,150,598,449,13426922,c_black,2) // Limestone White            
-
+            
+            if global.profiles[#3,user]=0
+            {
+                draw_config(fnt_profile,4142654,fa_middle,fa_middle)    // Kalamata
+                draw_text(300,300,"Your data will#appear here after#completing runs")
+            }
+            
             if entry_select=undefined
             {     
                 // Graph
@@ -1692,21 +1823,30 @@ if room=rm_main
             draw_config(fnt_profile_big,4142654,fa_middle,fa_middle) // Kalamata
             draw_text_transformed(150,113,global.profiles[#0,user],0.9,0.9,0)
                         
-            // Best Time
-            draw_config(fnt_profile,c_black,fa_middle,fa_middle)
-            draw_text_transformed(450,105,format_time(global.profiles[#1,user],false),0.9,0.9,0)
-            
-            // Best Time (surplus)
-            draw_config(fnt_profile,4142654,fa_middle,fa_middle) // Kalamata
-            if user!=0
-            {
-                draw_text_transformed(450,130,format_time(global.profiles[#1,user]-global.profiles[#1,user-1],true),0.5,0.5,0)
+            if global.profiles[#3,user]!=0
+            {            
+                // Best Time
+                draw_config(fnt_profile,c_black,fa_middle,fa_middle)
+                draw_text_transformed(450,105,format_time(global.profiles[#1,user],false),0.9,0.9,0)
+                
+                // Best Time (surplus)
+                draw_config(fnt_profile,4142654,fa_middle,fa_middle) // Kalamata
+                if user!=0
+                {
+                    draw_text_transformed(450,130,format_time(global.profiles[#1,user]-global.profiles[#1,user-1],true),0.5,0.5,0)
+                }
+                else
+                {
+                    draw_text_transformed(450,130,format_time(0,true),0.5,0.5,0)
+                }
             }
             else
             {
-                draw_text_transformed(450,130,format_time(0,true),0.5,0.5,0)
+                // No Information
+                draw_config(fnt_profile_small,4142654,fa_middle,fa_middle)  // Kalamata
+                draw_text(450,113,'Best Time#Unavailable')
             }
-           
+            
             // Selection Box
             if select=0
             {
