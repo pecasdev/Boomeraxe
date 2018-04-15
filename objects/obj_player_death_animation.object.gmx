@@ -25,8 +25,10 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>idle_timer=12
-drift_timer=0
+            <string>/// Initialize
+idle_timer=20
+init_speed=undefined
+step=undefined
 </string>
           </argument>
         </arguments>
@@ -49,36 +51,70 @@ drift_timer=0
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>if idle_timer=0
+            <string>/// Physics
+if !instance_exists(obj_player_death)
 {
-    if point_distance(x,y,dest_x,dest_y)&gt;100 and drift_timer&lt;20
+    instance_destroy()
+    exit    
+}
+
+if init_speed=undefined
+{
+    init_speed=speed 
+}
+
+if idle_timer=0
+{
+    if step=undefined
     {
-        motion_add(point_direction(x,y,dest_x,dest_y),point_distance(x,y,dest_x,dest_y)/400)
+        step=random_range(5,20)
+        angle=point_direction(obj_player_death.x,obj_player_death.y,x,y)
+        init_distance=point_distance(obj_player_death.x,obj_player_death.y,x,y)
     }
-    else
-    {
-        motion_set(point_direction(x,y,dest_x,dest_y),point_distance(x,y,dest_x,dest_y)/8)
-    }
+    
+    distance=obj_player_death.curr_distance/obj_player_death.init_distance*init_distance
+    //angle+=step
+
+    x=obj_player_death.x+lengthdir_x(distance,angle)
+    y=obj_player_death.y+lengthdir_y(distance,angle)
+    
+    
+    /*
+    current+=(ending-current)/8
+    follow_arc(cir_x,cir_y,radius,current)
+    /*
+    draw_set_alpha(0.1)
+    draw_set_colour(colour)
+    draw_circle(cir_x,cir_y,radius,0)
+    
+    draw_set_colour(c_red)
+    draw_circle(cir_x,cir_y,4,0)
+    
+    draw_set_colour(c_lime)
+    draw_circle(start_x,start_y,3,0)
+    
+    draw_set_colour(c_green)
+    draw_circle(target_x,target_y,3,0)
+    
+    draw_set_alpha(1)
+    */
 }
 else
 {
     idle_timer-=1
+    
+    if speed&gt;0
+    {
+        speed-=init_speed/20
+        speed=max(speed,0) 
+    }    
 }
-
-drift_timer+=1
-
-speed=clamp(speed,0,40)
 
 draw_set_colour(colour)
 draw_circle(x,y,scale,0)
 
 draw_set_colour(c_black)
 draw_circle(x,y,scale+0.1,1)
-
-if !instance_exists(obj_player_death)
-{
-    instance_destroy()
-}
 </string>
           </argument>
         </arguments>

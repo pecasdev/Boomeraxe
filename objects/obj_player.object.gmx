@@ -261,9 +261,7 @@ switch(state)
     break}
     
     case(s.attack):
-    {
-        sprite_index=spr_player_attack
-        
+    {        
         can_throw=false
         axe=instance_create(x,y,obj_axe)
         

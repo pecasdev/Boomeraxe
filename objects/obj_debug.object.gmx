@@ -77,18 +77,18 @@ if keyboard_check_pressed(vk_delete)
 if keyboard_check_pressed(vk_home)
 {
     room_restart()
+    global.k[? 'up']   =vk_up
+    global.k[? 'down'] =vk_down
+    global.k[? 'left'] =vk_left
+    global.k[? 'right']=vk_right
+    global.k[? 'jump'] =ord('Z')
+    global.k[? 'throw']=ord('X')
+    global.k[? 'dash'] =vk_shift
 }
 
 if keyboard_check_pressed(vk_insert)
 {
-    if player_invincible
-    {
-        player_invincible=false
-    }
-    else
-    {
-        player_invincible=true
-    }
+    player_invincible=!player_invincible
 }
 
 if instance_exists(obj_player)

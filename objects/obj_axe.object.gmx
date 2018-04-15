@@ -177,7 +177,7 @@ else
 
 move_snap(1,1)
 
-image_angle-=30*sign(hsp+vsp)
+image_angle+=25
 </string>
           </argument>
         </arguments>

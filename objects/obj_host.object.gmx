@@ -441,9 +441,10 @@ if room=rm_main
     prompt_timer=0 
     pause_x=0
     login_fail=0
+    logged_in_prompt=0
     
     // Other
-    global.selected_profile='Anonymous'
+    global.selected_profile='anonymous'
     
     global.kill_count=0
     global.death_count=0
@@ -664,7 +665,7 @@ if room=rm_title
             }
             
             // Error Checking
-            if string_length(create_name)&gt;10+string_count('\#',create_name)
+            if string_length(create_name)&gt;10
             {
                 name_oversized=true
                 name_error=120
@@ -680,7 +681,7 @@ if room=rm_title
                 name_taken=false
             }
                         
-            if string_count('#',create_name)!=string_count('\#',create_name)
+            if string_count('#',create_name)&gt;0 or string_count('%',create_name)&gt;0
             {
                 name_error=120
                 name_invalid=true
@@ -840,9 +841,10 @@ if room=rm_title
             draw_text(300,75,'- Options -')
             
             draw_config(fnt_title,c_white,fa_middle,fa_middle)
-            draw_text(300,300,'SFX : ')
-            draw_text(300,375,'MUSIC : ')
-            draw_text(300,450,'Overlay: ')
+            draw_text(300,225,'SFX : ')
+            draw_text(300,300,'MUSIC : ')
+            draw_text(300,375,'Overlay: ')
+            draw_text(300,450,'Keybindings')
             draw_text(300,525,'Back')
             
             draw_config(fnt_title_big,c_white,fa_left,fa_middle)
@@ -860,7 +862,7 @@ if room=rm_title
             
             // User Input
             select=clamp(select,0,4)
-            draw_select(300,300+select*75,195,45,2)
+            draw_select(300,225+select*75,195,45,2)
             
             if select=0
             {
@@ -889,12 +891,14 @@ if room=rm_title
                 if select=4
                 {
                     gui_state=s.title
+                    select=0
                 }
             }
             
             if keyboard_check_pressed(vk_escape)
             {
                 gui_state=s.title
+                select=0
             }                    
         }break
     }   
@@ -953,7 +957,7 @@ if room=rm_main
             draw_area(5+pause_x,489,195+pause_x,525,c_ltgray,c_black,3)
             draw_config(fnt_pause,c_black,fa_middle,fa_middle)
             
-            if global.selected_profile='Anonymous'
+            if global.selected_profile='anonymous'
             {
                 draw_text_transformed(100+pause_x,508,'No Profile Selected',0.75,1,0)
             }
@@ -1041,7 +1045,7 @@ if room=rm_main
             draw_area(5,489,195,525,c_ltgray,c_black,3)
             draw_config(fnt_pause,c_black,fa_middle,fa_middle)
             
-            if global.selected_profile='Anonymous'
+            if global.selected_profile='anonymous'
             {
                 draw_text_transformed(100+pause_x,508,'No Profile Selected',0.75,1,0)
             }
@@ -1135,7 +1139,7 @@ if room=rm_main
             draw_area(5,489,195,525,c_ltgray,c_black,3)
             draw_config(fnt_pause,c_black,fa_middle,fa_middle)
             
-            if global.selected_profile='Anonymous'
+            if global.selected_profile='anonymous'
             {
                 draw_text_transformed(100+pause_x,508,'No Profile Selected',0.75,1,0)
             }
@@ -1248,7 +1252,7 @@ if room=rm_main
             draw_area(5,489,195,525,c_ltgray,c_black,3)
             draw_config(fnt_pause,c_black,fa_middle,fa_middle)
             
-            if global.selected_profile='Anonymous'
+            if global.selected_profile='anonymous'
             {
                 draw_text_transformed(100+pause_x,508,'No Profile Selected',0.75,1,0)
             }
@@ -1358,7 +1362,7 @@ if room=rm_main
     
             for (i=0;i!=profile_count;i++)
             {         
-                if global.profiles[#3,i]!=0    
+                if global.profiles[#1,i]!=undefined    
                 {
                     if i=0
                     {
@@ -1606,7 +1610,14 @@ if room=rm_main
         
         case s.profile:
         {
-            select=clamp(select,0,global.profiles[#3,user])
+            if global.profiles[#1,user]!=undefined
+            {
+                select=clamp(select,0,global.profiles[#3,user])
+            }
+            else
+            {
+                select=clamp(select,0,0)
+            }
     
             // Configuring scrolling
             if -50*(select-2)&lt;=0 and global.profiles[#3,user]&gt;3
@@ -1633,60 +1644,62 @@ if room=rm_main
             // Bot area
             draw_area(1,450,598,598,6581117,c_black,1)     // Kalamata
             
-            if global.profiles[#3,user]=0
+            if global.profiles[#1,user]=undefined
             {
                 draw_config(fnt_profile_small,c_black,fa_middle,fa_middle)
                 draw_text(300,520,"(And also here)")
             }
-                                    
-            // Precalculations for graph
-            lo=global.profiles[#10,user]
-            hi=global.profiles[#10,user]
-            
-            // Run log
-            for (i=0;i!=global.profiles[#3,user]*6;i+=6)
-            {
-                // Run
-                draw_area(2,450+i/6*50+y_view_cur,598,500+i/6*50+y_view_cur,10595785,c_black,2)     // Kalamata White
+            else
+            {                        
+                // Precalculations for graph
+                lo=global.profiles[#10,user]
+                hi=global.profiles[#10,user]
                 
-                // Number
-                draw_area(6,454+i/6*50+y_view_cur,50,496+i/6*50+y_view_cur,10595785,c_black,2)      // Kalamata White
-                draw_config(fnt_profile_small,c_black,fa_middle,fa_middle)
-                draw_text(28,475+i/6*50+y_view_cur,i/6+1)
-                
-                // Time
-                draw_config(fnt_profile_small,c_black,fa_left,fa_middle)
-                draw_text(60,475+i/6*50+y_view_cur,format_time(global.profiles[#i+4,user],false))
-                
-                // Time (surplus)
-                if i&gt;0
+                // Run log
+                for (i=0;i!=global.profiles[#3,user]*6;i+=6)
                 {
-                    draw_config(fnt_profile_tiny,4142654,fa_left,fa_middle)                         // Kalamata
-                    draw_text(160,475+i/6*50+y_view_cur,format_time(global.profiles[#i+4,user]-global.profiles[#(i-6)+4,user],true))
+                    // Run
+                    draw_area(2,450+i/6*50+y_view_cur,598,500+i/6*50+y_view_cur,10595785,c_black,2)     // Kalamata White
+                    
+                    // Number
+                    draw_area(6,454+i/6*50+y_view_cur,50,496+i/6*50+y_view_cur,10595785,c_black,2)      // Kalamata White
+                    draw_config(fnt_profile_small,c_black,fa_middle,fa_middle)
+                    draw_text(28,475+i/6*50+y_view_cur,i/6+1)
+                    
+                    // Time
+                    draw_config(fnt_profile_small,c_black,fa_left,fa_middle)
+                    draw_text(60,475+i/6*50+y_view_cur,format_time(global.profiles[#i+4,user],false))
+                    
+                    // Time (surplus)
+                    if i&gt;0
+                    {
+                        draw_config(fnt_profile_tiny,4142654,fa_left,fa_middle)                         // Kalamata
+                        draw_text(160,475+i/6*50+y_view_cur,format_time(global.profiles[#i+4,user]-global.profiles[#(i-6)+4,user],true))
+                    }
+                    
+                    // Time (date)
+                    draw_config(fnt_profile_small,c_black,fa_right,fa_middle)
+                    draw_text(535,475+i/6*50+y_view_cur,format_datetime(global.profiles[#i+5,user]))
+                    
+                    // Delete Button
+                    draw_area(550,454+i/6*50+y_view_cur,594,496+i/6*50+y_view_cur,4142654,c_black,2)    // Kalamata
+                    draw_config(fnt_profile_small,c_white,fa_middle,fa_middle)
+                    draw_text(573,475+i/6*50+y_view_cur,'del')
+                    
+                    if global.profiles[#i+4,user]&lt;lo
+                    {
+                        lo=global.profiles[#i+4,user]
+                    }
+                    
+                    if global.profiles[#i+4,user]&gt;hi
+                    {
+                        hi=global.profiles[#i+4,user]
+                    }                
                 }
-                
-                // Time (date)
-                draw_config(fnt_profile_small,c_black,fa_right,fa_middle)
-                draw_text(535,475+i/6*50+y_view_cur,format_datetime(global.profiles[#i+5,user]))
-                
-                // Delete Button
-                draw_area(550,454+i/6*50+y_view_cur,594,496+i/6*50+y_view_cur,4142654,c_black,2)    // Kalamata
-                draw_config(fnt_profile_small,c_white,fa_middle,fa_middle)
-                draw_text(573,475+i/6*50+y_view_cur,'del')
-                
-                if global.profiles[#i+4,user]&lt;lo
-                {
-                    lo=global.profiles[#i+4,user]
-                }
-                
-                if global.profiles[#i+4,user]&gt;hi
-                {
-                    hi=global.profiles[#i+4,user]
-                }                
             }
             
             // Rank            
-            if global.profiles[#3,user]!=0
+            if global.profiles[#1,user]!=undefined
             {
                 if user=0
                 {
@@ -1734,75 +1747,78 @@ if room=rm_main
             // Mid area
             draw_area(1,150,598,449,13426922,c_black,2) // Limestone White            
             
-            if global.profiles[#3,user]=0
+            if global.profiles[#1,user]=undefined
             {
                 draw_config(fnt_profile,4142654,fa_middle,fa_middle)    // Kalamata
                 draw_text(300,300,"Your data will#appear here after#completing runs")
             }
             
-            if entry_select=undefined
-            {     
-                // Graph
-                draw_graph(lo,hi) 
-            }
-            else
+            if global.profiles[#1,user]!=undefined
             {
-                // Final Runtime
-                draw_config(fnt_entry_big,c_black,fa_middle,fa_middle)
-                draw_text(300,185,format_time(global.profiles[#(entry_select-1)*6+4,user],false))
-                draw_config(fnt_entry_tiny,c_black,fa_middle,fa_middle)
-                draw_text(300,225,'Final Runtime')
-                
-                // Surplus (world record)
-                draw_config(fnt_entry_small,4995380,fa_middle,fa_middle)    // Grayish
-                draw_text(150,254,format_time(global.best_time,false))
-                draw_config(fnt_entry_tiny,4079406,fa_middle,fa_middle)     // Murky Turquoise
-                draw_text(150,274,'World Record')
-                
-                if global.profiles[#(entry_select-1)*6+4,user]-global.best_time&gt;0
-                {
-                    draw_config(fnt_entry_small,3018673,fa_middle,fa_middle)    // Crimson
-                    draw_text(450,254,format_time(global.profiles[#(entry_select-1)*6+4,user]-global.best_time,true))
+                if entry_select=undefined
+                {     
+                    // Graph
+                    draw_graph(lo,hi) 
                 }
                 else
                 {
-                    draw_config(fnt_entry_small,2852688,fa_middle,fa_middle)    // Radioactive
-                    draw_text(450,254,format_time(global.profiles[#(entry_select-1)*6+4,user]-global.best_time,true))
+                    // Final Runtime
+                    draw_config(fnt_entry_big,c_black,fa_middle,fa_middle)
+                    draw_text(300,185,format_time(global.profiles[#(entry_select-1)*6+4,user],false))
+                    draw_config(fnt_entry_tiny,c_black,fa_middle,fa_middle)
+                    draw_text(300,225,'Final Runtime')
+                    
+                    // Surplus (world record)
+                    draw_config(fnt_entry_small,4995380,fa_middle,fa_middle)    // Grayish
+                    draw_text(150,254,format_time(global.best_time,false))
+                    draw_config(fnt_entry_tiny,4079406,fa_middle,fa_middle)     // Murky Turquoise
+                    draw_text(150,274,'World Record')
+                    
+                    if global.profiles[#(entry_select-1)*6+4,user]-global.best_time&gt;0
+                    {
+                        draw_config(fnt_entry_small,3018673,fa_middle,fa_middle)    // Crimson
+                        draw_text(450,254,format_time(global.profiles[#(entry_select-1)*6+4,user]-global.best_time,true))
+                    }
+                    else
+                    {
+                        draw_config(fnt_entry_small,2852688,fa_middle,fa_middle)    // Radioactive
+                        draw_text(450,254,format_time(global.profiles[#(entry_select-1)*6+4,user]-global.best_time,true))
+                    }
+                    
+                    // Surplus (personal record)
+                    draw_config(fnt_entry_small,4995380,fa_middle,fa_middle)    // Grayish
+                    draw_text(150,311,format_time(global.profiles[#1,user],false))
+                    draw_config(fnt_entry_tiny,4079406,fa_middle,fa_middle)     // Murky Turquoise
+                    draw_text(150,331,'Personal Record')
+                    
+                    if global.profiles[#(entry_select-1)*6+4,user]-global.profiles[#1,user]&gt;0
+                    {
+                        draw_config(fnt_entry_small,3018673,fa_middle,fa_middle)    // Crimson
+                        draw_text(450,311,format_time(global.profiles[#(entry_select-1)*6+4,user]-global.profiles[#1,user],true))
+                    }
+                    else
+                    {
+                        draw_config(fnt_entry_small,2852688,fa_middle,fa_middle)    // Radioactive
+                        draw_text(450,311,format_time(global.profiles[#(entry_select-1)*6+4,user]-global.profiles[#1,user],true))
+                    }
+                
+                    // Stats
+                    draw_config(fnt_entry,4995380,fa_middle,fa_middle)          // Grayish
+                    draw_text(90,375,global.profiles[#(entry_select-1)*6+6,user])
+                    draw_text(230,375,global.profiles[#(entry_select-1)*6+7,user])
+                    draw_text(370,375,global.profiles[#(entry_select-1)*6+8,user])
+                    draw_text(510,375,global.profiles[#(entry_select-1)*6+9,user])
+                    
+                    draw_config(fnt_entry_tiny,4079406,fa_middle,fa_middle)    // Murky Turquoise
+                    draw_text(90,405,'Kills')
+                    draw_text(230,405,'Deaths')
+                    draw_text(370,405,'Jumps')
+                    draw_text(510,405,'Dashes')    
+                    
+                    // Prompt
+                    draw_config(fnt_entry_tiny,c_black,fa_middle,fa_middle)
+                    draw_text(300,430,'ESC to go back')            
                 }
-                
-                // Surplus (personal record)
-                draw_config(fnt_entry_small,4995380,fa_middle,fa_middle)    // Grayish
-                draw_text(150,311,format_time(global.profiles[#1,user],false))
-                draw_config(fnt_entry_tiny,4079406,fa_middle,fa_middle)     // Murky Turquoise
-                draw_text(150,331,'Personal Record')
-                
-                if global.profiles[#(entry_select-1)*6+4,user]-global.profiles[#1,user]&gt;0
-                {
-                    draw_config(fnt_entry_small,3018673,fa_middle,fa_middle)    // Crimson
-                    draw_text(450,311,format_time(global.profiles[#(entry_select-1)*6+4,user]-global.profiles[#1,user],true))
-                }
-                else
-                {
-                    draw_config(fnt_entry_small,2852688,fa_middle,fa_middle)    // Radioactive
-                    draw_text(450,311,format_time(global.profiles[#(entry_select-1)*6+4,user]-global.profiles[#1,user],true))
-                }
-            
-                // Stats
-                draw_config(fnt_entry,4995380,fa_middle,fa_middle)          // Grayish
-                draw_text(90,375,global.profiles[#(entry_select-1)*6+6,user])
-                draw_text(230,375,global.profiles[#(entry_select-1)*6+7,user])
-                draw_text(370,375,global.profiles[#(entry_select-1)*6+8,user])
-                draw_text(510,375,global.profiles[#(entry_select-1)*6+9,user])
-                
-                draw_config(fnt_entry_tiny,4079406,fa_middle,fa_middle)    // Murky Turquoise
-                draw_text(90,405,'Kills')
-                draw_text(230,405,'Deaths')
-                draw_text(370,405,'Jumps')
-                draw_text(510,405,'Dashes')    
-                
-                // Prompt
-                draw_config(fnt_entry_tiny,c_black,fa_middle,fa_middle)
-                draw_text(300,430,'ESC to go back')            
             }
             
             // Login Banner
@@ -1813,17 +1829,25 @@ if room=rm_main
             {
                 draw_text(339,38,"Profile Login")
             }
+            else if logged_in_prompt&gt;0
+            {
+                draw_set_alpha(logged_in_prompt/50)
+                draw_text(339,34,"Logged In!")
+                draw_set_alpha(1)
+            }
             else
             {
-                draw_text(339,39,"Logged In!")
+                draw_config(fnt_profile,c_black,fa_middle,fa_middle)            
+                draw_text(339,34,"Select to Log Out")
             }
             
             // Username
             draw_area(1,76,598,149,8626336,c_black,1)    // Limestone
             draw_config(fnt_profile_big,4142654,fa_middle,fa_middle) // Kalamata
+            
             draw_text_transformed(150,113,global.profiles[#0,user],0.9,0.9,0)
-                        
-            if global.profiles[#3,user]!=0
+                       
+            if global.profiles[#1,user]!=undefined
             {            
                 // Best Time
                 draw_config(fnt_profile,c_black,fa_middle,fa_middle)
@@ -1861,9 +1885,16 @@ if room=rm_main
             {
                 if select=0
                 {
-                    gui_state=s.login
-                    keyboard_string=''
-                    mix=0.2                    
+                    if global.selected_profile=global.profiles[#0,user]
+                    {
+                        global.selected_profile='anonymous'
+                    }
+                    else
+                    {
+                        gui_state=s.login
+                        keyboard_string=''
+                        mix=0.2 
+                    }                   
                 }
                 else
                 {
@@ -1917,6 +1948,7 @@ if room=rm_main
                 draw_text(300,420,"Login attempt failed")
                 draw_set_alpha(1)
             }
+            
             if keyboard_string=""
             {
                 draw_cursor(300,330,4,28,cursor_blink)
@@ -1945,7 +1977,12 @@ if room=rm_main
             
             if keyboard_check_pressed(vk_enter)
             {
-                login_user=global.profiles[#0,user]                
+                /******  REMOVE  ******/
+                global.selected_profile=global.profiles[#0,user]
+                gui_state=s.profile    
+                logged_in_prompt=120        
+                /******  REMOVE  ******/
+                
                 send_payload("login",global.profiles[#0,user],keyboard_string)
             }
 
@@ -1954,8 +1991,12 @@ if room=rm_main
                 if global.login_pass[? global.profiles[#0,user]]=true
                 {
                     global.selected_profile=global.profiles[#0,user]
-                    set_bindings()
-                    gui_state=s.profile
+                    
+                    user=get_user_from_name(global.selected_profile)
+                    login_bindings()
+                    
+                    logged_in_prompt=120
+                    gui_state=s.profile                    
                 }
                 
                 if global.login_pass[? global.profiles[#0,user]]=false
@@ -2060,53 +2101,15 @@ if room=rm_main
                               
                 if keyboard_key and keyboard_key!=vk_enter
                 {
-                    user=get_user_from_name(global.selected_profile)
-                    
                     if keyboard_key!=vk_escape and keyboard_key!=vk_backspace and !binding_taken()
                     {
-                        if user!="Anonymous"
-                        {
-                            global.profiles[#4+(global.profiles[#3,user]+1)*6+binding_select,user]=keyboard_key
-                            set_bindings()
+                        update_bindings()
+                        
+                        if global.selected_profile!="anonymous"
+                        {                            
                             send_payload("push_bind",global.selected_profile,global.k[? 'up'],global.k[? 'down'],global.k[? 'left'],global.k[? 'right'],global.k[? 'jump'],global.k[? 'throw'],global.k[? 'dash'])
                         }
-                        else
-                        {
-                            if binding_select=0
-                            {
-                                global.k[? 'up']=keyboard_key
-                            }
-
-                            if binding_select=1
-                            {
-                                global.k[? 'down']=keyboard_key
-                            }
-
-                            if binding_select=2
-                            {
-                                global.k[? 'left']=keyboard_key
-                            }
-
-                            if binding_select=3
-                            {
-                                global.k[? 'right']=keyboard_key
-                            }
-
-                            if binding_select=4
-                            {
-                                global.k[? 'jump']=keyboard_key
-                            }
-
-                            if binding_select=5
-                            {
-                                global.k[? 'throw']=keyboard_key
-                            }
-
-                            if binding_select=6
-                            {
-                                global.k[? 'dash']=keyboard_key
-                            }
-                        }
+                        
                         binding_select=undefined
                     }
                     else if binding_taken()
@@ -2292,7 +2295,7 @@ if room=rm_end
 // User Input
 if keyboard_check(global.k[? 'up'])
 {
-    if hold_up=0 or (hold_up&gt;15 and hold_up mod 5=0)
+    if hold_up=0 or (hold_up&gt;15 and hold_up mod 3=0)
     {
         select-=1
     }
@@ -2305,7 +2308,7 @@ else
 
 if keyboard_check(global.k[? 'down'])
 {
-    if hold_dn=0 or (hold_dn&gt;15 and hold_dn mod 5=0)
+    if hold_dn=0 or (hold_dn&gt;15 and hold_dn mod 3=0)
     {
         select+=1
     }
@@ -2391,6 +2394,11 @@ if room=rm_main
     if login_fail!=0
     {
         login_fail-=0.02
+    }
+    
+    if logged_in_prompt&gt;0
+    {
+        logged_in_prompt-=1
     }
 }
 </string>

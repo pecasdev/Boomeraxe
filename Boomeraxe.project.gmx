@@ -8,7 +8,6 @@
   <sprites name="sprites">
     <sprites name="live">
       <sprites name="player">
-        <sprite>sprites\spr_player_attack</sprite>
         <sprite>sprites\spr_player_dash</sprite>
         <sprite>sprites\spr_player_down</sprite>
         <sprite>sprites\spr_player_fall</sprite>
@@ -93,6 +92,8 @@
       <script>scripts\calculate_rank.gml</script>
       <script>scripts\draw_key.gml</script>
       <script>scripts\binding_taken.gml</script>
+      <script>scripts\create_arc.gml</script>
+      <script>scripts\follow_arc.gml</script>
     </scripts>
     <scripts name="else">
       <script>scripts\create_particles.gml</script>
@@ -104,7 +105,8 @@
       <script>scripts\read_data.gml</script>
       <script>scripts\download_data.gml</script>
       <script>scripts\process_buffer.gml</script>
-      <script>scripts\set_bindings.gml</script>
+      <script>scripts\update_bindings.gml</script>
+      <script>scripts\login_bindings.gml</script>
       <script>scripts\string_key.gml</script>
       <script>scripts\get_user_from_name.gml</script>
       <script>scripts\draw_cursor.gml</script>

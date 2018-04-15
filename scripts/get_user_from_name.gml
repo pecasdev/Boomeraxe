@@ -1,6 +1,6 @@
-if argument0="Anonymous"
+if argument0="anonymous"
 {
-    return "Anonymous"
+    return "anonymous"
 }
 
 for (i=0;i!=ds_list_size(global.profiles);i+=1)

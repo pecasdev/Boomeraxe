@@ -26,12 +26,9 @@
           <argument>
             <kind>1</kind>
             <string>/// Initialize
-
 target=undefined
 
-idle_timer=12
-drift_timer=0
-
+idle_timer=20
 </string>
           </argument>
         </arguments>
@@ -74,20 +71,24 @@ if target=undefined
         target=instance_nearest(x,y,obj_savepoint)
     }
     
-    repeat(25)
+    instance_destroy(obj_player_death_animation)
+    repeat(30)
     {
         p=instance_create(x,y,obj_player_death_animation)
         p.direction=random(360)
-        p.speed=random_range(1,8)
+        p.speed=random_range(2,10)
         p.dest_x=target.x
         p.dest_y=target.y
-        p.scale=random_range(1.5,3)
+        p.scale=random_range(0.5,3.5)
         p.colour=merge_colour(choose(c_maroon,c_navy),c_white,random_range(0,0.2))
     }
-    
+    obj_camera.screen_shake=choose(irandom_range(5,100),irandom_range(-100,-5))
+    init_distance=point_distance(x,y,target.x+10,target.y+10)
+        
     create_particles(x,y,'death_end')
-
 }
+
+curr_distance=point_distance(x,y,target.x+10,target.y+10)
 
 if point_distance(x,y,target.x+10,target.y+10)&lt;10
 {
@@ -111,21 +112,12 @@ if point_distance(x,y,target.x+10,target.y+10)&lt;10
 
 if idle_timer=0
 {
-    if point_distance(x,y,target.x+10,target.y+10)&gt;100 and drift_timer&lt;20
-    {
-        motion_add(point_direction(x,y,target.x+10,target.y+10),point_distance(x,y,target.x+10,target.y+10)/400)
-    }
-    else
-    {
-        motion_set(point_direction(x,y,target.x+10,target.y+10),point_distance(x,y,target.x+10,target.y+10)/8)
-    }
+    motion_set(point_direction(x,y,target.x+10,target.y+10),point_distance(x,y,target.x+10,target.y+10)/8)
 }
 else
 {
     idle_timer-=1
 }
-
-drift_timer+=1
 
 speed=clamp(speed,0,40)
 create_particles(x,y,'death')
