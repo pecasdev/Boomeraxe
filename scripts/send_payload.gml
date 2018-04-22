@@ -1,6 +1,6 @@
 // (create)     - user,pass,up,down,left,right,jump,throw,dash
 // (login)      - user,pass
-// (pull)       - user
+// (pull)       - user,version
 // (push_run)   - user,game_time,date,kill_count,death_count,jump_count,dash_count
 // (push_bind)  - user,up,down,left,right,jump,throw,dash
 

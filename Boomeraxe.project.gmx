@@ -112,6 +112,7 @@
       <script>scripts\draw_cursor.gml</script>
       <script>scripts\create_ring.gml</script>
       <script>scripts\send_payload.gml</script>
+      <script>scripts\write_leaderboard.gml</script>
     </scripts>
   </scripts>
   <fonts name="fonts">

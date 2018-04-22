@@ -22,16 +22,16 @@ enum s
     options_video   ,
     options_audio   ,
     entry           ,
-    run_over        ,
     profile_create  ,
     login           ,
-    pull            ,
-    push_run        ,
-    push_bind       ,
+    run_over        ,
     up              ,
     down            ,
     left            ,
     right           ,
+    downloading     ,
+    download_wait   ,
+    reading         ,
 }
 
 global.k=ds_map_create()

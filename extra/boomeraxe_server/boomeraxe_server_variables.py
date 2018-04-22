@@ -12,3 +12,5 @@ udp_ip='192.168.0.200'   # WIFI
 udp_port=9000
 s.bind((udp_ip,udp_port))
 
+# OTHER
+leaderboard_version=time.time()
