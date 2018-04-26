@@ -8,23 +8,31 @@ print "Boomeraxe server online!"
 
 while True:
     data,client=client_recieve()
-    print data
     msg_id=data[0]
-
+    print data
     if msg_id=='pull':
 	print log('pull',client[0],data[1],data[2])
 	
         # READ boomeraxe.ini AND SEND TO CLIENT LINE BY LINE
-        if data[2]!=ini_read('meta','version'):
+        tag=0
+        if int(data[2])!=int(float(ini_read('meta','version'))):
             with open('boomeraxe.ini','r') as f:
                 lines=f.readlines()
-                for i in range(len(lines)):
-                    client_send(['pull',i,lines[i]],client)
-
-        client_send(['pull','done'],client)
+                                
+                while lines:
+                    payload=[]
+                    for i in range(10):
+                        try:
+                            payload+=[tag,lines.pop(0)]
+                            tag+=1
+                        except:
+                            break
+                    client_send(['pull']+payload,client)
+                    
+        client_send(['pull','done',tag],client)
                 
     if msg_id=='push_run':
-	log('push_run',client[0],data[1],data[2])
+	print log('push_run',client[0],data[1],data[2])
 
         # APPEND NEW RUN TO boomeraxe.ini
         name=data[1]
@@ -37,19 +45,22 @@ while True:
         ini_write(name,new_run+'4',data[6],False)
         ini_write(name,new_run+'5',data[7],False)
 
-        if ini_read(name,'best_time')>data[2]:
+        if int(float(ini_read(name,'best_time')))>int(data[2]) or int(float(ini_read(data[1],'run_count')))==0:
             ini_write(name,'best_time',data[2],False)
             ini_write(name,'best_date',data[3],False)
 
+        if int(float(ini_read('meta','best')))>int(data[2]):
             ini_write('meta','best',data[2],False)
 
         ini_write(name,'run_count',str(int(new_run)+1),False)
-            
+        
         with open('boomeraxe.ini','w') as f:
             config.write(f)
+        
+        client_send(['reciept','push_run'],client)
     
     if msg_id=='push_bind':
-        log('push_bind',client[0],data[1])
+        print log('push_bind',client[0],data[1])
 
         #UPDATE boomeraxe.ini WITH NEW BINDINGS
         name=data[1]
@@ -65,16 +76,18 @@ while True:
         with open('boomeraxe.ini','w') as f:
             config.write(f)
 
+        client_send(['reciept','push_bind'],client)
+        
     if msg_id=='login':
         name=data[1]
         
         if hashlib.sha256(data[2]).hexdigest()==ini_read(name,'pass'):
-            log('login_pass',client[0],name,data[2])
-            client_send(['login','pass'],client)
+            print log('login_pass',client[0],name,data[2])
+            client_send(['login','pass',name],client)
 
         else:
-            log('login_fail',client[0],name,data[2])
-            client_send(['login','fail'],client)
+            print log('login_fail',client[0],name,data[2])
+            client_send(['login','fail',name],client)
         
     if msg_id=='create':
         if not config.has_section(data[1]):
@@ -99,11 +112,11 @@ while True:
             with open('boomeraxe.ini','w') as f:
                 config.write(f)
             
-            log('create_pass',client[0],data[1],data[2])
+            print log('create_pass',client[0],data[1],data[2])
             client_send(['create','pass'],client)
             
         else:
-            log('create_fail',client[0],data[1],data[2])
+            print log('create_fail',client[0],data[1],data[2])
             client_send(['create','fail'],client)
 
 

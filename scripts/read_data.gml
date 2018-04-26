@@ -2,8 +2,8 @@ if file_exists('boomeraxe.ini')
 {
     ini_open('boomeraxe.ini')
     
-    global.best_time=ini_read_real('meta','best',2000)
-    profile_count=ini_read_real('meta','profile_count',1)
+    global.best_time=ini_read_real('meta','best',-1)
+    profile_count=ini_read_real('meta','profile_count',-1)
     
     global.leaderboard_version=ini_read_real('meta','version',0)
     
@@ -15,11 +15,7 @@ if file_exists('boomeraxe.ini')
     for (i=0;i!=profile_count;i++)
     {
         name=ini_read_string('meta',string(i),'')
-        show_debug_message(name)
-        if ini_read_real(name,'run_count',-1)=-1
-        {
-            show_debug_message(name+' - '+string(ini_read_real(name,'run_count',-1)))
-        }
+
         if ini_read_real(name,'run_count',0)!=0
         {    
             global.profiles[#0,i-a]=name
@@ -59,9 +55,7 @@ if file_exists('boomeraxe.ini')
             ds_list_add(new_profiles,ini_read_real(name,'throw',ord('X')))
             ds_list_add(new_profiles,ini_read_real(name,'dash',vk_shift))
             a+=1
-            show_debug_message(string(i)+' - SKIPPED')
-        }   
-        show_debug_message('gay')       
+        }         
     }
     
     ds_grid_resize(global.profiles,ds_grid_width(global.profiles),profile_count-a)
@@ -71,7 +65,6 @@ if file_exists('boomeraxe.ini')
     for (i=0;i!=ds_list_size(new_profiles);i+=9)
     {
         z=profile_count-a+i/9
-        show_debug_message(z)
         global.profiles[#0,z]=new_profiles[| i+0]
         global.profiles[#1,z]=new_profiles[| i+1]
         global.profiles[#2,z]=new_profiles[| i+2]
@@ -82,13 +75,7 @@ if file_exists('boomeraxe.ini')
         global.profiles[#7,z]=new_profiles[| i+7]
         global.profiles[#8,z]=new_profiles[| i+8]       
     }
-    
-    for (i=0;i!=profile_count;i+=1)
-    {
-        show_debug_message(string(i)+' - '+global.profiles[#0,i])
-        if i>10{break}
-    }
-    
+        
     ini_close()
 }
 

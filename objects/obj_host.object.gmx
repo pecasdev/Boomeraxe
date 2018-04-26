@@ -102,8 +102,11 @@ if room=rm_main
         paused=true
         if global.selected_profile!='Anonymous'
         {
-            send_payload('push_run',global.selected_profile,global.game_time,date_second_span(global.unix_start,date_current_datetime()),global.kill_count,global.death_count,global.jump_count,global.dash_count)
+            send_payload('push_run',global.selected_profile,global.game_time,int64(date_second_span(global.unix_start,date_current_datetime())),global.kill_count,global.death_count,global.jump_count,global.dash_count)
             room=rm_end
+            global.push_run_timer=240
+            global.push_run_reciept=false
+            global.push_run_attempt=0
         }
         else
         {
@@ -257,15 +260,19 @@ if async_load[? 'type']=network_type_data
 {
     buffer=async_load[? 'buffer']
     packet_id=buffer_read(buffer,buffer_string)
+    
     if packet_id='login'
     {
-        if buffer_read(buffer,buffer_string)='pass'
+        pass=buffer_read(buffer,buffer_string)
+        name=buffer_read(buffer,buffer_string)
+
+        if pass='pass'
         {
-            global.login_pass[? login_user]=true
+            global.login_pass[? name]=true
         }
         else
         {
-            global.login_pass[? login_user]=false
+            global.login_pass[? name]=false
         }
         
         login_update=true
@@ -274,18 +281,58 @@ if async_load[? 'type']=network_type_data
     if packet_id='pull'
     {
         check=buffer_read(buffer,buffer_string)
+        buffer_seek(buffer,buffer_seek_start,0)
+        show_debug_message(buffer_read(buffer,buffer_string))
         
+        show_debug_message('check: '+string(check))
         if check='done'
         {
-            write_leaderboard()
-            leaderboard_state=s.reading
+            buffer_read(buffer,buffer_string)
+            complete_size=int64(buffer_read(buffer,buffer_string))
         }
         else
         {
-            pos=check
-            lin=buffer_read(buffer,buffer_string)
-            
-            data_stack[? pos]=lin
+            repeat(10)
+            {
+                if buffer_tell(buffer)!=buffer_get_size(buffer)
+                {
+                   pos=buffer_read(buffer,buffer_string)
+                   //show_debug_message(pos)
+                   lin=buffer_read(buffer,buffer_string)
+                   
+                   data_stack[? pos]=lin
+                   //show_debug_message('packet recieved :  '+pos+' &gt;&gt; '+lin+'  '+string(buffer_tell(buffer))+"/"+string(buffer_get_size(buffer)))
+                }
+                else
+                {
+                    break
+                }
+            }
+        }
+        
+        if complete_size=ds_map_size(data_stack)
+        {   
+            if complete_size!=0
+            {         
+                write_leaderboard()
+            }
+            leaderboard_state=s.reading
+        }
+
+    }
+    
+    if packet_id='reciept'
+    {
+        type=buffer_read(buffer,buffer_string)
+        
+        if type='push_run'
+        {
+            global.push_run_reciept=true
+        }
+        
+        if type='push_bind'
+        {
+            global.push_bind_reciept=true
         }
     }
 }
@@ -409,6 +456,7 @@ if room=rm_main
     room_width=4000
     room_height=2000    
     
+    read_data()
     create_level()
     create_spike_and_enemy()
     
@@ -473,13 +521,14 @@ if room=rm_main
     
     login_update=0
     
-    leaderboard_state=s.idle    
+    leaderboard_state=s.idle 
+    complete_size=0   
 }
 
 if room=rm_end
 {
     selected_profile=ds_grid_value_y(global.profiles,0,0,0,ds_grid_height(global.profiles),global.selected_profile)
-    
+    show_debug_message(selected_profile)
     new_profiles=ds_grid_create(ds_grid_width(global.profiles),ds_grid_height(global.profiles))
     ds_grid_copy(new_profiles,global.profiles)
 }
@@ -621,7 +670,7 @@ if room=rm_title
                         
             if name_invalid
             {
-                draw_text(300,190,"add \ in front of \##to properly format it")
+                draw_text(300,190,"name contains illegal characters")
             }
             else if name_oversized
             {
@@ -677,7 +726,7 @@ if room=rm_title
                 name_taken=false
             }
                         
-            if string_count('#',create_name)&gt;0 or string_count('%',create_name)&gt;0
+            if string_count('#',create_name)&gt;0 or string_count('%',create_name)&gt;0 or string_count('[',create_name)&gt;0 or string_count(']',create_name)&gt;0
             {
                 name_error=120
                 name_invalid=true
@@ -1641,7 +1690,7 @@ if room=rm_main
                 // Background
                 draw_area(0,0,599,599,c_white,c_black,1)
                 draw_config(fnt_profiles_big,c_black,fa_middle,fa_middle)
-                draw_text(300,200,'nope')
+                draw_text(300,200,'Leaderboard data not found##Downloading from server...')
                 draw_text(300,400,'busting nut in#'+string(timeout))
             }
 
@@ -2017,12 +2066,6 @@ if room=rm_main
             
             if keyboard_check_pressed(vk_enter)
             {
-                /******  REMOVE  ******/
-                global.selected_profile=global.profiles[#0,user]
-                gui_state=s.profile    
-                logged_in_prompt=120        
-                /******  REMOVE  ******/
-                
                 send_payload("login",global.profiles[#0,user],keyboard_string)
             }
 
@@ -2181,7 +2224,8 @@ if room=rm_main
             {
                 gui_state=s.options
                 select=0
-            }                        
+            }
+                                  
         }break        
     }
 }   
@@ -2202,8 +2246,31 @@ if room=rm_end
     draw_area(0,0,599,64,10401985,c_black,2)                    // Light Mocha
     
     // Title
-    draw_config(fnt_end_medium,4995380,fa_middle,fa_middle)     // Grayish
-    draw_text(300,32,'Run Completed!')
+    draw_config(fnt_end_small,4995380,fa_middle,fa_middle)     // Grayish
+    if global.push_run_reciept=false
+    {
+        if global.push_run_attempt=0
+        {
+            draw_text(300,32,'Waiting for server confirmation...')
+        }
+        else
+        {
+            draw_text(300,32,'confirmation failed, retrying ('+string(global.push_run_attempt)+')')
+        }
+        
+        global.push_run_timer-=1
+    }
+    else
+    {
+        draw_text(300,32,'Run saved to server!')
+    }
+    
+    if global.push_run_timer=0
+    {
+        global.push_run_attempt+=1
+        global.push_run_timer=240
+        send_payload('push_run',global.selected_profile,global.game_time,int64(date_second_span(global.unix_start,date_current_datetime())),global.kill_count,global.death_count,global.jump_count,global.dash_count)
+    }
     
     // Runtime
     draw_config(fnt_end_big,c_black,fa_middle,fa_middle)
@@ -2230,21 +2297,37 @@ if room=rm_end
         
     // Personal Record
     draw_config(fnt_end_medium,4995380,fa_middle,fa_middle)     // Grayish
-    draw_text(150,280,format_time(global.profiles[#1,selected_profile],false))
-    draw_config(fnt_end_tiny,4079406,fa_middle,fa_middle)       // Murky Turquoise
-    draw_text(150,310,'Personal Record')
-
-    if global.game_time-global.profiles[#1,selected_profile]&gt;0
+    
+    if global.profiles[#1,selected_profile]=undefined
     {
-        draw_config(fnt_end_small,3018673,fa_middle,fa_middle)  // Crimson
-        draw_text(450,280,format_time(global.game_time-global.profiles[#1,selected_profile],true))
+        draw_text(150,280,"N/A")
     }
     else
     {
-        draw_config(fnt_end_small,2852688,fa_middle,fa_middle)  // Radioactive
-        draw_text(450,280,format_time(global.game_time-global.profiles[#1,selected_profile],true))    
-    }        
+        draw_text(150,280,format_time(global.profiles[#1,selected_profile],false))
+    }
     
+    draw_config(fnt_end_tiny,4079406,fa_middle,fa_middle)       // Murky Turquoise
+    draw_text(150,310,'Personal Record')
+
+    if global.profiles[#1,selected_profile]=undefined
+    {
+        draw_config(fnt_end_small,2852688,fa_middle,fa_middle)  // Radioactive
+        draw_text(450,280,format_time(0-global.game_time,true))
+    }
+    else
+    {
+        if global.game_time-global.profiles[#1,selected_profile]&gt;0
+        {
+            draw_config(fnt_end_small,3018673,fa_middle,fa_middle)  // Crimson
+            draw_text(450,280,format_time(global.game_time-global.profiles[#1,selected_profile],true))
+        }
+        else
+        {
+            draw_config(fnt_end_small,2852688,fa_middle,fa_middle)  // Radioactive
+            draw_text(450,280,format_time(global.game_time-global.profiles[#1,selected_profile],true))    
+        }        
+    }
     // Rank
     
     new_rank=clamp(calculate_rank(),1,selected_profile+1)
