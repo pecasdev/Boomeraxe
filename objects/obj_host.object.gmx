@@ -148,90 +148,43 @@ if room=rm_main
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>/// Networking
+            <string>/// Server Ping
 
-if keyboard_check_pressed(vk_space)
+if global.ping_retry&gt;=global.ping_timer
 {
-    http_get_file("sftp://pi@192.168.0.200/home/pi/Desktop/Boomeraxe/boomeraxe.ini",'C:/Users/peter/Desktop')
+    if global.server_connection=true
+    {
+        global.ping_timer=10*room_speed
+    }
+    else
+    {
+        global.ping_timer=3*room_speed
+    }
+    
+    global.ping_retry=0
+    
+    if global.fail_retries&gt;0
+    {
+        global.fail_retries-=1
+    }
+    
+    send_payload('ping',global.selected_profile)
 }
-/*
-
-if room=rm_main
+else if global.fail_retries&gt;0
 {
-    switch(network_state)
-    {
-        default:
-        {
-            payload=buffer_create(1,buffer_grow,1)
-            
-            // Timezone setting for sending to server
-            date_set_timezone(timezone_utc)
-        }break
-    }
+    global.ping_retry+=1
+}
+else
+{
+    global.server_connection=false
+}
     
-    switch(network_state)
-    {        
-        case(s.create):
-        {
-            buffer_write(payload,buffer_string,'user')
-            buffer_write(payload,buffer_string,'pass')
-            buffer_write(payload,buffer_string,global.k[? 'up']+'#')
-            buffer_write(payload,buffer_string,global.k[? 'down']+'#')
-            buffer_write(payload,buffer_string,global.k[? 'left']+'#')
-            buffer_write(payload,buffer_string,global.k[? 'right']+'#')
-            buffer_write(payload,buffer_string,global.k[? 'jump']+'#')
-            buffer_write(payload,buffer_string,global.k[? 'throw']+'#')
-            buffer_write(payload,buffer_string,global.k[? 'dash']+'#')
-        }break
-        
-        case(s.login):
-        {
-            buffer_write(payload,buffer_string,'LOGIN#')
-            buffer_write(payload,buffer_string,'pecas#')
-            buffer_write(payload,buffer_string,get_string('Password',''))
-        }break
-        
-        case(s.pull):
-        {
-            buffer_write(payload,buffer_string,'PULL#')
-            buffer_write(payload,buffer_string,global.selected_profile+'#')
-        }break
-        
-        case(s.push_run):
-        {
-            buffer_write(payload,buffer_string,'PUSH_RUN#')
-            buffer_write(payload,buffer_string,global.selected_profile+'#')
-            buffer_write(payload,buffer_string,global.game_time+'#')
-            buffer_write(payload,buffer_string,'date#')
-            buffer_write(payload,buffer_string,global.kill_count)
-            buffer_write(payload,buffer_string,global.death_count)
-            buffer_write(payload,buffer_string,global.jump_count)
-            buffer_write(payload,buffer_string,global.dash_count)
-        }break
-        
-        case(s.push_bind):
-        {
-            buffer_write(payload,buffer_string,'PUSH_BIND#')
-            buffer_write(payload,buffer_string,global.selected_profile+'#')
-            buffer_write(payload,buffer_string,global.k[? 'up']+'#')
-            buffer_write(payload,buffer_string,global.k[? 'down']+'#')
-            buffer_write(payload,buffer_string,global.k[? 'left']+'#')
-            buffer_write(payload,buffer_string,global.k[? 'right']+'#')
-            buffer_write(payload,buffer_string,global.k[? 'jump']+'#')
-            buffer_write(payload,buffer_string,global.k[? 'throw']+'#')
-            buffer_write(payload,buffer_string,global.k[? 'dash']+'#')
-        }break
-    }
-    
-    switch(network_state)
-    {
-        default:
-        {       
-            network_send_udp_raw(global.udp_socket,"192.168.0.200",9000,payload,buffer_tell(payload))        
-            network_state=s.idle
-            buffer_delete(payload)
-        }break
-    }
+if keyboard_check_pressed(ord('R'))
+{
+    global.server_connection=undefined
+    global.fail_retries=2
+    global.ping_timer=3*room_speed
+    global.ping_retry=0
 }
 </string>
           </argument>
@@ -258,6 +211,9 @@ if room=rm_main
             <string>/// Receive and Process Buffer
 if async_load[? 'type']=network_type_data
 {
+    show_debug_message('contact')
+    timeout=50
+    
     buffer=async_load[? 'buffer']
     packet_id=buffer_read(buffer,buffer_string)
     
@@ -281,18 +237,18 @@ if async_load[? 'type']=network_type_data
     if packet_id='pull'
     {
         check=buffer_read(buffer,buffer_string)
-        buffer_seek(buffer,buffer_seek_start,0)
-        show_debug_message(buffer_read(buffer,buffer_string))
+        buffer_seek(buffer,buffer_seek_start,0)    
         
-        show_debug_message('check: '+string(check))
         if check='done'
         {
+            buffer_read(buffer,buffer_string)
             buffer_read(buffer,buffer_string)
             complete_size=int64(buffer_read(buffer,buffer_string))
         }
         else
         {
-            repeat(10)
+            buffer_read(buffer,buffer_string)
+            repeat(200)
             {
                 if buffer_tell(buffer)!=buffer_get_size(buffer)
                 {
@@ -309,7 +265,7 @@ if async_load[? 'type']=network_type_data
                 }
             }
         }
-        
+        show_debug_message(string(ds_map_size(data_stack))+'/'+string(complete_size))
         if complete_size=ds_map_size(data_stack)
         {   
             if complete_size!=0
@@ -317,8 +273,8 @@ if async_load[? 'type']=network_type_data
                 write_leaderboard()
             }
             leaderboard_state=s.reading
+            show_debug_message('complete size reached')
         }
-
     }
     
     if packet_id='reciept'
@@ -334,6 +290,19 @@ if async_load[? 'type']=network_type_data
         {
             global.push_bind_reciept=true
         }
+        
+        if type='create'
+        {
+            global.create_reciept=true
+        }
+    }
+    
+    if packet_id='ping'
+    {
+        global.server_connection=true
+        global.ping_retry=0
+        global.fail_retries=2
+        global.ping_timer=30*room_speed
     }
 }
 </string>
@@ -425,13 +394,21 @@ if room=rm_title
     global.bg_enabled=true
     global.bg_value=4
     global.bg_alpha=5.5
-    
+
     // Time
     global.unix_start=date_create_datetime(1970,1,1,0,0,0)
     
     // Other
-    global.udp_socket=network_create_socket(network_socket_udp) 
-    exit_confirm=false
+    global.udp_socket=network_create_socket(network_socket_udp)
+    global.public_udp_ip='99.237.192.34'
+    global.private_udp_ip='192.168.0.200'
+    /*global.ip=global.public_udp_ip*/global.ip=global.private_udp_ip
+    global.udp_port=9000 
+    global.server_connection=undefined
+    global.ping_retry=0
+    global.fail_timer=0
+    global.fail_retries=2
+    global.ping_timer=0
     
     // Animations
     name_oversized=false
@@ -443,9 +420,11 @@ if room=rm_title
     pass_error=0
     c_create_name=c_white
     c_create_pass=c_white
+    exit_confirm=false
     
     global.login_pass=ds_map_create()
     global.leaderboard_version=0
+    global.selected_profile='anonymous'    
 }
 
 if room=rm_main
@@ -512,7 +491,6 @@ if room=rm_main
     
     // Other
     global.profiles=undefined
-    global.selected_profile='anonymous'
     
     global.kill_count=0
     global.death_count=0
@@ -522,7 +500,7 @@ if room=rm_main
     login_update=0
     
     leaderboard_state=s.idle 
-    complete_size=0   
+    complete_size=0  
 }
 
 if room=rm_end
@@ -532,7 +510,7 @@ if room=rm_end
     new_profiles=ds_grid_create(ds_grid_width(global.profiles),ds_grid_height(global.profiles))
     ds_grid_copy(new_profiles,global.profiles)
 }
-
+show_debug_message('A')
 // Global
 select=0
 prev_select=0
@@ -649,7 +627,21 @@ if room=rm_title
                         exit_confirm=true
                     }
                 }
-            }                    
+            } 
+            
+            if keyboard_check_pressed(vk_home)
+            {
+                if global.ip=global.public_udp_ip
+                {
+                    global.ip=global.private_udp_ip
+                    show_message("private ip enabled##hit the home key to disable#this if you aren't Pecas#cause it won't work")
+                }          
+                else
+                {
+                    global.ip=global.public_udp_ip
+                    show_message("public ip enabled")
+                }
+            }                   
         }break
         
         case s.profile_create:
@@ -726,7 +718,7 @@ if room=rm_title
                 name_taken=false
             }
                         
-            if string_count('#',create_name)&gt;0 or string_count('%',create_name)&gt;0 or string_count('[',create_name)&gt;0 or string_count(']',create_name)&gt;0
+            if string_count('#',create_name)&gt;0 or string_count('%',create_name)&gt;0 or string_count('[',create_name)&gt;0 or string_count(']',create_name)&gt;0 or !ascii_only(create_name)
             {
                 name_error=120
                 name_invalid=true
@@ -863,7 +855,7 @@ if room=rm_title
                 {
                     if !name_taken and !name_invalid and !name_oversized and !pass_mismatch
                     {
-                        send_payload('create',create_name,create_pass0,global.k[? 'up'],global.k[? 'down'],global.k[? 'left'],global.k[? 'right'],global.k[? 'jump'],global.k[? 'throw'],global.k[? 'dash'])
+                        send_payload('create',string_lower(create_name),create_pass0,global.k[? 'up'],global.k[? 'down'],global.k[? 'left'],global.k[? 'right'],global.k[? 'jump'],global.k[? 'throw'],global.k[? 'dash'])
                     }
                 }
                 
@@ -1380,6 +1372,7 @@ if room=rm_main
             {
                 case s.downloading:
                 {
+                    global.profiles=undefined
                     download_data()
                     
                 }break
@@ -1393,7 +1386,7 @@ if room=rm_main
                     }
                     else
                     {
-                        timeout-=0.2
+                        timeout-=1
                     }
                     
                 }break
@@ -1687,11 +1680,28 @@ if room=rm_main
             }
             else
             {
+                download_overlay=25
+            }
+            
+            if download_overlay&gt;0
+            {
                 // Background
+                draw_set_alpha(download_overlay/25)
                 draw_area(0,0,599,599,c_white,c_black,1)
-                draw_config(fnt_profiles_big,c_black,fa_middle,fa_middle)
-                draw_text(300,200,'Leaderboard data not found##Downloading from server...')
-                draw_text(300,400,'busting nut in#'+string(timeout))
+                draw_config(fnt_profiles_medium,c_black,fa_middle,fa_middle)
+                draw_text(300,200,'Retrieving leaderboard#from server...#(this might take a while)')
+                
+                if timeout=0
+                {
+                    draw_config(fnt_profiles,c_black,fa_middle,fa_middle)
+                    draw_text(300,400,'Could not connect to server#Loading cached leaderboard...')
+                }                
+                else if global.profiles!=undefined
+                {
+                    draw_text(300,400,'Success! Loading leaderboard...')
+                }
+                
+                download_overlay-=1
             }
 
         }break
@@ -1767,13 +1777,8 @@ if room=rm_main
                     
                     // Time (date)
                     draw_config(fnt_profile_small,c_black,fa_right,fa_middle)
-                    draw_text(535,475+i/6*50+y_view_cur,format_datetime(global.profiles[#i+5,user]))
-                    
-                    // Delete Button
-                    draw_area(550,454+i/6*50+y_view_cur,594,496+i/6*50+y_view_cur,4142654,c_black,2)    // Kalamata
-                    draw_config(fnt_profile_small,c_white,fa_middle,fa_middle)
-                    draw_text(573,475+i/6*50+y_view_cur,'del')
-                    
+                    draw_text(575,475+i/6*50+y_view_cur,format_datetime(global.profiles[#i+5,user]))
+                                        
                     if global.profiles[#i+4,user]&lt;lo
                     {
                         lo=global.profiles[#i+4,user]
@@ -2000,7 +2005,6 @@ if room=rm_main
                     select=0
                     y_view_cur=0
                     y_view_tar=0
-                    leaderboard_state=s.downloading
                 }
                 else
                 {
