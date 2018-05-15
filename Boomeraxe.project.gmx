@@ -183,6 +183,7 @@
         <object>objects\obj_particle</object>
         <object>objects\obj_player_death</object>
         <object>objects\obj_player_death_animation</object>
+        <object>objects\obj_player_teleport</object>
       </objects>
     </objects>
     <objects name="invisible">

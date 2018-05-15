@@ -100,7 +100,7 @@ if room=rm_main
     if run_over
     {
         paused=true
-        if global.selected_profile!='Anonymous'
+        if global.selected_profile!='anonymous'
         {
             send_payload('push_run',global.selected_profile,global.game_time,int64(date_second_span(global.unix_start,date_current_datetime())),global.kill_count,global.death_count,global.jump_count,global.dash_count)
             room=rm_end
@@ -402,7 +402,7 @@ if room=rm_title
     global.udp_socket=network_create_socket(network_socket_udp)
     global.public_udp_ip='99.237.192.34'
     global.private_udp_ip='192.168.0.200'
-    /*global.ip=global.public_udp_ip*/global.ip=global.private_udp_ip
+    global.ip=global.public_udp_ip //global.ip=global.private_udp_ip
     global.udp_port=9000 
     global.server_connection=undefined
     global.ping_retry=0

@@ -214,7 +214,8 @@ if sp!=noone and sp.state=s.close
         with(obj_player)
         {
             instance_destroy()
-            instance_create(x,y,obj_player_death)
+            teleport=instance_create(x,y,obj_player_teleport)
+            teleport.target=other.sp
         } 
     }
 }
@@ -238,8 +239,8 @@ if tp!=noone
             with(obj_player)
             {
                 instance_destroy()
-                instance_create(x,y,obj_player_death)
-                obj_player_death.target=other.tp        
+                teleport=instance_create(x,y,obj_player_teleport)
+                teleport.target=other.tp     
             }        
         }
     }

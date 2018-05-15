@@ -189,3 +189,31 @@ if type=='death_end'
         p.scale=random_range(1,3)
     }
 }
+
+if type=='teleport_savepoint'
+{
+    repeat(5)
+    {
+        p=instance_create(x_spawn,y_spawn,obj_particle)
+        p.direction=random_range(0,360)
+        p.speed=random_range(0.5,1.5)
+        p.gravity=random_range(0.04,0.1)
+        p.colour=c_lime
+        p.life=irandom_range(10,40)
+        p.scale=random_range(1,3)
+    }
+}
+
+if type=='teleport_telepoint'
+{
+    repeat(5)
+    {
+        p=instance_create(x_spawn,y_spawn,obj_particle)
+        p.direction=random_range(0,360)
+        p.speed=random_range(0.5,1.5)
+        p.gravity=random_range(0.04,0.1)
+        p.colour=c_aqua
+        p.life=irandom_range(10,40)
+        p.scale=random_range(1,3)
+    }
+}

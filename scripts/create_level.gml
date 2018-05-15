@@ -4279,7 +4279,7 @@ block=instance_create(1540,420,obj_wall)
 //(1560,420,empty)
 //(1580,420,empty)
 //(1600,420,empty)
-//(1620,420,empty)
+block=instance_create(1620,420,obj_savepoint)
 block=instance_create(1640,420,obj_wall)
 //(1660,420,empty)
 //(1680,420,empty)
@@ -4479,7 +4479,7 @@ block=instance_create(1540,440,obj_wall)
 //(1560,440,empty)
 //(1580,440,empty)
 //(1600,440,empty)
-block=instance_create(1620,440,obj_savepoint)
+block=instance_create(1620,440,obj_wall)
 block=instance_create(1640,440,obj_wall)
 //(1660,440,empty)
 //(1680,440,empty)
@@ -7830,14 +7830,14 @@ block=instance_create(260,780,obj_spike); block.variant=9
 //(580,780,empty)
 //(600,780,empty)
 //(620,780,empty)
-//(640,780,empty)
+block=instance_create(640,780,obj_savepoint)
 //(660,780,empty)
 //(680,780,empty)
 //(700,780,empty)
 //(720,780,empty)
 //(740,780,empty)
 //(760,780,empty)
-block=instance_create(780,780,obj_savepoint)
+//(780,780,empty)
 //(800,780,empty)
 //(820,780,empty)
 //(840,780,empty)
@@ -8029,8 +8029,8 @@ block=instance_create(260,800,obj_spike); block.variant=9
 //(560,800,empty)
 //(580,800,empty)
 //(600,800,empty)
-block=instance_create(620,800,obj_wall_crumble)
-block=instance_create(640,800,obj_wall_crumble)
+block=instance_create(620,800,obj_wall)
+block=instance_create(640,800,obj_wall)
 //(660,800,empty)
 //(680,800,empty)
 //(700,800,empty)
@@ -8312,7 +8312,7 @@ block=instance_create(2040,820,obj_spike); block.variant=6
 //(2220,820,empty)
 //(2240,820,empty)
 //(2260,820,empty)
-block=instance_create(2280,820,obj_spike); block.variant=4
+block=instance_create(2280,820,obj_spike); block.variant=6
 //(2300,820,empty)
 //(2320,820,empty)
 //(2340,820,empty)
@@ -8347,7 +8347,7 @@ block=instance_create(2900,820,obj_spike); block.variant=0
 block=instance_create(2920,820,obj_spike); block.variant=0
 block=instance_create(2940,820,obj_spike); block.variant=0
 block=instance_create(2960,820,obj_spike); block.variant=0
-block=instance_create(2980,820,obj_spike); block.variant=8
+block=instance_create(2980,820,obj_spike); block.variant=9
 //(3000,820,empty)
 //(3020,820,empty)
 //(3040,820,empty)
@@ -8512,7 +8512,7 @@ block=instance_create(2040,840,obj_spike); block.variant=6
 //(2220,840,empty)
 //(2240,840,empty)
 //(2260,840,empty)
-block=instance_create(2280,840,obj_spike); block.variant=4
+block=instance_create(2280,840,obj_spike); block.variant=6
 //(2300,840,empty)
 //(2320,840,empty)
 //(2340,840,empty)
@@ -8712,7 +8712,7 @@ block=instance_create(2160,860,obj_spike); block.variant=1
 //(2220,860,empty)
 //(2240,860,empty)
 //(2260,860,empty)
-block=instance_create(2280,860,obj_spike); block.variant=4
+block=instance_create(2280,860,obj_spike); block.variant=6
 //(2300,860,empty)
 //(2320,860,empty)
 //(2340,860,empty)
@@ -8912,7 +8912,7 @@ block=instance_create(2160,880,obj_spike); block.variant=4
 //(2220,880,empty)
 //(2240,880,empty)
 //(2260,880,empty)
-block=instance_create(2280,880,obj_spike); block.variant=4
+block=instance_create(2280,880,obj_spike); block.variant=6
 //(2300,880,empty)
 //(2320,880,empty)
 //(2340,880,empty)
@@ -9112,7 +9112,7 @@ block=instance_create(2160,900,obj_spike); block.variant=4
 //(2220,900,empty)
 //(2240,900,empty)
 //(2260,900,empty)
-block=instance_create(2280,900,obj_spike); block.variant=4
+block=instance_create(2280,900,obj_spike); block.variant=6
 //(2300,900,empty)
 //(2320,900,empty)
 //(2340,900,empty)
@@ -9155,7 +9155,7 @@ block=instance_create(3060,900,obj_spike); block.variant=2
 block=instance_create(3080,900,obj_spike); block.variant=2
 block=instance_create(3100,900,obj_spike); block.variant=2
 block=instance_create(3120,900,obj_spike); block.variant=2
-block=instance_create(3140,900,obj_spike); block.variant=9
+block=instance_create(3140,900,obj_spike); block.variant=8
 //(3160,900,empty)
 //(3180,900,empty)
 //(3200,900,empty)
@@ -9312,7 +9312,7 @@ block=instance_create(2160,920,obj_spike); block.variant=4
 //(2220,920,empty)
 //(2240,920,empty)
 //(2260,920,empty)
-block=instance_create(2280,920,obj_spike); block.variant=4
+block=instance_create(2280,920,obj_spike); block.variant=6
 //(2300,920,empty)
 //(2320,920,empty)
 //(2340,920,empty)
@@ -9512,7 +9512,7 @@ block=instance_create(2160,940,obj_spike); block.variant=4
 //(2220,940,empty)
 //(2240,940,empty)
 //(2260,940,empty)
-block=instance_create(2280,940,obj_spike); block.variant=4
+block=instance_create(2280,940,obj_spike); block.variant=6
 //(2300,940,empty)
 //(2320,940,empty)
 //(2340,940,empty)
@@ -9712,7 +9712,7 @@ block=instance_create(2160,960,obj_spike); block.variant=5
 //(2220,960,empty)
 //(2240,960,empty)
 //(2260,960,empty)
-block=instance_create(2280,960,obj_spike); block.variant=4
+block=instance_create(2280,960,obj_spike); block.variant=6
 //(2300,960,empty)
 //(2320,960,empty)
 //(2340,960,empty)
@@ -9912,7 +9912,7 @@ block=instance_create(2040,980,obj_spike); block.variant=6
 //(2220,980,empty)
 //(2240,980,empty)
 //(2260,980,empty)
-block=instance_create(2280,980,obj_spike); block.variant=4
+block=instance_create(2280,980,obj_spike); block.variant=6
 //(2300,980,empty)
 //(2320,980,empty)
 //(2340,980,empty)
@@ -10112,7 +10112,7 @@ block=instance_create(2040,1000,obj_spike); block.variant=6
 //(2220,1000,empty)
 //(2240,1000,empty)
 //(2260,1000,empty)
-block=instance_create(2280,1000,obj_spike); block.variant=4
+block=instance_create(2280,1000,obj_spike); block.variant=6
 block=instance_create(2300,1000,obj_spike); block.variant=0
 block=instance_create(2320,1000,obj_spike); block.variant=3
 //(2340,1000,empty)
@@ -10312,7 +10312,7 @@ block=instance_create(2040,1020,obj_spike); block.variant=6
 //(2220,1020,empty)
 //(2240,1020,empty)
 //(2260,1020,empty)
-block=instance_create(2280,1020,obj_spike); block.variant=4
+block=instance_create(2280,1020,obj_spike); block.variant=6
 //(2300,1020,empty)
 //(2320,1020,empty)
 //(2340,1020,empty)
@@ -10512,7 +10512,7 @@ block=instance_create(2040,1040,obj_spike); block.variant=6
 //(2220,1040,empty)
 //(2240,1040,empty)
 //(2260,1040,empty)
-block=instance_create(2280,1040,obj_spike); block.variant=4
+block=instance_create(2280,1040,obj_spike); block.variant=6
 //(2300,1040,empty)
 //(2320,1040,empty)
 //(2340,1040,empty)
@@ -10712,7 +10712,7 @@ block=instance_create(2160,1060,obj_spike); block.variant=3
 //(2220,1060,empty)
 //(2240,1060,empty)
 //(2260,1060,empty)
-block=instance_create(2280,1060,obj_spike); block.variant=4
+block=instance_create(2280,1060,obj_spike); block.variant=6
 //(2300,1060,empty)
 //(2320,1060,empty)
 //(2340,1060,empty)
@@ -10912,7 +10912,7 @@ block=instance_create(2160,1080,obj_spike); block.variant=9
 //(2220,1080,empty)
 //(2240,1080,empty)
 //(2260,1080,empty)
-block=instance_create(2280,1080,obj_spike); block.variant=4
+block=instance_create(2280,1080,obj_spike); block.variant=6
 //(2300,1080,empty)
 //(2320,1080,empty)
 block=instance_create(2340,1080,obj_telepoint)
@@ -11112,7 +11112,7 @@ block=instance_create(2160,1100,obj_spike); block.variant=9
 //(2220,1100,empty)
 //(2240,1100,empty)
 //(2260,1100,empty)
-block=instance_create(2280,1100,obj_spike); block.variant=4
+block=instance_create(2280,1100,obj_spike); block.variant=6
 //(2300,1100,empty)
 //(2320,1100,empty)
 //(2340,1100,empty)
@@ -11312,7 +11312,7 @@ block=instance_create(2160,1120,obj_spike); block.variant=9
 //(2220,1120,empty)
 //(2240,1120,empty)
 //(2260,1120,empty)
-block=instance_create(2280,1120,obj_spike); block.variant=4
+block=instance_create(2280,1120,obj_spike); block.variant=6
 //(2300,1120,empty)
 //(2320,1120,empty)
 //(2340,1120,empty)
@@ -11512,7 +11512,7 @@ block=instance_create(2160,1140,obj_spike); block.variant=9
 //(2220,1140,empty)
 //(2240,1140,empty)
 //(2260,1140,empty)
-block=instance_create(2280,1140,obj_spike); block.variant=4
+block=instance_create(2280,1140,obj_spike); block.variant=6
 //(2300,1140,empty)
 //(2320,1140,empty)
 //(2340,1140,empty)
@@ -11712,7 +11712,7 @@ block=instance_create(2160,1160,obj_spike); block.variant=8
 //(2220,1160,empty)
 //(2240,1160,empty)
 //(2260,1160,empty)
-block=instance_create(2280,1160,obj_spike); block.variant=4
+block=instance_create(2280,1160,obj_spike); block.variant=6
 //(2300,1160,empty)
 //(2320,1160,empty)
 //(2340,1160,empty)
@@ -11912,7 +11912,7 @@ block=instance_create(2040,1180,obj_spike); block.variant=6
 //(2220,1180,empty)
 //(2240,1180,empty)
 //(2260,1180,empty)
-block=instance_create(2280,1180,obj_spike); block.variant=4
+block=instance_create(2280,1180,obj_spike); block.variant=6
 //(2300,1180,empty)
 //(2320,1180,empty)
 //(2340,1180,empty)
@@ -12112,7 +12112,7 @@ block=instance_create(2040,1200,obj_spike); block.variant=6
 //(2220,1200,empty)
 //(2240,1200,empty)
 //(2260,1200,empty)
-block=instance_create(2280,1200,obj_spike); block.variant=4
+block=instance_create(2280,1200,obj_spike); block.variant=6
 block=instance_create(2300,1200,obj_spike); block.variant=0
 block=instance_create(2320,1200,obj_spike); block.variant=0
 block=instance_create(2340,1200,obj_spike); block.variant=0
@@ -12312,7 +12312,7 @@ block=instance_create(2040,1220,obj_spike); block.variant=6
 //(2220,1220,empty)
 //(2240,1220,empty)
 //(2260,1220,empty)
-block=instance_create(2280,1220,obj_spike); block.variant=4
+block=instance_create(2280,1220,obj_spike); block.variant=6
 //(2300,1220,empty)
 //(2320,1220,empty)
 //(2340,1220,empty)
@@ -12512,7 +12512,7 @@ block=instance_create(2040,1240,obj_spike); block.variant=6
 //(2220,1240,empty)
 //(2240,1240,empty)
 //(2260,1240,empty)
-block=instance_create(2280,1240,obj_spike); block.variant=4
+block=instance_create(2280,1240,obj_spike); block.variant=6
 //(2300,1240,empty)
 //(2320,1240,empty)
 //(2340,1240,empty)
@@ -12712,7 +12712,7 @@ block=instance_create(2160,1260,obj_spike); block.variant=1
 //(2220,1260,empty)
 //(2240,1260,empty)
 //(2260,1260,empty)
-block=instance_create(2280,1260,obj_spike); block.variant=4
+block=instance_create(2280,1260,obj_spike); block.variant=6
 //(2300,1260,empty)
 //(2320,1260,empty)
 //(2340,1260,empty)
@@ -12912,7 +12912,7 @@ block=instance_create(2160,1280,obj_spike); block.variant=4
 //(2220,1280,empty)
 //(2240,1280,empty)
 //(2260,1280,empty)
-block=instance_create(2280,1280,obj_spike); block.variant=4
+block=instance_create(2280,1280,obj_spike); block.variant=6
 //(2300,1280,empty)
 //(2320,1280,empty)
 //(2340,1280,empty)
@@ -13112,7 +13112,7 @@ block=instance_create(2160,1300,obj_spike); block.variant=4
 //(2220,1300,empty)
 //(2240,1300,empty)
 //(2260,1300,empty)
-block=instance_create(2280,1300,obj_spike); block.variant=4
+block=instance_create(2280,1300,obj_spike); block.variant=6
 //(2300,1300,empty)
 //(2320,1300,empty)
 //(2340,1300,empty)
@@ -13312,7 +13312,7 @@ block=instance_create(2160,1320,obj_spike); block.variant=4
 //(2220,1320,empty)
 //(2240,1320,empty)
 //(2260,1320,empty)
-block=instance_create(2280,1320,obj_spike); block.variant=4
+block=instance_create(2280,1320,obj_spike); block.variant=6
 //(2300,1320,empty)
 //(2320,1320,empty)
 //(2340,1320,empty)
@@ -13512,7 +13512,7 @@ block=instance_create(2160,1340,obj_spike); block.variant=4
 //(2220,1340,empty)
 //(2240,1340,empty)
 //(2260,1340,empty)
-block=instance_create(2280,1340,obj_spike); block.variant=4
+block=instance_create(2280,1340,obj_spike); block.variant=6
 //(2300,1340,empty)
 //(2320,1340,empty)
 //(2340,1340,empty)
@@ -13712,7 +13712,7 @@ block=instance_create(2160,1360,obj_spike); block.variant=5
 //(2220,1360,empty)
 //(2240,1360,empty)
 //(2260,1360,empty)
-block=instance_create(2280,1360,obj_spike); block.variant=4
+block=instance_create(2280,1360,obj_spike); block.variant=6
 //(2300,1360,empty)
 //(2320,1360,empty)
 //(2340,1360,empty)
@@ -13912,7 +13912,7 @@ block=instance_create(2040,1380,obj_spike); block.variant=6
 //(2220,1380,empty)
 //(2240,1380,empty)
 //(2260,1380,empty)
-block=instance_create(2280,1380,obj_spike); block.variant=4
+block=instance_create(2280,1380,obj_spike); block.variant=6
 //(2300,1380,empty)
 //(2320,1380,empty)
 //(2340,1380,empty)
@@ -14312,7 +14312,7 @@ block=instance_create(2040,1420,obj_spike); block.variant=6
 //(2220,1420,empty)
 //(2240,1420,empty)
 //(2260,1420,empty)
-block=instance_create(2280,1420,obj_spike); block.variant=4
+block=instance_create(2280,1420,obj_spike); block.variant=6
 //(2300,1420,empty)
 //(2320,1420,empty)
 //(2340,1420,empty)
@@ -14512,7 +14512,7 @@ block=instance_create(2040,1440,obj_spike); block.variant=6
 //(2220,1440,empty)
 //(2240,1440,empty)
 //(2260,1440,empty)
-block=instance_create(2280,1440,obj_spike); block.variant=4
+block=instance_create(2280,1440,obj_spike); block.variant=6
 //(2300,1440,empty)
 //(2320,1440,empty)
 //(2340,1440,empty)
@@ -14712,7 +14712,7 @@ block=instance_create(2160,1460,obj_spike); block.variant=3
 //(2220,1460,empty)
 //(2240,1460,empty)
 //(2260,1460,empty)
-block=instance_create(2280,1460,obj_spike); block.variant=4
+block=instance_create(2280,1460,obj_spike); block.variant=6
 //(2300,1460,empty)
 //(2320,1460,empty)
 //(2340,1460,empty)
@@ -14912,7 +14912,7 @@ block=instance_create(2160,1480,obj_spike); block.variant=9
 //(2220,1480,empty)
 //(2240,1480,empty)
 //(2260,1480,empty)
-block=instance_create(2280,1480,obj_spike); block.variant=4
+block=instance_create(2280,1480,obj_spike); block.variant=6
 //(2300,1480,empty)
 //(2320,1480,empty)
 block=instance_create(2340,1480,obj_telepoint)
@@ -15112,7 +15112,7 @@ block=instance_create(2160,1500,obj_spike); block.variant=9
 //(2220,1500,empty)
 //(2240,1500,empty)
 //(2260,1500,empty)
-block=instance_create(2280,1500,obj_spike); block.variant=4
+block=instance_create(2280,1500,obj_spike); block.variant=6
 //(2300,1500,empty)
 //(2320,1500,empty)
 //(2340,1500,empty)
@@ -15312,7 +15312,7 @@ block=instance_create(2160,1520,obj_spike); block.variant=9
 //(2220,1520,empty)
 //(2240,1520,empty)
 //(2260,1520,empty)
-block=instance_create(2280,1520,obj_spike); block.variant=4
+block=instance_create(2280,1520,obj_spike); block.variant=6
 //(2300,1520,empty)
 //(2320,1520,empty)
 //(2340,1520,empty)
@@ -15512,7 +15512,7 @@ block=instance_create(2160,1540,obj_spike); block.variant=9
 //(2220,1540,empty)
 //(2240,1540,empty)
 //(2260,1540,empty)
-block=instance_create(2280,1540,obj_spike); block.variant=4
+block=instance_create(2280,1540,obj_spike); block.variant=6
 //(2300,1540,empty)
 //(2320,1540,empty)
 //(2340,1540,empty)
@@ -15712,7 +15712,7 @@ block=instance_create(2160,1560,obj_spike); block.variant=8
 //(2220,1560,empty)
 //(2240,1560,empty)
 //(2260,1560,empty)
-block=instance_create(2280,1560,obj_spike); block.variant=4
+block=instance_create(2280,1560,obj_spike); block.variant=6
 //(2300,1560,empty)
 //(2320,1560,empty)
 //(2340,1560,empty)
@@ -15912,7 +15912,7 @@ block=instance_create(2040,1580,obj_spike); block.variant=6
 //(2220,1580,empty)
 //(2240,1580,empty)
 //(2260,1580,empty)
-block=instance_create(2280,1580,obj_spike); block.variant=4
+block=instance_create(2280,1580,obj_spike); block.variant=6
 //(2300,1580,empty)
 //(2320,1580,empty)
 //(2340,1580,empty)
@@ -16312,7 +16312,7 @@ block=instance_create(2040,1620,obj_spike); block.variant=6
 //(2220,1620,empty)
 //(2240,1620,empty)
 //(2260,1620,empty)
-block=instance_create(2280,1620,obj_spike); block.variant=4
+block=instance_create(2280,1620,obj_spike); block.variant=6
 //(2300,1620,empty)
 //(2320,1620,empty)
 //(2340,1620,empty)
@@ -16512,7 +16512,7 @@ block=instance_create(2040,1640,obj_spike); block.variant=6
 //(2220,1640,empty)
 //(2240,1640,empty)
 //(2260,1640,empty)
-block=instance_create(2280,1640,obj_spike); block.variant=4
+block=instance_create(2280,1640,obj_spike); block.variant=6
 //(2300,1640,empty)
 //(2320,1640,empty)
 //(2340,1640,empty)
@@ -16712,7 +16712,7 @@ block=instance_create(2160,1660,obj_spike); block.variant=1
 //(2220,1660,empty)
 //(2240,1660,empty)
 //(2260,1660,empty)
-block=instance_create(2280,1660,obj_spike); block.variant=4
+block=instance_create(2280,1660,obj_spike); block.variant=6
 //(2300,1660,empty)
 //(2320,1660,empty)
 //(2340,1660,empty)
@@ -16912,7 +16912,7 @@ block=instance_create(2160,1680,obj_spike); block.variant=4
 //(2220,1680,empty)
 //(2240,1680,empty)
 //(2260,1680,empty)
-block=instance_create(2280,1680,obj_spike); block.variant=4
+block=instance_create(2280,1680,obj_spike); block.variant=6
 //(2300,1680,empty)
 //(2320,1680,empty)
 //(2340,1680,empty)
@@ -17112,7 +17112,7 @@ block=instance_create(2160,1700,obj_spike); block.variant=4
 //(2220,1700,empty)
 //(2240,1700,empty)
 //(2260,1700,empty)
-block=instance_create(2280,1700,obj_spike); block.variant=4
+block=instance_create(2280,1700,obj_spike); block.variant=6
 //(2300,1700,empty)
 //(2320,1700,empty)
 //(2340,1700,empty)
@@ -17312,7 +17312,7 @@ block=instance_create(2160,1720,obj_spike); block.variant=4
 //(2220,1720,empty)
 //(2240,1720,empty)
 //(2260,1720,empty)
-block=instance_create(2280,1720,obj_spike); block.variant=4
+block=instance_create(2280,1720,obj_spike); block.variant=6
 //(2300,1720,empty)
 //(2320,1720,empty)
 //(2340,1720,empty)
@@ -17512,7 +17512,7 @@ block=instance_create(2160,1740,obj_spike); block.variant=4
 //(2220,1740,empty)
 //(2240,1740,empty)
 //(2260,1740,empty)
-block=instance_create(2280,1740,obj_spike); block.variant=4
+block=instance_create(2280,1740,obj_spike); block.variant=6
 //(2300,1740,empty)
 //(2320,1740,empty)
 //(2340,1740,empty)
@@ -17712,7 +17712,7 @@ block=instance_create(2160,1760,obj_spike); block.variant=5
 //(2220,1760,empty)
 //(2240,1760,empty)
 //(2260,1760,empty)
-block=instance_create(2280,1760,obj_spike); block.variant=4
+block=instance_create(2280,1760,obj_spike); block.variant=6
 //(2300,1760,empty)
 //(2320,1760,empty)
 //(2340,1760,empty)
@@ -17912,7 +17912,7 @@ block=instance_create(2040,1780,obj_spike); block.variant=6
 //(2220,1780,empty)
 //(2240,1780,empty)
 //(2260,1780,empty)
-block=instance_create(2280,1780,obj_spike); block.variant=4
+block=instance_create(2280,1780,obj_spike); block.variant=6
 block=instance_create(2300,1780,obj_spike); block.variant=0
 block=instance_create(2320,1780,obj_spike); block.variant=0
 block=instance_create(2340,1780,obj_spike); block.variant=0

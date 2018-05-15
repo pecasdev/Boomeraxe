@@ -25,14 +25,19 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>/// Initialize
-screen_shake=0
+            <string>init_lock=false
+spawn_lock=false
+
+init_x=x
+init_y=y
+
+alpha=1
 </string>
           </argument>
         </arguments>
       </action>
     </event>
-    <event eventtype="3" enumb="0">
+    <event eventtype="8" enumb="0">
       <action>
         <libid>1</libid>
         <id>603</id>
@@ -49,31 +54,79 @@ screen_shake=0
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>/// Player Tracking
-
-if instance_exists(obj_player)
+            <string>if init_lock=false
 {
-    x=obj_player.x
-    y=obj_player.y
+    target_x=target.x
+    target_y=target.y
+    target_object_index=target.object_index
+    size=floor(point_distance(x,y,target_x+10,target_y+5)/10)
+    distance=point_distance(x,y,target_x+10,target_y+5)/size
+    angle=point_direction(x,y,target_x+10,target_y+5)
+    
+    for(i=0;i!=size+1;i+=1)
+    {
+        if target.object_index=obj_savepoint
+        {
+            create_particles(x+lengthdir_x(distance*i,angle),y+lengthdir_y(distance*i,angle),'teleport_savepoint')
+        }
+        else
+        {
+            create_particles(x+lengthdir_x(distance*i,angle),y+lengthdir_y(distance*i,angle),'teleport_telepoint')
+        }        
+    }
+        
+    init_lock=true
 }
-else if instance_exists(obj_player_death)
+
+if x=target_x+10 and y=target_y+5
 {
-    x=obj_player_death.x
-    y=obj_player_death.y
+    if spawn_lock=false
+    {
+        instance_create(x,y,obj_player)
+        spawn_lock=true
+    }
+    
+    alpha-=0.1
+    
+    if alpha=0
+    {
+        instance_destroy()
+        
+        if instance_exists(target) and target.object_index=obj_telepoint
+        {
+            instance_destroy(target)
+        }
+    }
 }
-else if instance_exists(obj_player_teleport)
+else
 {
-    x=obj_player_teleport.x
-    y=obj_player_teleport.y
+    x+=(target_x+10-x)/2.5
+    y+=(target_y+5-y)/2.5
+    
+    if abs(target_x+10-x)&lt;5
+    {
+        x=target_x+10
+    }
+    if abs(target_y+5-y)&lt;5
+    {
+        y=target_y+5
+    }
+}  
+
+if target_object_index=obj_savepoint
+{
+    draw_set_colour(c_lime)
+}
+else
+{
+    draw_set_colour(c_aqua)
 }
 
-view_xview[0]=x-200+choose(screen_shake,-screen_shake)
-view_yview[0]=y-200+choose(screen_shake,-screen_shake)
+draw_set_alpha(alpha)
+draw_line_width(init_x,init_y,target_x+10,target_y+5,9)
+draw_set_alpha(1)
 
-screen_shake-=sign(screen_shake)
 
-x=clamp(x,200,room_width-200)
-y=clamp(y,200,room_height-200)
 </string>
           </argument>
         </arguments>
