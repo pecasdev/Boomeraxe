@@ -59,7 +59,7 @@ alpha=1
     target_x=target.x
     target_y=target.y
     target_object_index=target.object_index
-    size=floor(point_distance(x,y,target_x+10,target_y+5)/10)
+    size=floor(point_distance(x,y,target_x+10,target_y+5)/20)
     distance=point_distance(x,y,target_x+10,target_y+5)/size
     angle=point_direction(x,y,target_x+10,target_y+5)
     
@@ -123,7 +123,7 @@ else
 }
 
 draw_set_alpha(alpha)
-draw_line_width(init_x,init_y,target_x+10,target_y+5,9)
+draw_line_width(init_x,init_y,target_x+10,target_y+5,8)
 draw_set_alpha(1)
 
 

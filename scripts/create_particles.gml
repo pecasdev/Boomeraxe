@@ -2,6 +2,11 @@ x_spawn=argument0
 y_spawn=argument1
 type=argument2
 
+if !(x_spawn>view_xview[0] and x_spawn<view_xview[0]+view_wview[0] and y_spawn>view_yview[0] and y_spawn<view_yview[0]+view_hview[0])
+{
+    exit
+}
+
 if type=='dash'
 {
     repeat(3)
@@ -215,5 +220,32 @@ if type=='teleport_telepoint'
         p.colour=c_aqua
         p.life=irandom_range(10,40)
         p.scale=random_range(1,3)
+    }
+}
+
+if type=='dirtball'
+{
+    repeat(4)
+    {
+        p=instance_create(x_spawn,y_spawn,obj_particle)
+        p.direction=random(360)
+        p.speed=random_range(0,1)
+        p.gravity=0.05
+        p.colour=3959009    // Dirty Caramel
+        p.life=irandom_range(10,20)
+        p.scale=random_range(2,2.5)
+    }
+}
+
+if type=='dirtball_hit'
+{
+    repeat(10)
+    {
+        p=instance_create(x_spawn,y_spawn,obj_particle)
+        p.speed=random_range(0.3,1.2)
+        p.direction=random_range(0,360)
+        p.colour=3959009    // Dirty Caramel
+        p.life=irandom_range(10,40)
+        p.scale=random_range(2,3)
     }
 }
