@@ -79,7 +79,7 @@ if target=undefined
         p.speed=random_range(2,10)
         p.dest_x=target.x
         p.dest_y=target.y
-        p.scale=random_range(0.5,3.5)
+        p.scale=random_range(1.5,3.5)
         p.colour=merge_colour(choose(c_maroon,c_navy),c_white,random_range(0,0.2))
     }
     obj_camera.screen_shake=8

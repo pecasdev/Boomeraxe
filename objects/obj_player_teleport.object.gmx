@@ -59,7 +59,7 @@ alpha=1
     target_x=target.x
     target_y=target.y
     target_object_index=target.object_index
-    size=floor(point_distance(x,y,target_x+10,target_y+5)/20)
+    size=floor(point_distance(x,y,target_x+10,target_y+5)/15)
     distance=point_distance(x,y,target_x+10,target_y+5)/size
     angle=point_direction(x,y,target_x+10,target_y+5)
     
