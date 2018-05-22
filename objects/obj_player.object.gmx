@@ -136,8 +136,8 @@ k_left      =keyboard_check(global.k[? 'left'])
 k_right     =keyboard_check(global.k[? 'right'])
 k_up        =keyboard_check(global.k[? 'up'])
 k_down      =keyboard_check(global.k[? 'down'])
-k_attack    =keyboard_check_pressed(global.k[? 'throw'])
 k_jump      =keyboard_check_pressed(global.k[? 'jump'])
+k_attack    =keyboard_check_pressed(global.k[? 'throw'])
 k_dash      =keyboard_check_pressed(global.k[? 'dash'])
 
 move_x      =k_right-k_left

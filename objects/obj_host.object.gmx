@@ -487,7 +487,7 @@ if room=rm_main
     prompt_timer=0 
     pause_x=0
     login_fail=0
-    logged_in_prompt=0
+    logged_in_prompt=0    
     
     // Other
     global.profiles=undefined
@@ -510,10 +510,9 @@ if room=rm_end
     new_profiles=ds_grid_create(ds_grid_width(global.profiles),ds_grid_height(global.profiles))
     ds_grid_copy(new_profiles,global.profiles)
 }
-show_debug_message('A')
+
 // Global
 select=0
-prev_select=0
 hold_up=0
 hold_dn=0
 
@@ -524,6 +523,9 @@ h_cur=100
 
 mix=0.2
 cursor_blink=0.2
+
+search_toggle=false
+binding_select=undefined
 </string>
           </argument>
         </arguments>
@@ -591,7 +593,7 @@ if room=rm_title
                 draw_select(300,525,180,52,4)
             } 
             
-            if keyboard_check_pressed(vk_enter)
+            if keyboard_check_pressed(vk_enter) or keyboard_check_pressed(global.k[? 'jump'])
             {
                 if select=0
                 {
@@ -844,7 +846,7 @@ if room=rm_title
                 draw_select(390,552,140,52,3)
             }  
             
-            if keyboard_check_pressed(vk_enter)
+            if keyboard_check_pressed(vk_enter) or keyboard_check_pressed(global.k[? 'jump'])
             {
                 if select=3
                 {
@@ -912,7 +914,7 @@ if room=rm_title
             }
 
                 
-            if keyboard_check_pressed(vk_enter)
+            if keyboard_check_pressed(vk_enter) or keyboard_check_pressed(global.k[? 'jump'])
             {                
                 if select=2
                 {
@@ -1014,7 +1016,7 @@ if room=rm_main
             select=clamp(select,0,4)
             draw_select(100+pause_x,180+select*60,195,45,2)
             
-            if keyboard_check_pressed(vk_enter)
+            if keyboard_check_pressed(vk_enter) or keyboard_check_pressed(global.k[? 'jump'])
             {
                 if select=0
                 {
@@ -1103,7 +1105,7 @@ if room=rm_main
             select=clamp(select,0,4)
             draw_select(100+pause_x,180+select*60,195,45,2)
             
-            if keyboard_check_pressed(vk_enter)
+            if keyboard_check_pressed(vk_enter) or keyboard_check_pressed(global.k[? 'jump'])
             {
                 if select=0
                 {
@@ -1212,7 +1214,7 @@ if room=rm_main
                 global.bg_value=clamp(global.bg_value,0,10)
                 global.bg_alpha=clamp(global.bg_alpha,0,10)
     
-                if keyboard_check_pressed(vk_enter)
+                if keyboard_check_pressed(vk_enter) or keyboard_check_pressed(global.k[? 'jump'])
                 {
                     if select=0
                     {
@@ -1231,7 +1233,7 @@ if room=rm_main
                 select=clamp(select,0,1)
                 draw_select(100+pause_x,180+select*60,195,45,2)
                 
-                if keyboard_check_pressed(vk_enter)
+                if keyboard_check_pressed(vk_enter) or keyboard_check_pressed(global.k[? 'jump'])
                 {
                     if select=0
                     {
@@ -1325,7 +1327,7 @@ if room=rm_main
                 global.volume_effects=clamp(global.volume_effects,0,10)
                 global.volume_music=clamp(global.volume_music,0,10)
     
-                if keyboard_check_pressed(vk_enter)
+                if keyboard_check_pressed(vk_enter) or keyboard_check_pressed(global.k[? 'jump'])
                 {
                     if select=0
                     {
@@ -1344,7 +1346,7 @@ if room=rm_main
                 select=clamp(select,0,1)
                 draw_select(100+pause_x,180+select*60,195,45,2)
             
-                if keyboard_check_pressed(vk_enter)
+                if keyboard_check_pressed(vk_enter) or keyboard_check_pressed(global.k[? 'jump'])
                 {
                     if select=0
                     {
@@ -1424,13 +1426,18 @@ if room=rm_main
                 {
                     y_view_cur=y_view_tar
                 }
-              
+                
+                if !search_toggle
+                {
+                    keyboard_string=''
+                }
+
                 // Background
                 draw_area(0,0,599,599,c_white,c_black,1)
                 
                 // Profiles
                 draw_area(1,80,598,599,c_dkgray,c_black,1)
-        
+                                
                 for (i=0;i!=profile_count;i++)
                 {         
                     if global.profiles[#1,i]!=undefined    
@@ -1524,17 +1531,17 @@ if room=rm_main
                             draw_area(8,207+i*60+y_view_cur,53,253+i*60+y_view_cur,3564704,c_black,1)       // Darker Dirt
                             draw_config(fnt_profiles_big,c_black,fa_middle,fa_middle)
                             
-                            if string_length(i+1)=1
+                            if string_length(string(i+1))=1
                             {
                                 r_scale=0.9
                             }
                             
-                            if string_length(i+1)=2
+                            if string_length(string(i+1))=2
                             {
                                 r_scale=0.65
                             }
                             
-                            if string_length(i+1)=3
+                            if string_length(string(i+1))=3
                             {
                                 r_scale=0.48
                             }
@@ -1584,13 +1591,17 @@ if room=rm_main
                 // Title
                 draw_area(0,0,599,79,c_ltgray,c_black,1)
                 draw_config(fnt_profiles_medium,c_search,fa_middle,fa_middle)
-                if string_length(keyboard_string)&gt;0
+                if string_length(keyboard_string)&gt;0 and search_toggle
                 {
                     draw_text(300,40-y_match,'{ '+keyboard_string+' }')
                 }
+                else if search_toggle
+                {
+                    draw_text(300,40-y_match,"{ }")
+                }
                 else
                 {
-                    draw_text(300,40-y_match,'{ Profile Search }')
+                    draw_text(300,40-y_match,"{ 'tab' to search }")
                 }
                 
                 if profile_match&lt;-0.2
@@ -1617,42 +1628,54 @@ if room=rm_main
                     draw_select(300,230+select*60+y_view_cur,600,60,4)
                 }
                 
+                // Search Toggle
+                if search_toggle
+                {
+                    draw_set_alpha(0.6)
+                    draw_area(0,80,600,600,c_black,c_black,0)
+                    draw_set_alpha(1)
+                }
+
                 // User Input
-                if keyboard_check_pressed(vk_enter)
+                if keyboard_check_pressed(vk_enter) or keyboard_check_pressed(global.k[? 'jump'])
                 {
                     if string_length(keyboard_string)&gt;0
                     {
-                        none=true
-                        
-                        for (z=0;z!=profile_count;z+=1)
-                        {                      
-                            if string_lower(keyboard_string)=global.profiles[#0,z]
-                            {
-                                if z=select
-                                {                    
-                                    entry_select=undefined
-                                    gui_state=s.profile
-                                    user=select
-                                    select=0
-                                    y_view_cur=0
-                                    y_view_tar=0
+                        if !keyboard_check_pressed(global.k[? 'jump'])
+                        {
+                            none=true
+                            
+                            for (z=0;z!=profile_count;z+=1)
+                            {                      
+                                if string_lower(keyboard_string)=global.profiles[#0,z]
+                                {
+                                    if z=select
+                                    {                    
+                                        entry_select=undefined
+                                        gui_state=s.profile
+                                        user=select
+                                        select=0
+                                        y_view_cur=0
+                                        y_view_tar=0
+                                        break
+                                    }    
+                                                            
+                                    select=z
+                                    none=false  
                                     break
-                                }    
-                                                        
-                                select=z
-                                none=false  
-                                break
+                                }
                             }
-                        }
-                        
-                        if none
-                        {
-                            profile_match=-1
-                        }
-                        else
-                        {
-                            profile_match=1
-                        }                      
+                            
+                            if none
+                            {
+                                profile_match=-1
+                            }
+                            else
+                            {
+                                profile_match=1
+                                search_toggle=false
+                            } 
+                        }                                                                    
                     }
                     else
                     {                    
@@ -1665,17 +1688,34 @@ if room=rm_main
                     }
                 }
                 
+                if keyboard_check_pressed(vk_tab)
+                {
+                    if search_toggle=true
+                    {
+                        search_toggle=false
+                    }
+                    else
+                    {
+                        search_toggle=true
+                    }
+                }
+                
                 if keyboard_check_pressed(vk_escape)
                 {
-                    if string_length(keyboard_string)&gt;0
+                    if search_toggle
+                    {
+                        search_toggle=false
+                    }
+                    else if string_length(keyboard_string)&gt;0
                     {
                         keyboard_string=''
+                        search_toggle=false
                     }
                     else
                     {                    
                         gui_state=s.pause
                         exit_confirm=false    
-                    }
+                    }                    
                 }
             }
             else
@@ -1734,8 +1774,7 @@ if room=rm_main
             {
                 y_view_cur=y_view_tar
             }
-            
-            
+                        
             // Background
             draw_area(0,0,599,599,c_white,c_black,1)
                         
@@ -1811,17 +1850,17 @@ if room=rm_main
                     c_rank=3564704
                 }
                 
-                if string_length(user+1)=1
+                if string_length(string(user+1))=1
                 {
                     r_scale=1
                 }
                 
-                if string_length(user+1)=2
+                if string_length(string(user+1))=2
                 {
                     r_scale=0.75
                 }
                 
-                if string_length(user+1)=3
+                if string_length(string(user+1))=3
                 {
                     r_scale=0.55
                 }  
@@ -1974,7 +2013,7 @@ if room=rm_main
                 draw_select(300,475+(select-1)*50+y_view_cur,600,50,3)
             }
             
-            if keyboard_check_pressed(vk_enter)
+            if keyboard_check_pressed(vk_enter) or keyboard_check_pressed(global.k[? 'jump'])
             {
                 if select=0
                 {
@@ -2068,7 +2107,7 @@ if room=rm_main
             draw_config(fnt_login,14803425,fa_middle,fa_middle)     // Wisp
             draw_text(300,550,'ENTER to Confirm')
             
-            if keyboard_check_pressed(vk_enter)
+            if keyboard_check_pressed(vk_enter) or keyboard_check_pressed(global.k[? 'jump'])
             {
                 send_payload("login",global.profiles[#0,user],keyboard_string)
             }
@@ -2103,11 +2142,6 @@ if room=rm_main
         case s.keybind:
         {
             select=clamp(select,0,6)
-
-            if binding_select!=undefined
-            {
-                select=prev_select
-            }
             
             draw_area(0,0,599,599,6581117,c_black,3)    // Kalamata
             
@@ -2170,8 +2204,6 @@ if room=rm_main
                 {
                     draw_select(450,538,string_width(string_key(global.k[? 'dash']))+20,string_height(string_key(global.k[? 'dash']))+20,4)
                 }
-                
-                prev_select=select
             }
             else
             {
@@ -2219,7 +2251,7 @@ if room=rm_main
                 draw_select(450,163+63*binding_select,string_width(binding_prompt)+20,string_height(binding_prompt)+20,4)
             }
             
-            if keyboard_check_pressed(vk_enter)
+            if keyboard_check_pressed(vk_enter) or keyboard_check_pressed(global.k[? 'jump'])
             {
                 binding_select=select
             }
@@ -2228,8 +2260,7 @@ if room=rm_main
             {
                 gui_state=s.options
                 select=0
-            }
-                                  
+            }                                 
         }break        
     }
 }   
@@ -2402,7 +2433,7 @@ if room=rm_end
         draw_select(500,565,200,70,4)
     }
     
-    if keyboard_check_pressed(vk_enter)
+    if keyboard_check_pressed(vk_enter) or keyboard_check_pressed(global.k[? 'jump'])
     {
         if select=0
         {
@@ -2419,31 +2450,34 @@ if room=rm_end
     }
 }
 
-// User Input
-if keyboard_check(global.k[? 'up'])
+if !search_toggle and binding_select=undefined
 {
-    if hold_up=0 or (hold_up&gt;15 and hold_up mod 3=0)
+    // User Input
+    if keyboard_check(global.k[? 'up'])
     {
-        select-=1
+        if hold_up=0 or (hold_up&gt;15 and hold_up mod 3=0)
+        {
+            select-=1
+        }
+        hold_up+=1
     }
-    hold_up+=1
-}
-else
-{
-    hold_up=0
-}
-
-if keyboard_check(global.k[? 'down'])
-{
-    if hold_dn=0 or (hold_dn&gt;15 and hold_dn mod 3=0)
+    else
     {
-        select+=1
+        hold_up=0
     }
-    hold_dn+=1
-}
-else
-{
-    hold_dn=0
+    
+    if keyboard_check(global.k[? 'down'])
+    {
+        if hold_dn=0 or (hold_dn&gt;15 and hold_dn mod 3=0)
+        {
+            select+=1
+        }
+        hold_dn+=1
+    }
+    else
+    {
+        hold_dn=0
+    }
 }
 </string>
           </argument>
