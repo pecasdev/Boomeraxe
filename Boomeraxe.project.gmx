@@ -192,8 +192,8 @@
       <object>objects\obj_camera</object>
       <object>objects\obj_debug</object>
       <object>objects\obj_ring</object>
+      <object>objects\obj_connection_notify</object>
     </objects>
-    <object>objects\obj_connection_notify</object>
   </objects>
   <rooms name="rooms">
     <room>rooms\rm_title</room>

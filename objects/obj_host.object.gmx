@@ -390,7 +390,7 @@ if room=rm_title
     global.volume_mute=false
     global.volume_effects=5
     global.volume_music=5
-    global.leaderboard_overlay=false
+    global.overlay_toggle=false
     global.bg_enabled=true
     global.bg_value=4
     global.bg_alpha=5.5
@@ -890,7 +890,7 @@ if room=rm_title
             draw_text(400,300,string(global.volume_effects))
             draw_text(400,375,string(global.volume_music))
 
-            if global.leaderboard_overlay
+            if global.overlay_toggle
             {
                 draw_text(410,450,"On")
             }
@@ -918,7 +918,7 @@ if room=rm_title
             {                
                 if select=2
                 {
-                    global.leaderboard_overlay=(global.leaderboard_overlay==false) // quick switcher from true/false
+                    global.overlay_toggle=global.overlay_toggle==false
                 }
                 
                 if select=3
@@ -956,6 +956,20 @@ if room=rm_main
                 exit_confirm=false
                 paused=true
                 select=0
+            }
+            
+            if global.overlay_toggle
+            {
+                // Background
+                draw_area(400,0,600,150,c_white,c_black,1)
+                
+                // Top Border
+                draw_area(400,0,600,42,c_ltgray,c_black,1)
+                
+                for (i=0;i!=4;i+=1)
+                {
+                    draw_area(400,42+27*i,600,42+27*(i+1),c_gray,c_black,1)
+                }
             }
         }break
         
@@ -1073,7 +1087,7 @@ if room=rm_main
             
             draw_config(fnt_pause_big,c_black,fa_left,fa_middle)
             
-            if global.leaderboard_overlay
+            if global.overlay_toggle
             {
                 draw_text(135,300,"On")
             }
@@ -1118,7 +1132,7 @@ if room=rm_main
                 }               
                 if select=2
                 {
-                    global.leaderboard_overlay=(global.leaderboard_overlay==false) // quick switcher from true/false
+                     global.overlay_toggle=global.overlay_toggle==false
                 }
                 
                 if select=3
