@@ -1023,7 +1023,7 @@ if room=rm_main
             
             if global.selected_profile='anonymous'
             {
-                draw_text_transformed(100+pause_x,508,'No Profile Selected',0.75,1,0)
+                draw_text_transformed(100+pause_x,508,'Not logged in',1,1,0)
             }
             else
             {
@@ -1112,7 +1112,7 @@ if room=rm_main
             
             if global.selected_profile='anonymous'
             {
-                draw_text_transformed(100+pause_x,508,'No Profile Selected',0.75,1,0)
+                draw_text_transformed(100+pause_x,508,'Not logged in',1,1,0)
             }
             else
             {
@@ -1206,7 +1206,7 @@ if room=rm_main
             
             if global.selected_profile='anonymous'
             {
-                draw_text_transformed(100+pause_x,508,'No Profile Selected',0.75,1,0)
+                draw_text_transformed(100+pause_x,508,'Not logged in',1,1,0)
             }
             else
             {
@@ -1319,7 +1319,7 @@ if room=rm_main
             
             if global.selected_profile='anonymous'
             {
-                draw_text_transformed(100+pause_x,508,'No Profile Selected',0.75,1,0)
+                draw_text_transformed(100+pause_x,508,'Not logged in',1,1,0)
             }
             else
             {
@@ -2291,65 +2291,83 @@ if room=rm_main
     
     if global.overlay_toggle and (gui_state=s.idle or gui_state=s.pause or gui_state=s.options)
     {
-        // Background
-        draw_area(400,450,600,600,c_white,c_black,1)
-        
-        // Top Border
-        draw_area(400,450,600,492,c_ltgray,c_black,2)
-        
-        // Time until rank down
-        draw_config(fnt_overlay,c_black,fa_middle,fa_middle)
-        draw_text(450,463,'00:02.87')
-        
-        draw_config(fnt_overlay_small,2302755,fa_middle,fa_middle)  // Light Charcoal
-        draw_text(450,479,'rank down')
-        
-        // Time until personal best
-        draw_config(fnt_overlay,c_black,fa_middle,fa_middle)
-        draw_text(550,463,'00:02.87')
-        
-        draw_config(fnt_overlay_small,2302755,fa_middle,fa_middle) // Light Charcoal
-        draw_text(550,479,'personal best')
-        
-        for (i=0;i!=4;i+=1)
+        if global.profiles!=undefined
         {
-            if i=0
+            // Background
+            draw_area(400,450,600,600,c_white,c_black,1)
+            
+            // Top Border
+            draw_area(400,450,600,492,c_ltgray,c_black,2)
+            
+            // Time until rank down
+            draw_config(fnt_overlay,c_black,fa_middle,fa_middle)
+            draw_text(450,463,'00:02.87')
+            
+            draw_config(fnt_overlay_small,2302755,fa_middle,fa_middle)  // Light Charcoal
+            draw_text(450,479,'rank down')
+            
+            // Time until personal best
+            draw_config(fnt_overlay,c_black,fa_middle,fa_middle)
+            if global.selected_profile!='anonymous' and global.profiles[#1,user]!=undefined
             {
-                c_back=3517429
-                c_rank=3118552
-            }
-            else if i=1
-            {
-                c_back=13157819
-                c_rank=11184288 
-            }
-            else if i=2
-            {
-                c_back=5150699
-                c_rank=4621262
+                draw_text(550,463,'00:02.87')
             }
             else
             {
-                c_back=3961266
-                c_rank=3564704     
+                draw_text(550,463,'not found')
             }
+            draw_config(fnt_overlay_small,2302755,fa_middle,fa_middle) // Light Charcoal
+            draw_text(550,479,'personal best')
             
-            // Background           
-            draw_area(400,492+27*i,600,492+27*(i+1),c_back,c_black,1)
-            
-            // Username
-            draw_config(fnt_overlay_big,c_black,fa_left,fa_middle)
-            draw_text(433,491+27*(i+0.5),'pecas')
-            
-            // Best Time
-            draw_config(fnt_overlay,c_black,fa_right,fa_middle)
-            draw_text(590,491+27*(i+0.5),'14:02.37')
-            
-            // Rank
-            draw_area(403,495+27*i,424,489+27*(i+1),c_rank,c_black,1)
-            draw_config(fnt_overlay_big,c_black,fa_middle,fa_middle)
-            draw_text(415,491+27*(i+0.5),string(i+1))
+            for (i=0;i!=4;i+=1)
+            {
+                if i=0
+                {
+                    c_back=3517429
+                    c_rank=3118552
+                }
+                else if i=1
+                {
+                    c_back=13157819
+                    c_rank=11184288 
+                }
+                else if i=2
+                {
+                    c_back=5150699
+                    c_rank=4621262
+                }
+                else
+                {
+                    c_back=3961266
+                    c_rank=3564704     
+                }
+                
+                // Background           
+                draw_area(400,492+27*i,600,492+27*(i+1),c_back,c_black,1)
+                
+                // Username
+                draw_config(fnt_overlay_big,c_black,fa_left,fa_middle)
+                draw_text(433,491+27*(i+0.5),'pecas')
+                
+                // Best Time
+                draw_config(fnt_overlay,c_black,fa_right,fa_middle)
+                draw_text(590,491+27*(i+0.5),'14:02.37')
+                
+                // Rank
+                draw_area(403,495+27*i,424,489+27*(i+1),c_rank,c_black,1)
+                draw_config(fnt_overlay_big,c_black,fa_middle,fa_middle)
+                draw_text(415,491+27*(i+0.5),string(i+1))
+            }
         }
+        else
+        {
+            // Background
+            draw_area(400,450,600,600,c_white,c_black,1)
+            
+            // Prompt
+            draw_config(fnt_overlay,c_black,fa_middle,fa_middle)
+            draw_text(500,525,'profiles must be#downloaded to use this##options-&gt;profiles#to download')
+        }            
     }
 }   
 
