@@ -54,7 +54,7 @@ debug_enabled=true
           <argument>
             <kind>1</kind>
             <string>/// Debug
-if instance_exists(obj_player) and obj_host.gui_state=s.idle and debug_enabled
+if instance_exists(obj_player) and obj_host.gui_state=s.idle and debug_enabled and global.overlay_toggle=false
 {
     draw_area(450,450,600,600,c_white,c_black,2)
     draw_config(fnt_debug,c_black,fa_middle,fa_middle)

@@ -363,11 +363,7 @@ if game_time&lt;best_time and !running
             <string>/// Initialize
 
 if room=rm_title
-{
-    window_set_caption('Boomeraxe')
-    draw_set_circle_precision(64)
-    create_enum()
-    
+{    
     // GUI
     gui_state=s.title
     select_offset=2
@@ -386,29 +382,6 @@ if room=rm_title
     background_yscale[3]=2
     background_yscale[4]=2
     background_yscale[5]=2 
-       
-    global.volume_mute=false
-    global.volume_effects=5
-    global.volume_music=5
-    global.overlay_toggle=false
-    global.bg_enabled=true
-    global.bg_value=4
-    global.bg_alpha=5.5
-
-    // Time
-    global.unix_start=date_create_datetime(1970,1,1,0,0,0)
-    
-    // Other
-    global.udp_socket=network_create_socket(network_socket_udp)
-    global.public_udp_ip='99.237.192.34'
-    global.private_udp_ip='192.168.0.200'
-    global.ip=global.public_udp_ip //global.ip=global.private_udp_ip
-    global.udp_port=9000 
-    global.server_connection=undefined
-    global.ping_retry=0
-    global.fail_timer=0
-    global.fail_retries=2
-    global.ping_timer=0
     
     // Animations
     name_oversized=false
@@ -421,10 +394,6 @@ if room=rm_title
     c_create_name=c_white
     c_create_pass=c_white
     exit_confirm=false
-    
-    global.login_pass=ds_map_create()
-    global.leaderboard_version=0
-    global.selected_profile='anonymous'    
 }
 
 if room=rm_main
@@ -526,6 +495,62 @@ cursor_blink=0.2
 
 search_toggle=false
 binding_select=undefined
+
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="7" enumb="2">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>/// Game Start Initialize
+
+// Time
+global.unix_start=date_create_datetime(1970,1,1,0,0,0)
+
+// Other
+global.udp_socket=network_create_socket(network_socket_udp)
+global.public_udp_ip='99.237.192.34'
+global.private_udp_ip='192.168.0.200'
+global.ip=global.public_udp_ip //global.ip=global.private_udp_ip
+global.udp_port=9000 
+global.server_connection=undefined
+global.ping_retry=0
+global.fail_timer=0
+global.fail_retries=2
+global.ping_timer=0
+global.login_pass=ds_map_create()
+global.leaderboard_version=0
+global.selected_profile='anonymous'        
+       
+global.volume_mute=false
+global.volume_effects=5
+global.volume_music=5
+global.overlay_toggle=false
+global.bg_enabled=true
+global.bg_value=4
+global.bg_alpha=5.5
+
+window_set_caption('Boomeraxe')
+draw_set_circle_precision(64)
+create_enum()
+
+instance_create(0,0,obj_connection_notify)
 </string>
           </argument>
         </arguments>
@@ -956,23 +981,9 @@ if room=rm_main
                 exit_confirm=false
                 paused=true
                 select=0
-            }
-            
-            if global.overlay_toggle
-            {
-                // Background
-                draw_area(400,0,600,150,c_white,c_black,1)
-                
-                // Top Border
-                draw_area(400,0,600,42,c_ltgray,c_black,1)
-                
-                for (i=0;i!=4;i+=1)
-                {
-                    draw_area(400,42+27*i,600,42+27*(i+1),c_gray,c_black,1)
-                }
-            }
+            }            
         }break
-        
+                
         case s.pause:
         {
             if pause_x&lt;0
@@ -2276,6 +2287,34 @@ if room=rm_main
                 select=0
             }                                 
         }break        
+    }
+    
+    if global.overlay_toggle and (gui_state=s.idle or gui_state=s.pause or gui_state=s.options)
+    {
+        // Background
+        draw_area(400,450,600,600,c_white,c_black,1)
+        
+        // Top Border
+        draw_area(400,450,600,492,c_ltgray,c_black,1)
+        
+        // Time until rank down
+        draw_config(fnt_overlay,c_black,fa_middle,fa_middle)
+        draw_text(450,463,'00:02.87')
+        
+        draw_config(fnt_overlay_small,c_dkgray,fa_middle,fa_middle)
+        draw_text(450,479,'rank down')
+        
+        // Time until personal best
+        draw_config(fnt_overlay,c_black,fa_middle,fa_middle)
+        draw_text(550,463,'00:02.87')
+        
+        draw_config(fnt_overlay_small,c_dkgray,fa_middle,fa_middle)
+        draw_text(550,479,'personal best')
+        
+        for (i=0;i!=4;i+=1)
+        {
+            draw_area(400,492+27*i,600,492+27*(i+1),c_gray,c_black,1)
+        }
     }
 }   
 

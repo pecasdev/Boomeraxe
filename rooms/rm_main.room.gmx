@@ -52,7 +52,6 @@
   </views>
   <instances>
     <instance objName="obj_host" x="0" y="0" name="inst_4EA733C2" locked="0" code="" scaleX="1" scaleY="1" colour="4294967295" rotation="0"/>
-    <instance objName="obj_connection_notify" x="32" y="0" name="inst_6E94670E" locked="0" code="" scaleX="1" scaleY="1" colour="4294967295" rotation="0"/>
   </instances>
   <tiles/>
   <PhysicsWorld>0</PhysicsWorld>
