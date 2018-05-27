@@ -2295,25 +2295,60 @@ if room=rm_main
         draw_area(400,450,600,600,c_white,c_black,1)
         
         // Top Border
-        draw_area(400,450,600,492,c_ltgray,c_black,1)
+        draw_area(400,450,600,492,c_ltgray,c_black,2)
         
         // Time until rank down
         draw_config(fnt_overlay,c_black,fa_middle,fa_middle)
         draw_text(450,463,'00:02.87')
         
-        draw_config(fnt_overlay_small,c_dkgray,fa_middle,fa_middle)
+        draw_config(fnt_overlay_small,2302755,fa_middle,fa_middle)  // Light Charcoal
         draw_text(450,479,'rank down')
         
         // Time until personal best
         draw_config(fnt_overlay,c_black,fa_middle,fa_middle)
         draw_text(550,463,'00:02.87')
         
-        draw_config(fnt_overlay_small,c_dkgray,fa_middle,fa_middle)
+        draw_config(fnt_overlay_small,2302755,fa_middle,fa_middle) // Light Charcoal
         draw_text(550,479,'personal best')
         
         for (i=0;i!=4;i+=1)
         {
-            draw_area(400,492+27*i,600,492+27*(i+1),c_gray,c_black,1)
+            if i=0
+            {
+                c_back=3517429
+                c_rank=3118552
+            }
+            else if i=1
+            {
+                c_back=13157819
+                c_rank=11184288 
+            }
+            else if i=2
+            {
+                c_back=5150699
+                c_rank=4621262
+            }
+            else
+            {
+                c_back=3961266
+                c_rank=3564704     
+            }
+            
+            // Background           
+            draw_area(400,492+27*i,600,492+27*(i+1),c_back,c_black,1)
+            
+            // Username
+            draw_config(fnt_overlay_big,c_black,fa_left,fa_middle)
+            draw_text(433,491+27*(i+0.5),'pecas')
+            
+            // Best Time
+            draw_config(fnt_overlay,c_black,fa_right,fa_middle)
+            draw_text(590,491+27*(i+0.5),'14:02.37')
+            
+            // Rank
+            draw_area(403,495+27*i,424,489+27*(i+1),c_rank,c_black,1)
+            draw_config(fnt_overlay_big,c_black,fa_middle,fa_middle)
+            draw_text(415,491+27*(i+0.5),string(i+1))
         }
     }
 }   

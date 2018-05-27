@@ -148,6 +148,7 @@
     <font>fonts\fnt_login</font>
     <font>fonts\fnt_login_small</font>
     <font>fonts\fnt_connection_notify</font>
+    <font>fonts\fnt_overlay_big</font>
     <font>fonts\fnt_overlay</font>
     <font>fonts\fnt_overlay_small</font>
   </fonts>
