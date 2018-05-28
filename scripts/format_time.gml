@@ -8,13 +8,14 @@ if split=true
     if sign(time)=-1 or sign(time)=0
     {
         sym='-'
-        time=abs(time)
     }
     else
     {
         sym='+'
     }
 }
+
+time=abs(time)
 
 m=floor(time/6000)
 s=floor(time/100 mod 60)

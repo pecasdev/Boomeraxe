@@ -944,6 +944,7 @@ if room=rm_title
                 if select=2
                 {
                     global.overlay_toggle=global.overlay_toggle==false
+                    global.overlay_next_rank=0
                 }
                 
                 if select=3
@@ -1144,6 +1145,7 @@ if room=rm_main
                 if select=2
                 {
                      global.overlay_toggle=global.overlay_toggle==false
+                     global.overlay_next_rank=0
                 }
                 
                 if select=3
@@ -2300,9 +2302,14 @@ if room=rm_main
             draw_area(400,450,600,492,c_ltgray,c_black,2)
             
             // Time until rank down
-            draw_config(fnt_overlay,c_black,fa_middle,fa_middle)
-            draw_text(450,463,'00:02.87')
+            if global.game_time&gt;global.profiles[#1,global.overlay_next_rank]
+            {
+                global.overlay_next_rank+=1
+            }
             
+            draw_config(fnt_overlay,c_black,fa_middle,fa_middle)
+            draw_text(450,463,format_time(global.game_time-global.profiles[#1,global.overlay_next_rank],false))
+
             draw_config(fnt_overlay_small,2302755,fa_middle,fa_middle)  // Light Charcoal
             draw_text(450,479,'rank down')
             
@@ -2310,7 +2317,7 @@ if room=rm_main
             draw_config(fnt_overlay,c_black,fa_middle,fa_middle)
             if global.selected_profile!='anonymous' and global.profiles[#1,user]!=undefined
             {
-                draw_text(550,463,'00:02.87')
+                draw_text(550,463,format_time(global.game_time-global.profiles[#1,global.selected_profile],false))
             }
             else
             {
@@ -2318,20 +2325,22 @@ if room=rm_main
             }
             draw_config(fnt_overlay_small,2302755,fa_middle,fa_middle) // Light Charcoal
             draw_text(550,479,'personal best')
+            show_debug_message(string(global.overlay_next_rank)+' , '+string(clamp(global.overlay_next_rank+i,0,profile_count)))
             
-            for (i=0;i!=4;i+=1)
+            for (i=-1;i!=3;i+=1)
             {
-                if i=0
+                show_debug_message(i)
+                if clamp(global.overlay_next_rank+i,0,profile_count)=0
                 {
                     c_back=3517429
                     c_rank=3118552
                 }
-                else if i=1
+                else if clamp(global.overlay_next_rank+i,0,profile_count)=1
                 {
                     c_back=13157819
                     c_rank=11184288 
                 }
-                else if i=2
+                else if clamp(global.overlay_next_rank+i,0,profile_count)=2
                 {
                     c_back=5150699
                     c_rank=4621262
@@ -2343,20 +2352,47 @@ if room=rm_main
                 }
                 
                 // Background           
-                draw_area(400,492+27*i,600,492+27*(i+1),c_back,c_black,1)
+                draw_area(400,492+27*(i+1),600,492+27*(i+2),c_back,c_black,1)
                 
-                // Username
-                draw_config(fnt_overlay_big,c_black,fa_left,fa_middle)
-                draw_text(433,491+27*(i+0.5),'pecas')
-                
-                // Best Time
-                draw_config(fnt_overlay,c_black,fa_right,fa_middle)
-                draw_text(590,491+27*(i+0.5),'14:02.37')
+                if i=-1
+                {
+                    if global.selected_profile!='anonymous'
+                    {                    
+                        //Username
+                        draw_config(fnt_overlay_big,c_black,fa_left,fa_middle)
+                        draw_text(433,491+27*(i+1.5),global.profiles[#0,global.selected_profile])
+                    }
+                    else
+                    {
+                        //Username
+                        draw_config(fnt_overlay_big,c_black,fa_left,fa_middle)
+                        draw_text(433,491+27*(i+1.5),'anonymous')
+                    }
+                    
+                    // Current Time
+                    draw_config(fnt_overlay,c_black,fa_right,fa_middle)
+                    draw_text(590,491+27*(i+1.5),format_time(global.game_time,false))
+                    
+                    // Rank
+                    draw_area(403,495+27*(i+1),424,489+27*(i+2),c_rank,c_black,1)
+                    draw_config(fnt_overlay_big,c_black,fa_middle,fa_middle)
+                    draw_text(415,491+27*(i+1.5),string(global.overlay_next_rank-1))                
+                }
+                else
+                {
+                    // Username
+                    draw_config(fnt_overlay_big,c_black,fa_left,fa_middle)
+                    draw_text(433,491+27*(i+1.5),global.profiles[#0,clamp(global.overlay_next_rank+i,0,profile_count)])
+                    
+                    // Best Time
+                    draw_config(fnt_overlay,c_black,fa_right,fa_middle)
+                    draw_text(590,491+27*(i+1.5),format_time(global.profiles[#1,clamp(global.overlay_next_rank+i,0,profile_count)],false))
+                }
                 
                 // Rank
-                draw_area(403,495+27*i,424,489+27*(i+1),c_rank,c_black,1)
+                draw_area(403,495+27*(i+1),424,489+27*(i+2),c_rank,c_black,1)
                 draw_config(fnt_overlay_big,c_black,fa_middle,fa_middle)
-                draw_text(415,491+27*(i+0.5),string(i+1))
+                draw_text(415,491+27*(i+1.5),string(clamp(global.overlay_next_rank+i,0,profile_count)+2))                
             }
         }
         else
@@ -2366,7 +2402,7 @@ if room=rm_main
             
             // Prompt
             draw_config(fnt_overlay,c_black,fa_middle,fa_middle)
-            draw_text(500,525,'profiles must be#downloaded to use this##options-&gt;profiles#to download')
+            draw_text(500,525,'data not found##options-&gt;profiles#to download')
         }            
     }
 }   
