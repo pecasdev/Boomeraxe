@@ -537,7 +537,7 @@ global.ping_timer=0
 global.login_pass=ds_map_create()
 global.leaderboard_version=0
 global.selected_profile='anonymous'        
-       
+global.local_save_lock=false
 global.volume_mute=false
 global.volume_effects=5
 global.volume_music=5
@@ -550,7 +550,15 @@ window_set_caption('Boomeraxe')
 draw_set_circle_precision(64)
 create_enum()
 
-instance_create(0,0,obj_connection_notify)
+if file_exists('local_save')
+{
+    global.local_save_mode=true
+}
+else
+{
+    global.local_save_mode=false
+    instance_create(0,0,obj_connection_notify)
+}
 </string>
           </argument>
         </arguments>
@@ -2424,31 +2432,115 @@ if room=rm_end
     
     // Title
     draw_config(fnt_end_small,4995380,fa_middle,fa_middle)     // Grayish
-    if global.push_run_reciept=false
+    if !global.local_save_mode
     {
-        if global.push_run_attempt=0
+        if global.push_run_reciept=false
         {
-            draw_text(300,32,'Waiting for server confirmation...')
+            if global.push_run_attempt=0
+            {
+                draw_text(300,32,'Waiting for server confirmation...')
+            }
+            else
+            {
+                draw_text(300,32,'confirmation failed, retrying ('+string(global.push_run_attempt)+')')
+            }
+            
+            global.push_run_timer-=1
         }
         else
         {
-            draw_text(300,32,'confirmation failed, retrying ('+string(global.push_run_attempt)+')')
+            draw_text(300,32,'Run saved to server!')
         }
         
-        global.push_run_timer-=1
+        if global.push_run_timer=0
+        {
+            global.push_run_attempt+=1
+            global.push_run_timer=150
+            send_payload('push_run',global.selected_profile,global.game_time,int64(date_second_span(global.unix_start,date_current_datetime())),global.kill_count,global.death_count,global.jump_count,global.dash_count)
+        }
     }
     else
     {
-        draw_text(300,32,'Run saved to server!')
+        if global.local_save_lock=false
+        {
+            if global.selected_profile!='anonymous'
+            {                            
+                name=global.selected_profile
+                if file_exists(name+'.boomeraxe')
+                {
+                    ini_open(name+'.boomeraxe')
+                    run_count=ini_read_real(name,'run_count',0)
+                    
+                    ini_write_real(name,string(run_count)+'0',global.game_time)
+                    ini_write_real(name,string(run_count)+'1',int64(date_second_span(global.unix_start,date_current_datetime())))
+                    ini_write_real(name,string(run_count)+'2',global.kill_count)
+                    ini_write_real(name,string(run_count)+'3',global.death_count)
+                    ini_write_real(name,string(run_count)+'4',global.jump_count)
+                    ini_write_real(name,string(run_count)+'5',global.dash_count)
+                    
+                    if global.game_time&gt;ini_read_real(name,'best_time',0)
+                    {
+                        ini_write_real(name,'best_time',global.game_time)
+                        ini_write_real(name,'best_date',int64(date_second_span(global.unix_start,date_current_datetime())))
+                    }
+                    
+                    ini_write_real(name,'run_count',run_count+1)  
+                      
+                    ini_close()     
+                }
+                else
+                {
+                    ini_open(name+'.boomeraxe')
+                    
+                    ini_write_real(name,'best_time',global.game_time)
+                    ini_write_real(name,'best_date',int64(date_second_span(global.unix_start,date_current_datetime())))
+                    ini_write_real(name,'run_count',1)
+                    
+                    ini_write_real(name,'00',global.game_time)
+                    ini_write_real(name,'01',int64(date_second_span(global.unix_start,date_current_datetime())))
+                    ini_write_real(name,'02',global.kill_count)
+                    ini_write_real(name,'03',global.death_count)
+                    ini_write_real(name,'04',global.jump_count)
+                    ini_write_real(name,'05',global.dash_count)
+                    
+                    ini_close()
+                }    
+            }
+                        
+            ini_open('boomeraxe.ini')
+            
+            run_count=ini_read_real(name,'run_count',0)
+            
+            ini_write_real(name,string(run_count)+'0',global.game_time)
+            ini_write_real(name,string(run_count)+'1',int64(date_second_span(global.unix_start,date_current_datetime())))
+            ini_write_real(name,string(run_count)+'2',global.kill_count)
+            ini_write_real(name,string(run_count)+'3',global.death_count)
+            ini_write_real(name,string(run_count)+'4',global.jump_count)
+            ini_write_real(name,string(run_count)+'5',global.dash_count)
+            
+            if global.game_time&gt;ini_read_real(name,'best_time',0)
+            {
+                ini_write_real(name,'best_time',global.game_time)
+                ini_write_real(name,'best_date',int64(date_second_span(global.unix_start,date_current_datetime())))
+            }
+            
+            if global.game_time&gt;ini_read_real('meta','best',0)
+            {
+                ini_write_real('meta','best',global.game_time)
+            }
+            
+            
+            ini_write_real(name,'run_count',run_count+1)
+            
+            ini_close()
+            global.local_save_lock=true            
+        }
+        else
+        {
+            draw_text(300,32,'Run saved to file!')
+        }
     }
-    
-    if global.push_run_timer=0
-    {
-        global.push_run_attempt+=1
-        global.push_run_timer=240
-        send_payload('push_run',global.selected_profile,global.game_time,int64(date_second_span(global.unix_start,date_current_datetime())),global.kill_count,global.death_count,global.jump_count,global.dash_count)
-    }
-    
+        
     // Runtime
     draw_config(fnt_end_big,c_black,fa_middle,fa_middle)
     draw_text(300,110,format_time(global.game_time,false))
