@@ -94,6 +94,7 @@
       <script>scripts\binding_taken.gml</script>
       <script>scripts\create_arc.gml</script>
       <script>scripts\follow_arc.gml</script>
+      <script>scripts\write_local_bindings.gml</script>
     </scripts>
     <scripts name="else">
       <script>scripts\create_particles.gml</script>

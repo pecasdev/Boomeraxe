@@ -2144,7 +2144,15 @@ if room=rm_main
             
             if keyboard_check_pressed(vk_enter) or keyboard_check_pressed(global.k[? 'jump'])
             {
-                send_payload("login",global.profiles[#0,user],keyboard_string)
+                if global.local_save_mode=false
+                {
+                    send_payload("login",global.profiles[#0,user],keyboard_string)
+                }
+                else
+                {
+                    global.login_pass[? global.profiles[#0,user]]=true
+                    login_update=true
+                }
             }
 
             if login_update
@@ -2260,8 +2268,15 @@ if room=rm_main
                         update_bindings()
                         
                         if global.selected_profile!="anonymous"
-                        {                            
-                            send_payload("push_bind",global.selected_profile,global.k[? 'up'],global.k[? 'down'],global.k[? 'left'],global.k[? 'right'],global.k[? 'jump'],global.k[? 'throw'],global.k[? 'dash'])
+                        {
+                            if global.local_save_mode=false
+                            {                                                    
+                                send_payload("push_bind",global.selected_profile,global.k[? 'up'],global.k[? 'down'],global.k[? 'left'],global.k[? 'right'],global.k[? 'jump'],global.k[? 'throw'],global.k[? 'dash'])
+                            }
+                            else
+                            {
+                                write_local_bindings()
+                            }
                         }
                         
                         binding_select=undefined
@@ -2286,7 +2301,7 @@ if room=rm_main
                 draw_select(450,163+63*binding_select,string_width(binding_prompt)+20,string_height(binding_prompt)+20,4)
             }
             
-            if keyboard_check_pressed(vk_enter) or keyboard_check_pressed(global.k[? 'jump'])
+            if keyboard_check_pressed(vk_enter)
             {
                 binding_select=select
             }
@@ -2478,7 +2493,7 @@ if room=rm_end
                     ini_write_real(name,string(run_count)+'4',global.jump_count)
                     ini_write_real(name,string(run_count)+'5',global.dash_count)
                     
-                    if global.game_time&gt;ini_read_real(name,'best_time',0)
+                    if global.game_time&lt;ini_read_real(name,'best_time',global.game_time+1)
                     {
                         ini_write_real(name,'best_time',global.game_time)
                         ini_write_real(name,'best_date',int64(date_second_span(global.unix_start,date_current_datetime())))
