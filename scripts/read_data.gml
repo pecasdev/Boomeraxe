@@ -24,7 +24,7 @@ if file_exists('boomeraxe.ini')
             global.profiles[#3,i-a]=ini_read_real(name,'run_count',0)
             
             ds_grid_resize(global.profiles,max(ds_grid_width(global.profiles),(global.profiles[#3,i-a]+1)*6+11),profile_count)
-        
+            
             for (z=0;z!=global.profiles[#3,i-a]*6;z+=6)
             {
                 global.profiles[#z+4,i-a]=ini_read_real(name,string(z/6)+'0',0)    // Runtime
@@ -60,6 +60,23 @@ if file_exists('boomeraxe.ini')
     
     ds_grid_resize(global.profiles,ds_grid_width(global.profiles),profile_count-a)
     ds_grid_sort(global.profiles,1,1)
+    
+    sort_index=ds_list_create()
+    
+    for (i=0;i!=ds_list_size(global.profiles);i+=1)
+    {
+        a=1
+        if global.profiles[#1,i]=global.profiles[#1,i+a] and i+a!=ds_list_size(global.profiles)-1
+        {
+            while global.profiles[#1,i]=global.profiles[#1,i+a]
+            {
+                a+=1
+            }
+            sort_by_date(a-1) // because it goes over by one in order to check if that value is possible
+            i+=a
+        }
+        show_debug_message(i)
+    }
     ds_grid_resize(global.profiles,ds_grid_width(global.profiles),profile_count)
     
     for (i=0;i!=ds_list_size(new_profiles);i+=9)
