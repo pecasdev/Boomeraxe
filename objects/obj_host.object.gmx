@@ -476,6 +476,7 @@ if room=rm_end
     show_debug_message(selected_profile)
     new_profiles=ds_grid_create(ds_grid_width(global.profiles),ds_grid_height(global.profiles))
     ds_grid_copy(new_profiles,global.profiles)
+    new_rank=clamp(calculate_rank(),0,selected_profile)
 }
 
 // Global
@@ -2670,9 +2671,7 @@ if room=rm_end
         }        
     }
     // Rank
-    
-    new_rank=clamp(calculate_rank(),1,selected_profile+1)
-    
+       
     if new_rank=1
     {
         c_rank=3118552

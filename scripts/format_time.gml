@@ -5,7 +5,7 @@ sym=''
 
 if split=true
 {
-    if sign(time)=-1 or sign(time)=0
+    if sign(time)=-1
     {
         sym='-'
     }
