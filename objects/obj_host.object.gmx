@@ -107,6 +107,7 @@ if room=rm_main
             global.push_run_timer=240
             global.push_run_reciept=false
             global.push_run_attempt=0
+            global.local_save_lock=false
         }
         else
         {
@@ -457,10 +458,7 @@ if room=rm_main
     pause_x=0
     login_fail=0
     logged_in_prompt=0    
-    
-    // Other
-    global.profiles=undefined
-    
+       
     global.kill_count=0
     global.death_count=0
     global.jump_count=0
@@ -493,9 +491,11 @@ h_cur=100
 mix=0.2
 cursor_blink=0.2
 
+prev_select=0
+
 search_toggle=false
 binding_select=undefined
-
+download_overlay=0
 </string>
           </argument>
         </arguments>
@@ -545,6 +545,7 @@ global.overlay_toggle=false
 global.bg_enabled=true
 global.bg_value=4
 global.bg_alpha=5.5
+global.profiles=undefined
 
 window_set_caption('Boomeraxe')
 draw_set_circle_precision(64)
@@ -553,6 +554,7 @@ create_enum()
 if file_exists('local_save')
 {
     global.local_save_mode=true
+    show_message('Local save mode enabled!')
 }
 else
 {
@@ -890,7 +892,46 @@ if room=rm_title
                 {
                     if !name_taken and !name_invalid and !name_oversized and !pass_mismatch
                     {
-                        send_payload('create',string_lower(create_name),create_pass0,global.k[? 'up'],global.k[? 'down'],global.k[? 'left'],global.k[? 'right'],global.k[? 'jump'],global.k[? 'throw'],global.k[? 'dash'])
+                        if global.local_save_mode=false
+                        {
+                            send_payload('create',string_lower(create_name),create_pass0,global.k[? 'up'],global.k[? 'down'],global.k[? 'left'],global.k[? 'right'],global.k[? 'jump'],global.k[? 'throw'],global.k[? 'dash'])
+                        }
+                        else
+                        {
+                            ini_open('boomeraxe.ini')
+                            
+                            profile_count=ini_read_real('meta','profile_count',0)
+                            
+                            ini_write_real('meta','profile_count',profile_count+1)
+                            ini_write_string('meta',profile_count,string_lower(create_name))
+                            ini_write_string(string_lower(create_name),'pass',create_pass0)
+                            ini_write_real(string_lower(create_name),'best_time',0)
+                            ini_write_real(string_lower(create_name),'best_date',0)
+                            ini_write_real(string_lower(create_name),'run_count',0)
+                            ini_write_real(string_lower(create_name),'up',global.k[? 'up'])
+                            ini_write_real(string_lower(create_name),'down',global.k[? 'down'])
+                            ini_write_real(string_lower(create_name),'left',global.k[? 'left'])
+                            ini_write_real(string_lower(create_name),'right',global.k[? 'right'])
+                            ini_write_real(string_lower(create_name),'jump',global.k[? 'jump'])
+                            ini_write_real(string_lower(create_name),'throw',global.k[? 'throw'])
+                            ini_write_real(string_lower(create_name),'dash',global.k[? 'dash'])
+                            
+                            ini_close()
+                            
+                            
+                            ini_open(string_lower(create_name)+'.boomeraxe')
+                            
+                            ini_write_string(string_lower(create_name),'pass',create_pass0)
+                            ini_write_real(string_lower(create_name),'up',global.k[? 'up'])
+                            ini_write_real(string_lower(create_name),'down',global.k[? 'down'])
+                            ini_write_real(string_lower(create_name),'left',global.k[? 'left'])
+                            ini_write_real(string_lower(create_name),'right',global.k[? 'right'])
+                            ini_write_real(string_lower(create_name),'jump',global.k[? 'jump'])
+                            ini_write_real(string_lower(create_name),'throw',global.k[? 'throw'])
+                            ini_write_real(string_lower(create_name),'dash',global.k[? 'dash'])
+                            
+                            ini_close()
+                        } 
                     }
                 }
                 
@@ -1409,9 +1450,16 @@ if room=rm_main
             {
                 case s.downloading:
                 {
-                    global.profiles=undefined
-                    download_data()
-                    
+                    if global.local_save_mode=false
+                    {
+                        global.profiles=undefined
+                        download_data()
+                    }
+                    else
+                    {
+                        read_data()
+                        leaderboard_state=s.idle
+                    }                    
                 }break
                 
                 case s.download_wait:
@@ -2052,15 +2100,30 @@ if room=rm_main
             {
                 if select=0
                 {
+                    show_debug_message(global.selected_profile)
+                    show_debug_message(global.profiles[#0,user])
+                    
                     if global.selected_profile=global.profiles[#0,user]
                     {
                         global.selected_profile='anonymous'
                     }
                     else
                     {
-                        gui_state=s.login
-                        keyboard_string=''
-                        mix=0.2 
+                        if global.local_save_mode
+                        {
+                            global.selected_profile=global.profiles[#0,user]
+                                
+                            username=get_username_from_name(global.selected_profile)
+                            login_bindings()
+                                
+                            logged_in_prompt=120
+                        }
+                        else
+                        {
+                            gui_state=s.login
+                            keyboard_string=''
+                            mix=0.2 
+                        }
                     }                   
                 }
                 else
@@ -2143,16 +2206,8 @@ if room=rm_main
             draw_text(300,550,'ENTER to Confirm')
             
             if keyboard_check_pressed(vk_enter) or keyboard_check_pressed(global.k[? 'jump'])
-            {
-                if global.local_save_mode=false
-                {
-                    send_payload("login",global.profiles[#0,user],keyboard_string)
-                }
-                else
-                {
-                    global.login_pass[? global.profiles[#0,user]]=true
-                    login_update=true
-                }
+            {                
+                send_payload("login",global.profiles[#0,user],keyboard_string)
             }
 
             if login_update
@@ -2161,7 +2216,7 @@ if room=rm_main
                 {
                     global.selected_profile=global.profiles[#0,user]
                     
-                    user=get_user_from_name(global.selected_profile)
+                    username=get_username_from_name(global.selected_profile)
                     login_bindings()
                     
                     logged_in_prompt=120
@@ -2179,7 +2234,8 @@ if room=rm_main
             if keyboard_check_pressed(vk_escape)
             {
                 gui_state=s.profile
-            }                    
+            }
+                                
         }break
         
         case s.keybind:
@@ -2483,6 +2539,7 @@ if room=rm_end
                 name=global.selected_profile
                 if file_exists(name+'.boomeraxe')
                 {
+                    
                     ini_open(name+'.boomeraxe')
                     run_count=ini_read_real(name,'run_count',0)
                     
@@ -2493,7 +2550,7 @@ if room=rm_end
                     ini_write_real(name,string(run_count)+'4',global.jump_count)
                     ini_write_real(name,string(run_count)+'5',global.dash_count)
                     
-                    if global.game_time&lt;ini_read_real(name,'best_time',global.game_time+1)
+                    if global.game_time&lt;ini_read_real(name,'best_time',global.game_time+1) or ini_read_real(name,'run_count',0)=0
                     {
                         ini_write_real(name,'best_time',global.game_time)
                         ini_write_real(name,'best_date',int64(date_second_span(global.unix_start,date_current_datetime())))
@@ -2519,36 +2576,36 @@ if room=rm_end
                     ini_write_real(name,'05',global.dash_count)
                     
                     ini_close()
-                }    
-            }
+                }             
                         
-            ini_open('boomeraxe.ini')
-            
-            run_count=ini_read_real(name,'run_count',0)
-            
-            ini_write_real(name,string(run_count)+'0',global.game_time)
-            ini_write_real(name,string(run_count)+'1',int64(date_second_span(global.unix_start,date_current_datetime())))
-            ini_write_real(name,string(run_count)+'2',global.kill_count)
-            ini_write_real(name,string(run_count)+'3',global.death_count)
-            ini_write_real(name,string(run_count)+'4',global.jump_count)
-            ini_write_real(name,string(run_count)+'5',global.dash_count)
-            
-            if global.game_time&gt;ini_read_real(name,'best_time',0)
-            {
-                ini_write_real(name,'best_time',global.game_time)
-                ini_write_real(name,'best_date',int64(date_second_span(global.unix_start,date_current_datetime())))
-            }
-            
-            if global.game_time&gt;ini_read_real('meta','best',0)
-            {
-                ini_write_real('meta','best',global.game_time)
-            }
-            
-            
-            ini_write_real(name,'run_count',run_count+1)
-            
-            ini_close()
-            global.local_save_lock=true            
+                ini_open('boomeraxe.ini')
+                
+                run_count=ini_read_real(name,'run_count',0)
+                
+                ini_write_real(name,string(run_count)+'0',global.game_time)
+                ini_write_real(name,string(run_count)+'1',int64(date_second_span(global.unix_start,date_current_datetime())))
+                ini_write_real(name,string(run_count)+'2',global.kill_count)
+                ini_write_real(name,string(run_count)+'3',global.death_count)
+                ini_write_real(name,string(run_count)+'4',global.jump_count)
+                ini_write_real(name,string(run_count)+'5',global.dash_count)
+                
+                if global.game_time&lt;ini_read_real(name,'best_time',0) or ini_read_real(name,'run_count',0)=0
+                {
+                    ini_write_real(name,'best_time',global.game_time)
+                    ini_write_real(name,'best_date',int64(date_second_span(global.unix_start,date_current_datetime())))
+                }
+                
+                if global.game_time&lt;ini_read_real('meta','best',0)
+                {
+                    ini_write_real('meta','best',global.game_time)
+                }
+                
+                
+                ini_write_real(name,'run_count',run_count+1)
+                
+                ini_close()
+                global.local_save_lock=true
+            }            
         }
         else
         {

@@ -109,7 +109,7 @@
       <script>scripts\update_bindings.gml</script>
       <script>scripts\login_bindings.gml</script>
       <script>scripts\string_key.gml</script>
-      <script>scripts\get_user_from_name.gml</script>
+      <script>scripts\get_username_from_name.gml</script>
       <script>scripts\draw_cursor.gml</script>
       <script>scripts\create_ring.gml</script>
       <script>scripts\send_payload.gml</script>

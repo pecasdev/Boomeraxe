@@ -1,4 +1,3 @@
-
 if file_exists('boomeraxe.ini')
 {
     ini_open('boomeraxe.ini')
