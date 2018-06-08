@@ -150,42 +150,44 @@ if room=rm_main
           <argument>
             <kind>1</kind>
             <string>/// Server Ping
-
-if global.ping_retry&gt;=global.ping_timer
+if gui_state!=s.profile_create and gui_state!=s.profiles
 {
-    if global.server_connection=true
+    if global.ping_retry&gt;=global.ping_timer
     {
-        global.ping_timer=10*room_speed
+        if global.server_connection=true
+        {
+            global.ping_timer=10*room_speed
+        }
+        else
+        {
+            global.ping_timer=3*room_speed
+        }
+        
+        global.ping_retry=0
+        
+        if global.fail_retries&gt;0
+        {
+            global.fail_retries-=1
+        }
+        
+        send_payload('ping',global.selected_profile)
+    }
+    else if global.fail_retries&gt;0
+    {
+        global.ping_retry+=1
     }
     else
     {
-        global.ping_timer=3*room_speed
+        global.server_connection=false
     }
-    
-    global.ping_retry=0
-    
-    if global.fail_retries&gt;0
+        
+    if keyboard_check_pressed(ord('R'))
     {
-        global.fail_retries-=1
+        global.server_connection=undefined
+        global.fail_retries=2
+        global.ping_timer=3*room_speed
+        global.ping_retry=0
     }
-    
-    send_payload('ping',global.selected_profile)
-}
-else if global.fail_retries&gt;0
-{
-    global.ping_retry+=1
-}
-else
-{
-    global.server_connection=false
-}
-    
-if keyboard_check_pressed(ord('R'))
-{
-    global.server_connection=undefined
-    global.fail_retries=2
-    global.ping_timer=3*room_speed
-    global.ping_retry=0
 }
 </string>
           </argument>
@@ -305,6 +307,18 @@ if async_load[? 'type']=network_type_data
         global.fail_retries=2
         global.ping_timer=30*room_speed
     }
+    
+    if packet_id='create_name_check'
+    {      
+        if buffer_read(buffer,buffer_string)='pass'
+        {
+            name_taken='pass'
+        }
+        else
+        {
+            name_taken=true
+        }
+    }
 }
 </string>
           </argument>
@@ -390,6 +404,11 @@ if room=rm_title
     name_taken=false
     name_invalid=false
     
+    name_left_blank=0
+    pass0_left_blank=0
+    pass1_left_blank=0
+    
+    check_name_lock=false
     name_error=0
     pass_error=0
     c_create_name=c_white
@@ -458,6 +477,7 @@ if room=rm_main
     pause_x=0
     login_fail=0
     logged_in_prompt=0    
+    overlay_init_lock=false
        
     global.kill_count=0
     global.death_count=0
@@ -543,6 +563,7 @@ global.volume_mute=false
 global.volume_effects=5
 global.volume_music=5
 global.overlay_toggle=false
+overlay_init_lock=false
 global.bg_enabled=true
 global.bg_value=4
 global.bg_alpha=5.5
@@ -555,6 +576,7 @@ create_enum()
 if file_exists('local_save')
 {
     global.local_save_mode=true
+    read_data()
     show_message('Local save mode enabled!')
 }
 else
@@ -692,7 +714,7 @@ if room=rm_title
             draw_text(300,40,"Profile Create")
             
             // Username Box
-            draw_area(300-150,135-26,300+150,135+26,4210752,c_white,2)          // Graphite
+            draw_area(300-150,135-26,300+150,135+26,4210752,merge_colour(c_white,c_red,clamp(name_left_blank,0,120)/120),2)          // Graphite
             draw_config(fnt_profile_create_small,9868950,fa_middle,fa_middle)   // Pastel
             draw_text(300,135,create_name)    
             
@@ -710,13 +732,23 @@ if room=rm_title
             {
                 draw_text(300,190,"Name is unavailable")
             }
+            else if name_taken=undefined
+            {
+                draw_set_colour(c_white)
+                draw_text(300,190,"Checking name...")
+            }
+            else if name_taken='pass'
+            {
+                draw_set_colour(c_lime)
+                draw_text(300,190,'Name Available!')
+            }
             else
             {
                 draw_text(300,177,"Choose a Username")
             }
             
             // Password Box
-            draw_area(300-150,270-26,300+150,270+26,4210752,c_white,2)          // Graphite
+            draw_area(300-150,270-26,300+150,270+26,4210752,merge_colour(c_white,c_red,clamp(pass0_left_blank/120,0,120)),2)          // Graphite
             draw_config(fnt_profile_create,9868950,fa_middle,fa_middle)   // Pastel
             draw_text_transformed(300,260,string_repeat('.',string_length(create_pass0)),1.25,1.5,0)
             
@@ -724,7 +756,7 @@ if room=rm_title
             draw_text(300,307,"Enter a Password")
             
             // Confirm Password Box
-            draw_area(300-150,362-26,300+150,362+26,4210752,c_white,2)          // Graphite
+            draw_area(300-150,362-26,300+150,362+26,4210752,merge_colour(c_white,c_red,clamp(pass1_left_blank/120,0,120)),2)          // Graphite
             draw_config(fnt_profile_create,9868950,fa_middle,fa_middle)   // Pastel
             draw_text_transformed(300,352,string_repeat('.',string_length(create_pass1)),1.25,1.5,0)
             
@@ -753,7 +785,6 @@ if room=rm_title
             if name_taken
             {
                 name_error=120
-                name_taken=false
             }
                         
             if string_count('#',create_name)&gt;0 or string_count('%',create_name)&gt;0 or string_count('[',create_name)&gt;0 or string_count(']',create_name)&gt;0 or !ascii_only(create_name)
@@ -775,7 +806,23 @@ if room=rm_title
             {
                 pass_mismatch=false
             }
-        
+                        
+            // Fade out
+            if name_left_blank&gt;0
+            {
+                name_left_blank-=5
+            }
+            
+            if pass0_left_blank&gt;0
+            {
+                pass0_left_blank-=5
+            }
+            
+            if pass1_left_blank&gt;0
+            {
+                pass1_left_blank-=5
+            }
+            
             // Keybindings Button
             draw_area(300-105,478-25,300+105,478+25,4210752,c_white,2)          // Graphite
             
@@ -813,11 +860,16 @@ if room=rm_title
             
             cursor_blink+=(up-down)*0.03
             
+            if keyboard_check_pressed(vk_anykey)
+            {
+                check_name_lock=false
+            }
+            
             if select=0
             {
                 draw_select(300,135,300,52,3)
                 if create_name=''
-                {
+                {                    
                     draw_cursor(300,135,4,28,cursor_blink)
                 }
                                 
@@ -828,7 +880,27 @@ if room=rm_title
                 else
                 {
                     create_name=keyboard_string
-                }          
+                    
+                    if keyboard_string!='' and check_name_lock=false
+                    {
+                        if global.local_save_mode=false
+                        {
+                            name_taken=undefined
+                            send_payload('create_name_check',create_name)
+                        }
+                        else
+                        {
+                            name_taken=check_username_availability(create_name)
+                        }
+                        check_name_lock=true
+                    }
+                    else if keyboard_string=''
+                    {
+                        name_taken=false
+                    }
+                }
+                
+                name_left_blank=0          
             }
             
             if select=1
@@ -846,7 +918,9 @@ if room=rm_title
                 else
                 {
                     create_pass0=keyboard_string
-                }          
+                }
+                
+                pass0_left_blank=0
             }
             
             if select=2
@@ -864,7 +938,9 @@ if room=rm_title
                 else
                 {
                     create_pass1=keyboard_string
-                }          
+                }
+                
+                pass1_left_blank=0         
             }
             
             if select=3
@@ -891,20 +967,23 @@ if room=rm_title
                 
                 if select=4
                 {
-                    if !name_taken and !name_invalid and !name_oversized and !pass_mismatch
+                    if create_name='' or create_pass0='' or create_pass1=''
                     {
-                        if global.local_save_mode=false
+                        // Error checking for entries left blank
+                        if name_left_blank=0 and create_name='' and select!=0
                         {
-                            send_payload('create',string_lower(create_name),create_pass0,global.k[? 'up'],global.k[? 'down'],global.k[? 'left'],global.k[? 'right'],global.k[? 'jump'],global.k[? 'throw'],global.k[? 'dash'])
+                            name_left_blank=120
                         }
-                        else
+                        
+                        if pass0_left_blank=0 and create_pass0='' and select!=1
                         {
+<<<<<<< HEAD
                             ini_open('boomeraxe.ini')
                             
                             profile_count=ini_read_real('meta','profile_count',0)
                             
                             ini_write_real('meta','profile_count',profile_count+1)
-                            ini_write_string('meta',profile_count,string_lower(create_name))
+                            ini_write_string('meta',string(profile_count),string_lower(create_name))
                             ini_write_string(string_lower(create_name),'pass',create_pass0)
                             ini_write_real(string_lower(create_name),'best_time',0)
                             ini_write_real(string_lower(create_name),'best_date',0)
@@ -933,6 +1012,61 @@ if room=rm_title
                             
                             ini_close()
                         } 
+=======
+                            pass0_left_blank=120
+                        }
+                        
+                        if pass1_left_blank=0 and create_pass1='' and select!=2
+                        {
+                            pass1_left_blank=120
+                        }
+                    }
+                    else
+                    {
+                        if name_taken=false and name_invalid=false and name_oversized=false and pass_mismatch=false
+                        {
+                            if global.local_save_mode=false
+                            {
+                                send_payload('create',string_lower(create_name),create_pass0,global.k[? 'up'],global.k[? 'down'],global.k[? 'left'],global.k[? 'right'],global.k[? 'jump'],global.k[? 'throw'],global.k[? 'dash'])
+                            }
+                            else
+                            {
+                                ini_open('boomeraxe.ini')
+                                
+                                profile_count=ini_read_real('meta','profile_count',0)
+                                
+                                ini_write_real('meta','profile_count',profile_count+1)
+                                ini_write_string('meta',profile_count,string_lower(create_name))
+                                ini_write_string(string_lower(create_name),'pass',create_pass0)
+                                ini_write_real(string_lower(create_name),'best_time',0)
+                                ini_write_real(string_lower(create_name),'best_date',0)
+                                ini_write_real(string_lower(create_name),'run_count',0)
+                                ini_write_real(string_lower(create_name),'up',global.k[? 'up'])
+                                ini_write_real(string_lower(create_name),'down',global.k[? 'down'])
+                                ini_write_real(string_lower(create_name),'left',global.k[? 'left'])
+                                ini_write_real(string_lower(create_name),'right',global.k[? 'right'])
+                                ini_write_real(string_lower(create_name),'jump',global.k[? 'jump'])
+                                ini_write_real(string_lower(create_name),'throw',global.k[? 'throw'])
+                                ini_write_real(string_lower(create_name),'dash',global.k[? 'dash'])
+                                
+                                ini_close()
+                                
+                                
+                                ini_open(string_lower(create_name)+'.boomeraxe')
+                                
+                                ini_write_string(string_lower(create_name),'pass',create_pass0)
+                                ini_write_real(string_lower(create_name),'up',global.k[? 'up'])
+                                ini_write_real(string_lower(create_name),'down',global.k[? 'down'])
+                                ini_write_real(string_lower(create_name),'left',global.k[? 'left'])
+                                ini_write_real(string_lower(create_name),'right',global.k[? 'right'])
+                                ini_write_real(string_lower(create_name),'jump',global.k[? 'jump'])
+                                ini_write_real(string_lower(create_name),'throw',global.k[? 'throw'])
+                                ini_write_real(string_lower(create_name),'dash',global.k[? 'dash'])
+                                
+                                ini_close()
+                            } 
+                        }
+>>>>>>> edad624f0f48bd804b1386cfdbf0c1958f2717e7
                     }
                 }
                 
@@ -1715,7 +1849,7 @@ if room=rm_main
                 // Search Toggle
                 if search_toggle
                 {
-                    draw_set_alpha(0.6)
+                    draw_set_alpha(0.45)
                     draw_area(0,80,600,600,c_black,c_black,0)
                     draw_set_alpha(1)
                 }
@@ -2100,10 +2234,7 @@ if room=rm_main
             if keyboard_check_pressed(vk_enter) or keyboard_check_pressed(global.k[? 'jump'])
             {
                 if select=0
-                {
-                    show_debug_message(global.selected_profile)
-                    show_debug_message(global.profiles[#0,user])
-                    
+                {                    
                     if global.selected_profile=global.profiles[#0,user]
                     {
                         global.selected_profile='anonymous'
@@ -2375,6 +2506,30 @@ if room=rm_main
     {
         if global.profiles!=undefined
         {
+            if overlay_init_lock=false
+            {
+                rows=ds_list_create()
+                
+                for(i=0;i!=5;i++)
+                {
+                    row=instance_create(400,492+27*i,obj_overlay_row)
+                    row.rank=i+1
+                    
+                    if i=0
+                    {
+                        row.username=global.selected_profile
+                    }
+                    else
+                    {
+                        row.username=global.profiles[#0,i]
+                        row.time=global.profiles[#1,i]
+                    }
+                    
+                    ds_list_add(rows,row)
+                }
+            
+                overlay_init_lock=true
+            }
             // Background
             draw_area(400,450,600,600,c_white,c_black,1)
             
@@ -2384,7 +2539,37 @@ if room=rm_main
             // Time until rank down
             if global.game_time&gt;global.profiles[#1,global.overlay_next_rank]
             {
-                global.overlay_next_rank+=1
+                global.overlay_next_rank+=1 
+                
+                if ds_list_find_index(rows,global.selected_profile)=0
+                {
+                    rows[| 0].y_target+=27
+                    rows[| 1].y_target-=27
+                }
+                
+                if ds_list_find_index(rows,global.selected_profile)=1
+                {
+                    if global.overlay_next_rank&lt;=profile_count-2
+                    {
+                        rows[| 0].y_target-=27
+                        rows[| 2].y_target-=54
+                        rows[| 3].y_target-=27
+                        
+                        row=instance_create(400,573,obj_overlay_row)
+                        ds_list_add(rows,row)
+                    }
+                    else
+                    {
+                        rows[| 1].y_target+=27
+                        rows[| 2].y_target-=27
+                    }                    
+                }
+                
+                if ds_list_find_index(rows,global.selected_profile)=2
+                {
+                    rows[| 2]+=27
+                    rows[| 3]-=27
+                }                                
             }
             
             draw_config(fnt_overlay,c_black,fa_middle,fa_middle)
@@ -2405,11 +2590,12 @@ if room=rm_main
             }
             draw_config(fnt_overlay_small,2302755,fa_middle,fa_middle) // Light Charcoal
             draw_text(550,479,'personal best')
-            show_debug_message(string(global.overlay_next_rank)+' , '+string(clamp(global.overlay_next_rank+i,0,profile_count)))
-            
+<<<<<<< HEAD
+            show_debug_message(string(global.overlay_next_rank)+' , '+string(clamp(global.overlay_next_rank+i,0,profile_count)))            
+=======
+                        
             for (i=-1;i!=3;i+=1)
             {
-                show_debug_message(i)
                 if clamp(global.overlay_next_rank+i,0,profile_count)=0
                 {
                     c_back=3517429
@@ -2474,6 +2660,7 @@ if room=rm_main
                 draw_config(fnt_overlay_big,c_black,fa_middle,fa_middle)
                 draw_text(415,491+27*(i+1.5),string(clamp(global.overlay_next_rank+i,0,profile_count)+2))                
             }
+>>>>>>> edad624f0f48bd804b1386cfdbf0c1958f2717e7
         }
         else
         {
@@ -2655,7 +2842,7 @@ if room=rm_end
     if global.profiles[#1,selected_profile]=undefined
     {
         draw_config(fnt_end_small,2852688,fa_middle,fa_middle)  // Radioactive
-        draw_text(450,280,format_time(0-global.game_time,true))
+        draw_text(450,280,'N/A')
     }
     else
     {

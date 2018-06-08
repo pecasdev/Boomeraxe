@@ -117,6 +117,7 @@
       <script>scripts\write_leaderboard.gml</script>
       <script>scripts\ascii_only.gml</script>
       <script>scripts\chance.gml</script>
+      <script>scripts\check_username_availability.gml</script>
     </scripts>
   </scripts>
   <fonts name="fonts">
@@ -198,6 +199,7 @@
       <object>objects\obj_debug</object>
       <object>objects\obj_ring</object>
       <object>objects\obj_connection_notify</object>
+      <object>objects\obj_overlay_row</object>
     </objects>
   </objects>
   <rooms name="rooms">

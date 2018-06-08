@@ -11,6 +11,7 @@ if file_exists('boomeraxe.ini')
     
     new_profiles=ds_list_create()
     a=0
+    empty_profiles=0
     
     for (i=0;i!=profile_count;i++)
     {
@@ -18,30 +19,30 @@ if file_exists('boomeraxe.ini')
 
         if ini_read_real(name,'run_count',0)!=0
         {    
-            global.profiles[#0,i-a]=name
-            global.profiles[#1,i-a]=ini_read_real(name,'best_time',0)
-            global.profiles[#2,i-a]=ini_read_real(name,'best_date',0)
-            global.profiles[#3,i-a]=ini_read_real(name,'run_count',0)
+            global.profiles[#0,i-empty_profiles]=name
+            global.profiles[#1,i-empty_profiles]=ini_read_real(name,'best_time',0)
+            global.profiles[#2,i-empty_profiles]=ini_read_real(name,'best_date',0)
+            global.profiles[#3,i-empty_profiles]=ini_read_real(name,'run_count',0)
             
-            ds_grid_resize(global.profiles,max(ds_grid_width(global.profiles),(global.profiles[#3,i-a]+1)*6+11),profile_count)
+            ds_grid_resize(global.profiles,max(ds_grid_width(global.profiles),(global.profiles[#3,i-empty_profiles]+1)*6+11),profile_count)
             
-            for (z=0;z!=global.profiles[#3,i-a]*6;z+=6)
+            for (z=0;z!=global.profiles[#3,i-empty_profiles]*6;z+=6)
             {
-                global.profiles[#z+4,i-a]=ini_read_real(name,string(z/6)+'0',0)    // Runtime
-                global.profiles[#z+5,i-a]=ini_read_real(name,string(z/6)+'1',0)    // Date 
-                global.profiles[#z+6,i-a]=ini_read_real(name,string(z/6)+'2',0)    // Kills
-                global.profiles[#z+7,i-a]=ini_read_real(name,string(z/6)+'3',0)    // Deaths
-                global.profiles[#z+8,i-a]=ini_read_real(name,string(z/6)+'4',0)    // Jumps
-                global.profiles[#z+9,i-a]=ini_read_real(name,string(z/6)+'5',0)    // Dashes
+                global.profiles[#z+4,i-empty_profiles]=ini_read_real(name,string(z/6)+'0',0)    // Runtime
+                global.profiles[#z+5,i-empty_profiles]=ini_read_real(name,string(z/6)+'1',0)    // Date 
+                global.profiles[#z+6,i-empty_profiles]=ini_read_real(name,string(z/6)+'2',0)    // Kills
+                global.profiles[#z+7,i-empty_profiles]=ini_read_real(name,string(z/6)+'3',0)    // Deaths
+                global.profiles[#z+8,i-empty_profiles]=ini_read_real(name,string(z/6)+'4',0)    // Jumps
+                global.profiles[#z+9,i-empty_profiles]=ini_read_real(name,string(z/6)+'5',0)    // Dashes
             }
             
-            global.profiles[#4+(global.profiles[#3,i-a]+1)*6+0,i-a]=ini_read_real(name,'up',vk_up)
-            global.profiles[#4+(global.profiles[#3,i-a]+1)*6+1,i-a]=ini_read_real(name,'down',vk_down)
-            global.profiles[#4+(global.profiles[#3,i-a]+1)*6+2,i-a]=ini_read_real(name,'left',vk_left)
-            global.profiles[#4+(global.profiles[#3,i-a]+1)*6+3,i-a]=ini_read_real(name,'right',vk_right)
-            global.profiles[#4+(global.profiles[#3,i-a]+1)*6+4,i-a]=ini_read_real(name,'jump',ord('Z'))
-            global.profiles[#4+(global.profiles[#3,i-a]+1)*6+5,i-a]=ini_read_real(name,'throw',ord('X'))
-            global.profiles[#4+(global.profiles[#3,i-a]+1)*6+6,i-a]=ini_read_real(name,'dash',vk_shift)
+            global.profiles[#4+(global.profiles[#3,i-empty_profiles]+1)*6+0,i-empty_profiles]=ini_read_real(name,'up',vk_up)
+            global.profiles[#4+(global.profiles[#3,i-empty_profiles]+1)*6+1,i-empty_profiles]=ini_read_real(name,'down',vk_down)
+            global.profiles[#4+(global.profiles[#3,i-empty_profiles]+1)*6+2,i-empty_profiles]=ini_read_real(name,'left',vk_left)
+            global.profiles[#4+(global.profiles[#3,i-empty_profiles]+1)*6+3,i-empty_profiles]=ini_read_real(name,'right',vk_right)
+            global.profiles[#4+(global.profiles[#3,i-empty_profiles]+1)*6+4,i-empty_profiles]=ini_read_real(name,'jump',ord('Z'))
+            global.profiles[#4+(global.profiles[#3,i-empty_profiles]+1)*6+5,i-empty_profiles]=ini_read_real(name,'throw',ord('X'))
+            global.profiles[#4+(global.profiles[#3,i-empty_profiles]+1)*6+6,i-empty_profiles]=ini_read_real(name,'dash',vk_shift)
         }
         else
         {
@@ -54,34 +55,41 @@ if file_exists('boomeraxe.ini')
             ds_list_add(new_profiles,ini_read_real(name,'jump',ord('Z')))
             ds_list_add(new_profiles,ini_read_real(name,'throw',ord('X')))
             ds_list_add(new_profiles,ini_read_real(name,'dash',vk_shift))
-            a+=1
+            
+            empty_profiles+=1
         }         
     }
-    
     ds_grid_resize(global.profiles,ds_grid_width(global.profiles),profile_count-a)
+    
+    ds_grid_resize(global.profiles,ds_grid_width(global.profiles),profile_count-empty_profiles)
     ds_grid_sort(global.profiles,1,1)
     
     sort_index=ds_list_create()
 
-    for (i=0;i!=profile_count;i+=1)
+    for (i=0;i!=profile_count-empty_profiles;i+=1)
     {
         a=1
-        if global.profiles[#1,i]=global.profiles[#1,i+a] and i+a!=ds_list_size(global.profiles)-1
+        if global.profiles[#1,i]=global.profiles[#1,i+a] and i+a<=ds_list_size(global.profiles)-1
+        profile_matches=1
+        if global.profiles[#1,i]=global.profiles[#1,i+profile_matches] and i+profile_matches!=ds_list_size(global.profiles)-1
         {
-            while global.profiles[#1,i]=global.profiles[#1,i+a]
+            while global.profiles[#1,i]=global.profiles[#1,i+profile_matches]
             {
-                a+=1
+                profile_matches+=1
             }
-            show_debug_message('swapping selection of size '+string(a))
+            show_message('swapping selection of size '+string(a))
             sort_by_date(a-1) // "-1" because it goes over by one in order to check if that value is possible
             i+=a
+            
+            sort_by_date(profile_matches-1) // "-1" because it goes over by one in order to check if that value is possible
+            i+=profile_matches
         }
     }
     ds_grid_resize(global.profiles,ds_grid_width(global.profiles),profile_count)
     
     for (i=0;i!=ds_list_size(new_profiles);i+=9)
     {
-        z=profile_count-a+i/9
+        z=profile_count-empty_profiles+i/9
         global.profiles[#0,z]=new_profiles[| i+0]
         global.profiles[#1,z]=new_profiles[| i+1]
         global.profiles[#2,z]=new_profiles[| i+2]
@@ -90,9 +98,10 @@ if file_exists('boomeraxe.ini')
         global.profiles[#5,z]=new_profiles[| i+5]
         global.profiles[#6,z]=new_profiles[| i+6]
         global.profiles[#7,z]=new_profiles[| i+7]
-        global.profiles[#8,z]=new_profiles[| i+8]       
+        global.profiles[#8,z]=new_profiles[| i+8]      
     }
         
     ini_close()
+    show_debug_message('LOADED')
 }
 
