@@ -978,6 +978,7 @@ if room=rm_title
                         if pass0_left_blank=0 and create_pass0='' and select!=1
                         {
 <<<<<<< HEAD
+<<<<<<< HEAD
                             ini_open('boomeraxe.ini')
                             
                             profile_count=ini_read_real('meta','profile_count',0)
@@ -1013,6 +1014,8 @@ if room=rm_title
                             ini_close()
                         } 
 =======
+=======
+>>>>>>> edad624f0f48bd804b1386cfdbf0c1958f2717e7
                             pass0_left_blank=120
                         }
                         
@@ -1066,6 +1069,9 @@ if room=rm_title
                                 ini_close()
                             } 
                         }
+<<<<<<< HEAD
+>>>>>>> edad624f0f48bd804b1386cfdbf0c1958f2717e7
+=======
 >>>>>>> edad624f0f48bd804b1386cfdbf0c1958f2717e7
                     }
                 }
@@ -2591,8 +2597,11 @@ if room=rm_main
             draw_config(fnt_overlay_small,2302755,fa_middle,fa_middle) // Light Charcoal
             draw_text(550,479,'personal best')
 <<<<<<< HEAD
+<<<<<<< HEAD
             show_debug_message(string(global.overlay_next_rank)+' , '+string(clamp(global.overlay_next_rank+i,0,profile_count)))            
 =======
+=======
+>>>>>>> edad624f0f48bd804b1386cfdbf0c1958f2717e7
                         
             for (i=-1;i!=3;i+=1)
             {
