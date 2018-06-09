@@ -65,11 +65,11 @@ if file_exists('boomeraxe.ini')
     
     sort_index=ds_list_create()
 
-    /* CHECK BELOW CODE FOR OUT OF GRID INDEX ERROR */
     for (i=0;i!=profile_count-empty_profiles;i+=1)
     {
         profile_matches=1
-        if global.profiles[#1,i]=global.profiles[#1,i+profile_matches] and i+profile_matches!=ds_list_size(global.profiles)-1
+        
+        if i+profile_matches<=profile_count-1 and global.profiles[#1,i]=global.profiles[#1,i+profile_matches]
         {
             while global.profiles[#1,i]=global.profiles[#1,i+profile_matches]
             {
@@ -80,10 +80,9 @@ if file_exists('boomeraxe.ini')
             i+=profile_matches
         }
     }
-    /* CHECK ABOVE CODE FOR OUT OF GRID INDEX ERROR */
-    
+   
     ds_grid_resize(global.profiles,ds_grid_width(global.profiles),profile_count)
-    
+
     for (i=0;i!=ds_list_size(new_profiles);i+=9)
     {
         z=profile_count-empty_profiles+i/9
