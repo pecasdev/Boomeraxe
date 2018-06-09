@@ -199,6 +199,7 @@
       <object>objects\obj_debug</object>
       <object>objects\obj_ring</object>
       <object>objects\obj_connection_notify</object>
+      <object>objects\obj_overlay_row</object>
     </objects>
   </objects>
   <rooms name="rooms">
