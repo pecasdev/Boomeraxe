@@ -150,7 +150,7 @@ if room=rm_main
           <argument>
             <kind>1</kind>
             <string>/// Server Ping
-if gui_state!=s.profile_create and gui_state!=s.profiles
+if gui_state!=s.profile_create and gui_state!=s.profiles and gui_state!=s.login
 {
     if global.ping_retry&gt;=global.ping_timer
     {
@@ -1545,15 +1545,15 @@ if room=rm_main
             {
                 case s.downloading:
                 {
-                    if global.local_save_mode=false
+                    if global.local_save_mode=true or global.server_connection=false
                     {
-                        global.profiles=undefined
-                        download_data()
+                        read_data()
+                        leaderboard_state=s.idle                    
                     }
                     else
                     {
-                        read_data()
-                        leaderboard_state=s.idle
+                        global.profiles=undefined
+                        download_data()
                     }                    
                 }break
                 
@@ -2262,6 +2262,13 @@ if room=rm_main
             // Password Box
             draw_config(fnt_login_big,c_black,fa_middle,fa_middle)
             draw_area(300-150,330-28,300+150,330+28,4210752,c_white,2)  // Graphite
+            
+            if global.server_connection=false
+            {
+                // Offline Error
+                draw_config(fnt_login_small,c_red,fa_middle,fa_middle)
+                draw_text(300,415,'you cannot login#in offline mode')
+            }
             
             if login_fail!=0
             {
