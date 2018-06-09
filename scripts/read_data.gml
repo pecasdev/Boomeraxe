@@ -10,10 +10,7 @@ if file_exists('boomeraxe.ini')
     global.profiles=ds_grid_create(11,profile_count)
     
     new_profiles=ds_list_create()
-<<<<<<< HEAD
-    a=0
-=======
->>>>>>> edad624f0f48bd804b1386cfdbf0c1958f2717e7
+
     empty_profiles=0
     
     for (i=0;i!=profile_count;i++)
@@ -62,23 +59,15 @@ if file_exists('boomeraxe.ini')
             empty_profiles+=1
         }         
     }
-<<<<<<< HEAD
-    ds_grid_resize(global.profiles,ds_grid_width(global.profiles),profile_count-a)
-=======
->>>>>>> edad624f0f48bd804b1386cfdbf0c1958f2717e7
     
     ds_grid_resize(global.profiles,ds_grid_width(global.profiles),profile_count-empty_profiles)
     ds_grid_sort(global.profiles,1,1)
     
     sort_index=ds_list_create()
 
+    /* CHECK BELOW CODE FOR OUT OF GRID INDEX ERROR */
     for (i=0;i!=profile_count-empty_profiles;i+=1)
     {
-<<<<<<< HEAD
-        a=1
-        if global.profiles[#1,i]=global.profiles[#1,i+a] and i+a<=ds_list_size(global.profiles)-1
-=======
->>>>>>> edad624f0f48bd804b1386cfdbf0c1958f2717e7
         profile_matches=1
         if global.profiles[#1,i]=global.profiles[#1,i+profile_matches] and i+profile_matches!=ds_list_size(global.profiles)-1
         {
@@ -86,17 +75,13 @@ if file_exists('boomeraxe.ini')
             {
                 profile_matches+=1
             }
-<<<<<<< HEAD
-            show_message('swapping selection of size '+string(a))
-            sort_by_date(a-1) // "-1" because it goes over by one in order to check if that value is possible
-            i+=a
-=======
->>>>>>> edad624f0f48bd804b1386cfdbf0c1958f2717e7
             
             sort_by_date(profile_matches-1) // "-1" because it goes over by one in order to check if that value is possible
             i+=profile_matches
         }
     }
+    /* CHECK ABOVE CODE FOR OUT OF GRID INDEX ERROR */
+    
     ds_grid_resize(global.profiles,ds_grid_width(global.profiles),profile_count)
     
     for (i=0;i!=ds_list_size(new_profiles);i+=9)

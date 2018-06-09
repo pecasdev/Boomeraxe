@@ -150,45 +150,44 @@ if room=rm_main
           <argument>
             <kind>1</kind>
             <string>/// Server Ping
-if gui_state!=s.profile_create and gui_state!=s.profiles and gui_state!=s.login
+
+if global.ping_retry&gt;=global.ping_timer
 {
-    if global.ping_retry&gt;=global.ping_timer
+    if global.server_connection=true
     {
-        if global.server_connection=true
-        {
-            global.ping_timer=10*room_speed
-        }
-        else
-        {
-            global.ping_timer=3*room_speed
-        }
-        
-        global.ping_retry=0
-        
-        if global.fail_retries&gt;0
-        {
-            global.fail_retries-=1
-        }
-        
-        send_payload('ping',global.selected_profile)
-    }
-    else if global.fail_retries&gt;0
-    {
-        global.ping_retry+=1
+        global.ping_timer=10*room_speed
     }
     else
     {
-        global.server_connection=false
-    }
-        
-    if keyboard_check_pressed(ord('R'))
-    {
-        global.server_connection=undefined
-        global.fail_retries=2
         global.ping_timer=3*room_speed
-        global.ping_retry=0
     }
+    
+    global.ping_retry=0
+    
+    if global.fail_retries&gt;0
+    {
+        global.fail_retries-=1
+    }
+    
+    send_payload('ping',global.selected_profile)
 }
+else if global.fail_retries&gt;0
+{
+    global.ping_retry+=1
+}
+else
+{
+    global.server_connection=false
+}
+    
+if keyboard_check_pressed(ord('R')) and gui_state!=s.profile_create and gui_state!=s.profiles and gui_state!=s.login
+{
+    global.server_connection=undefined
+    global.fail_retries=2
+    global.ping_timer=3*room_speed
+    global.ping_retry=0
+}
+
 </string>
           </argument>
         </arguments>
@@ -496,7 +495,7 @@ if room=rm_end
     show_debug_message(selected_profile)
     new_profiles=ds_grid_create(ds_grid_width(global.profiles),ds_grid_height(global.profiles))
     ds_grid_copy(new_profiles,global.profiles)
-    new_rank=clamp(calculate_rank(),0,selected_profile)
+    new_rank=calculate_rank()
 }
 
 // Global
@@ -977,45 +976,6 @@ if room=rm_title
                         
                         if pass0_left_blank=0 and create_pass0='' and select!=1
                         {
-<<<<<<< HEAD
-<<<<<<< HEAD
-                            ini_open('boomeraxe.ini')
-                            
-                            profile_count=ini_read_real('meta','profile_count',0)
-                            
-                            ini_write_real('meta','profile_count',profile_count+1)
-                            ini_write_string('meta',string(profile_count),string_lower(create_name))
-                            ini_write_string(string_lower(create_name),'pass',create_pass0)
-                            ini_write_real(string_lower(create_name),'best_time',0)
-                            ini_write_real(string_lower(create_name),'best_date',0)
-                            ini_write_real(string_lower(create_name),'run_count',0)
-                            ini_write_real(string_lower(create_name),'up',global.k[? 'up'])
-                            ini_write_real(string_lower(create_name),'down',global.k[? 'down'])
-                            ini_write_real(string_lower(create_name),'left',global.k[? 'left'])
-                            ini_write_real(string_lower(create_name),'right',global.k[? 'right'])
-                            ini_write_real(string_lower(create_name),'jump',global.k[? 'jump'])
-                            ini_write_real(string_lower(create_name),'throw',global.k[? 'throw'])
-                            ini_write_real(string_lower(create_name),'dash',global.k[? 'dash'])
-                            
-                            ini_close()
-                            
-                            
-                            ini_open(string_lower(create_name)+'.boomeraxe')
-                            
-                            ini_write_string(string_lower(create_name),'pass',create_pass0)
-                            ini_write_real(string_lower(create_name),'up',global.k[? 'up'])
-                            ini_write_real(string_lower(create_name),'down',global.k[? 'down'])
-                            ini_write_real(string_lower(create_name),'left',global.k[? 'left'])
-                            ini_write_real(string_lower(create_name),'right',global.k[? 'right'])
-                            ini_write_real(string_lower(create_name),'jump',global.k[? 'jump'])
-                            ini_write_real(string_lower(create_name),'throw',global.k[? 'throw'])
-                            ini_write_real(string_lower(create_name),'dash',global.k[? 'dash'])
-                            
-                            ini_close()
-                        } 
-=======
-=======
->>>>>>> edad624f0f48bd804b1386cfdbf0c1958f2717e7
                             pass0_left_blank=120
                         }
                         
@@ -1069,10 +1029,6 @@ if room=rm_title
                                 ini_close()
                             } 
                         }
-<<<<<<< HEAD
->>>>>>> edad624f0f48bd804b1386cfdbf0c1958f2717e7
-=======
->>>>>>> edad624f0f48bd804b1386cfdbf0c1958f2717e7
                     }
                 }
                 
@@ -2603,80 +2559,9 @@ if room=rm_main
             }
             draw_config(fnt_overlay_small,2302755,fa_middle,fa_middle) // Light Charcoal
             draw_text(550,479,'personal best')
-<<<<<<< HEAD
-<<<<<<< HEAD
+
             show_debug_message(string(global.overlay_next_rank)+' , '+string(clamp(global.overlay_next_rank+i,0,profile_count)))            
-=======
-=======
->>>>>>> edad624f0f48bd804b1386cfdbf0c1958f2717e7
                         
-            for (i=-1;i!=3;i+=1)
-            {
-                if clamp(global.overlay_next_rank+i,0,profile_count)=0
-                {
-                    c_back=3517429
-                    c_rank=3118552
-                }
-                else if clamp(global.overlay_next_rank+i,0,profile_count)=1
-                {
-                    c_back=13157819
-                    c_rank=11184288 
-                }
-                else if clamp(global.overlay_next_rank+i,0,profile_count)=2
-                {
-                    c_back=5150699
-                    c_rank=4621262
-                }
-                else
-                {
-                    c_back=3961266
-                    c_rank=3564704     
-                }
-                
-                // Background           
-                draw_area(400,492+27*(i+1),600,492+27*(i+2),c_back,c_black,1)
-                
-                if i=-1
-                {
-                    if global.selected_profile!='anonymous'
-                    {                    
-                        //Username
-                        draw_config(fnt_overlay_big,c_black,fa_left,fa_middle)
-                        draw_text(433,491+27*(i+1.5),global.profiles[#0,global.selected_profile])
-                    }
-                    else
-                    {
-                        //Username
-                        draw_config(fnt_overlay_big,c_black,fa_left,fa_middle)
-                        draw_text(433,491+27*(i+1.5),'anonymous')
-                    }
-                    
-                    // Current Time
-                    draw_config(fnt_overlay,c_black,fa_right,fa_middle)
-                    draw_text(590,491+27*(i+1.5),format_time(global.game_time,false))
-                    
-                    // Rank
-                    draw_area(403,495+27*(i+1),424,489+27*(i+2),c_rank,c_black,1)
-                    draw_config(fnt_overlay_big,c_black,fa_middle,fa_middle)
-                    draw_text(415,491+27*(i+1.5),string(global.overlay_next_rank-1))                
-                }
-                else
-                {
-                    // Username
-                    draw_config(fnt_overlay_big,c_black,fa_left,fa_middle)
-                    draw_text(433,491+27*(i+1.5),global.profiles[#0,clamp(global.overlay_next_rank+i,0,profile_count)])
-                    
-                    // Best Time
-                    draw_config(fnt_overlay,c_black,fa_right,fa_middle)
-                    draw_text(590,491+27*(i+1.5),format_time(global.profiles[#1,clamp(global.overlay_next_rank+i,0,profile_count)],false))
-                }
-                
-                // Rank
-                draw_area(403,495+27*(i+1),424,489+27*(i+2),c_rank,c_black,1)
-                draw_config(fnt_overlay_big,c_black,fa_middle,fa_middle)
-                draw_text(415,491+27*(i+1.5),string(clamp(global.overlay_next_rank+i,0,profile_count)+2))                
-            }
->>>>>>> edad624f0f48bd804b1386cfdbf0c1958f2717e7
         }
         else
         {
