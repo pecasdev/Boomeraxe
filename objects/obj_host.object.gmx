@@ -295,7 +295,14 @@ if async_load[? 'type']=network_type_data
         
         if type='create'
         {
-            global.create_reciept=true
+            if buffer_read(buffer,buffer_string)='pass'
+            {
+                profile_create_notify('pass')
+            }
+            else
+            {
+                profile_create_notify('fail')
+            }
         }
     }
     
@@ -660,6 +667,7 @@ if room=rm_title
                 if select=1
                 {
                     gui_state=s.profile_create
+                    profile_create_exit=false
                     
                     select=0
                     
@@ -718,7 +726,20 @@ if room=rm_title
             draw_text(300,135,create_name)    
             
             draw_config(fnt_profile_create_small,c_create_name,fa_middle,fa_middle)
-                        
+            
+            if profile_create_exit=true
+            {
+                if !instance_exists(obj_connection_notify)
+                {
+                    gui_state=s.title
+                }
+                else if keyboard_check_pressed(vk_enter)
+                {
+                    instance_destroy(obj_connection_notify)
+                    gui_state=s.title
+                }
+            }   
+                    
             if name_invalid
             {
                 draw_text(300,190,"name contains illegal characters")
@@ -959,6 +980,14 @@ if room=rm_title
             
             if keyboard_check_pressed(vk_enter) or keyboard_check_pressed(global.k[? 'jump'])
             {
+                show_debug_message(name_taken)
+                show_debug_message(name_invalid)
+                show_debug_message(name_oversized)
+                show_debug_message(pass_mismatch)
+                show_debug_message(create_name=='')
+                show_debug_message(create_pass0=='')
+                show_debug_message(create_pass1=='')
+                show_debug_message(global.local_save_mode=false)
                 if select=3
                 {
                     // keybindings
@@ -986,7 +1015,7 @@ if room=rm_title
                     }
                     else
                     {
-                        if name_taken=false and name_invalid=false and name_oversized=false and pass_mismatch=false
+                        if name_taken='pass' and name_invalid=false and name_oversized=false and pass_mismatch=false
                         {
                             if global.local_save_mode=false
                             {
@@ -1027,6 +1056,9 @@ if room=rm_title
                                 ini_write_real(string_lower(create_name),'dash',global.k[? 'dash'])
                                 
                                 ini_close()
+                                
+                                profile_create_notify('pass')
+                                show_debug_message('CREATED')
                             } 
                         }
                     }

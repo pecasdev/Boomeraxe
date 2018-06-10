@@ -96,6 +96,7 @@
       <script>scripts\follow_arc.gml</script>
       <script>scripts\write_local_bindings.gml</script>
       <script>scripts\sort_by_date.gml</script>
+      <script>scripts\profile_create_notify.gml</script>
     </scripts>
     <scripts name="else">
       <script>scripts\create_particles.gml</script>
@@ -146,6 +147,7 @@
     <font>fonts\fnt_entry_small</font>
     <font>fonts\fnt_profile_create_big</font>
     <font>fonts\fnt_profile_create</font>
+    <font>fonts\fnt_profile_create_notify</font>
     <font>fonts\fnt_profile_create_small</font>
     <font>fonts\fnt_login_big</font>
     <font>fonts\fnt_login</font>
@@ -200,6 +202,7 @@
       <object>objects\obj_ring</object>
       <object>objects\obj_connection_notify</object>
       <object>objects\obj_overlay_row</object>
+      <object>objects\obj_profile_create_notify</object>
     </objects>
   </objects>
   <rooms name="rooms">
