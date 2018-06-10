@@ -570,7 +570,6 @@ global.volume_mute=false
 global.volume_effects=5
 global.volume_music=5
 global.overlay_toggle=false
-overlay_init_lock=false
 global.bg_enabled=true
 global.bg_value=4
 global.bg_alpha=5.5
@@ -1017,17 +1016,17 @@ if room=rm_title
                                 profile_count=ini_read_real('meta','profile_count',0)
                                 
                                 ini_write_real('meta','profile_count',profile_count+1)
-                                ini_write_string('meta',profile_count,string_lower(create_name))
+                                ini_write_string('meta',string(profile_count),string_lower(create_name))
                                 ini_write_string(string_lower(create_name),'pass',create_pass0)
                                 ini_write_real(string_lower(create_name),'best_time',0)
                                 ini_write_real(string_lower(create_name),'best_date',0)
-                                ini_write_real(string_lower(create_name),'run_count',0)
-                                ini_write_real(string_lower(create_name),'up',global.k[? 'up'])
-                                ini_write_real(string_lower(create_name),'down',global.k[? 'down'])
-                                ini_write_real(string_lower(create_name),'left',global.k[? 'left'])
-                                ini_write_real(string_lower(create_name),'right',global.k[? 'right'])
-                                ini_write_real(string_lower(create_name),'jump',global.k[? 'jump'])
-                                ini_write_real(string_lower(create_name),'throw',global.k[? 'throw'])
+                                    ini_write_real(string_lower(create_name),'run_count',0)
+                                    ini_write_real(string_lower(create_name),'up',global.k[? 'up'])
+                                    ini_write_real(string_lower(create_name),'down',global.k[? 'down'])
+                                    ini_write_real(string_lower(create_name),'left',global.k[? 'left'])
+                                    ini_write_real(string_lower(create_name),'right',global.k[? 'right'])
+                                    ini_write_real(string_lower(create_name),'jump',global.k[? 'jump'])
+                                    ini_write_real(string_lower(create_name),'throw',global.k[? 'throw'])
                                 ini_write_real(string_lower(create_name),'dash',global.k[? 'dash'])
                                 
                                 ini_close()
@@ -1074,7 +1073,7 @@ if room=rm_title
             draw_config(fnt_title,c_white,fa_middle,fa_middle)
             draw_text(300,225,'SFX : ')
             draw_text(300,300,'MUSIC : ')
-            draw_text(300,375,'Overlay: ')
+            draw_text(300,375,'Overlay: '   )
             draw_text(300,450,'Keybindings')
             draw_text(300,525,'Back')
             
@@ -1111,7 +1110,6 @@ if room=rm_title
                 if select=2
                 {
                     global.overlay_toggle=global.overlay_toggle==false
-                    global.overlay_next_rank=0
                 }
                 
                 if select=3
@@ -1312,7 +1310,6 @@ if room=rm_main
                 if select=2
                 {
                      global.overlay_toggle=global.overlay_toggle==false
-                     global.overlay_next_rank=0
                 }
                 
                 if select=3
@@ -2492,6 +2489,15 @@ if room=rm_main
         }break        
     }
     
+    if global.overlay_toggle=false
+    {
+        overlay_init_lock=false
+        if instance_exists(obj_overlay_row)
+        {
+            instance_destroy(obj_overlay_row)
+        }
+    }
+    
     if global.overlay_toggle and (gui_state=s.idle or gui_state=s.pause or gui_state=s.options)
     {
         if global.profiles!=undefined
@@ -2499,15 +2505,22 @@ if room=rm_main
             if overlay_init_lock=false
             {
                 rows=ds_list_create()
+                overlay_next_rank=0
                 
-                for(i=0;i!=5;i++)
+                while global.game_time&gt;global.profiles[#1,overlay_next_rank]
                 {
-                    row=instance_create(400,492+27*i,obj_overlay_row)
+                    overlay_next_rank+=1
+                }
+                
+                for(i=overlay_next_rank;i!=overlay_next_rank+5;i+=1)
+                {    
+                    row=instance_create(400,492+27*(i-overlay_next_rank),obj_overlay_row)
                     row.rank=i+1
                     
-                    if i=0
+                    if (i=overlay_next_rank and overlay_next_rank=0) or (i=overlay_next_rank+1 and overlay_next_rank&gt;1 and overlay_next_rank&lt;profile_count-2) or (i=overlay_next_rank+2 and overlay_next_rank=profile_count-1) or (i=overlay_next_rank+3 and overlay_next_rank=profile_count)
                     {
                         row.username=global.selected_profile
+                        user_profile=row
                     }
                     else
                     {
@@ -2519,7 +2532,15 @@ if room=rm_main
                 }
             
                 overlay_init_lock=true
+                
+                for(i=0;i!=ds_list_size(rows);i+=1)
+                {
+                    show_debug_message('['+string(i)+'] &gt;&gt; ('+string(rows[| i].username)+') -- RANK: '+string(rows[| i].rank))
+                }
+                show_debug_message('------------------------------------------------------------')
+
             }
+            
             // Background
             draw_area(400,450,600,600,c_white,c_black,1)
             
@@ -2527,47 +2548,92 @@ if room=rm_main
             draw_area(400,450,600,492,c_ltgray,c_black,2)
             
             // Time until rank down
-            if global.game_time&gt;global.profiles[#1,global.overlay_next_rank]
+            if overlay_next_rank&lt;profile_count and global.game_time&gt;global.profiles[#1,overlay_next_rank]
             {
-                global.overlay_next_rank+=1 
+                show_debug_message('ADDING 1 TO '+string(overlay_next_rank))
+                overlay_next_rank+=1 
                 
-                if ds_list_find_index(rows,global.selected_profile)=0
+                user_pos=get_user_profile_pos()
+                
+                if user_pos=0
                 {
                     rows[| 0].y_target+=27
+                    rows[| 0].rank+=1
                     rows[| 1].y_target-=27
+                    rows[| 1].rank-=1
+                    
+                    list_index_swap(0,1)
                 }
-                
-                if ds_list_find_index(rows,global.selected_profile)=1
+                             
+                if user_pos=1
                 {
-                    if global.overlay_next_rank&lt;=profile_count-2
+                    if overlay_next_rank&lt;=profile_count-3
                     {
                         rows[| 0].y_target-=27
+                        rows[| 1].rank+=1
                         rows[| 2].y_target-=54
+                        rows[| 2].rank-=1
                         rows[| 3].y_target-=27
+                        rows[| 4].y_target-=27
                         
-                        row=instance_create(400,573,obj_overlay_row)
-                        ds_list_add(rows,row)
+                        rows[| 0]=rows[| 2]
+                        rows[| 2]=rows[| 3]
+                        rows[| 3]=rows[| 4]
+                        
+                        if overlay_next_rank!=profile_count-3
+                        {
+                            row=instance_create(400,573,obj_overlay_row)
+                            row.rank=overlay_next_rank+4
+                            row.username=global.profiles[#0, overlay_next_rank+3]
+                            rows[| 4]=row
+                        }
+                        else
+                        {
+                            ds_list_delete(rows,4)
+                        }
                     }
                     else
                     {
                         rows[| 1].y_target+=27
+                        rows[| 1].rank+=1
                         rows[| 2].y_target-=27
+                        rows[| 2].rank-=1
+                        
+                        list_index_swap(1,2)
                     }                    
                 }
                 
-                if ds_list_find_index(rows,global.selected_profile)=2
+                if user_pos=2
                 {
-                    rows[| 2]+=27
-                    rows[| 3]-=27
-                }                                
+                    rows[| 2].y_target+=27
+                    rows[| 2].rank+=1
+                    rows[| 3].y_target-=27
+                    rows[| 3].rank-=1
+                    
+                    list_index_swap(2,3)
+                }     
+                    
+                for(i=0;i!=ds_list_size(rows);i+=1)
+                {
+                    show_debug_message('['+string(i)+'] &gt;&gt; ('+string(rows[| i].username)+') -- RANK: '+string(rows[| i].rank))
+                }
+                show_debug_message('------------------------------------------------------------')                       
             }
             
-            draw_config(fnt_overlay,c_black,fa_middle,fa_middle)
-            draw_text(450,463,format_time(global.game_time-global.profiles[#1,global.overlay_next_rank],false))
-
+            if overlay_next_rank&lt;profile_count
+            {
+                draw_config(fnt_overlay,c_black,fa_middle,fa_middle)
+                draw_text(450,463,format_time(global.game_time-global.profiles[#1,overlay_next_rank],false))
+            }
+            else
+            {
+                draw_config(fnt_overlay,c_black,fa_middle,fa_middle)
+                draw_text(450,463,'N/A')
+            }
+            
             draw_config(fnt_overlay_small,2302755,fa_middle,fa_middle)  // Light Charcoal
             draw_text(450,479,'rank down')
-            
+                            
             // Time until personal best
             draw_config(fnt_overlay,c_black,fa_middle,fa_middle)
             if global.selected_profile!='anonymous' and global.profiles[#1,user]!=undefined
@@ -2579,10 +2645,7 @@ if room=rm_main
                 draw_text(550,463,'not found')
             }
             draw_config(fnt_overlay_small,2302755,fa_middle,fa_middle) // Light Charcoal
-            draw_text(550,479,'personal best')
-
-            show_debug_message(string(global.overlay_next_rank)+' , '+string(clamp(global.overlay_next_rank+i,0,profile_count)))            
-                        
+            draw_text(550,479,'personal best')              
         }
         else
         {

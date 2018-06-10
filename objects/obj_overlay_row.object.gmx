@@ -3,7 +3,7 @@
   <spriteName>&lt;undefined&gt;</spriteName>
   <solid>0</solid>
   <visible>-1</visible>
-  <depth>0</depth>
+  <depth>-50</depth>
   <persistent>0</persistent>
   <parentName>&lt;undefined&gt;</parentName>
   <maskName>&lt;undefined&gt;</maskName>
@@ -25,7 +25,7 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>target_y=y
+            <string>y_target=y
 </string>
           </argument>
         </arguments>
@@ -48,16 +48,20 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>y+=(target_y-y)/3
-if abs(target_y-y)&lt;5
+            <string>y+=(y_target-y)/3
+if abs(y_target-y)&lt;5
 {
-    y=target_y
+    y=y_target
+    if y&lt;373
+    {
+        instance_destroy()
+    }
 }
 
-draw_config(fnt_overlay_big,c_black,fa_middle,fa_middle)
 draw_area(x,y,x+200,y+27,c_ltgray,c_black,1)
-draw_text(x-50,y,rank)
-
+draw_config(fnt_overlay,c_black,fa_left,fa_middle)
+draw_text(x+50,y+10,rank)
+draw_text(x+100,y+10,username)
 </string>
           </argument>
         </arguments>

@@ -97,6 +97,8 @@
       <script>scripts\write_local_bindings.gml</script>
       <script>scripts\sort_by_date.gml</script>
       <script>scripts\profile_create_notify.gml</script>
+      <script>scripts\get_user_profile_pos.gml</script>
+      <script>scripts\list_index_swap.gml</script>
     </scripts>
     <scripts name="else">
       <script>scripts\create_particles.gml</script>
