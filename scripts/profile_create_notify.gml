@@ -1,5 +1,15 @@
 notify=instance_create(0,0,obj_profile_create_notify)
-notify.alpha=5
+
+if argument0='checking'
+{
+    notify.col=c_white
+    notify.text='checking...'
+}
+else
+{
+    instance_destroy(obj_profile_create_notify)
+    notify=instance_create(0,0,obj_profile_create_notify)
+}
 
 if argument0='pass'
 {
@@ -13,4 +23,4 @@ if argument0='fail'
     notify.text='Profile Error'
 }
 
-profile_create_exit=true
+gui_state=s.title

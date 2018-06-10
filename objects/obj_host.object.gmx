@@ -295,6 +295,7 @@ if async_load[? 'type']=network_type_data
         
         if type='create'
         {
+            show_debug_message('create response')
             if buffer_read(buffer,buffer_string)='pass'
             {
                 profile_create_notify('pass')
@@ -726,20 +727,7 @@ if room=rm_title
             draw_text(300,135,create_name)    
             
             draw_config(fnt_profile_create_small,c_create_name,fa_middle,fa_middle)
-            
-            if profile_create_exit=true
-            {
-                if !instance_exists(obj_connection_notify)
-                {
-                    gui_state=s.title
-                }
-                else if keyboard_check_pressed(vk_enter)
-                {
-                    instance_destroy(obj_connection_notify)
-                    gui_state=s.title
-                }
-            }   
-                    
+                               
             if name_invalid
             {
                 draw_text(300,190,"name contains illegal characters")
@@ -1020,6 +1008,7 @@ if room=rm_title
                             if global.local_save_mode=false
                             {
                                 send_payload('create',string_lower(create_name),create_pass0,global.k[? 'up'],global.k[? 'down'],global.k[? 'left'],global.k[? 'right'],global.k[? 'jump'],global.k[? 'throw'],global.k[? 'dash'])
+                                profile_create_notify('checking')
                             }
                             else
                             {

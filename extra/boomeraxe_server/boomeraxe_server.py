@@ -10,6 +10,11 @@ while True:
     data,client=client_recieve()
     msg_id=data[0]
     print data
+
+    if msg_id=='ping':
+        print log('ping',client[0],data[1])
+        client_send(['ping'],client)
+        
     if msg_id=='pull':
 	print log('pull',client[0],data[1],data[2])
 	
@@ -113,10 +118,14 @@ while True:
                 config.write(f)
             
             print log('create_pass',client[0],data[1],data[2])
-            client_send(['create','pass'],client)
+            client_send(['reciept','create','pass'],client)
             
         else:
             print log('create_fail',client[0],data[1],data[2])
-            client_send(['create','fail'],client)
+            client_send(['reciept','create','fail'],client)
 
-
+    if msg_id=='create_name_check':
+        if not config.has_section(data[1]):
+            client_send(['create_name_check','pass'],client)
+        else:
+            client_send(['create_name_check','fail'],client)
