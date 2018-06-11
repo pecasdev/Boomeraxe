@@ -52,16 +52,17 @@
 if abs(y_target-y)&lt;5
 {
     y=y_target
-    if y&lt;373
+    if y=492+27*-1
     {
         instance_destroy()
     }
 }
 
 draw_area(x,y,x+200,y+27,c_ltgray,c_black,1)
-draw_config(fnt_overlay,c_black,fa_left,fa_middle)
-draw_text(x+50,y+10,rank)
-draw_text(x+100,y+10,username)
+draw_config(fnt_overlay_small,c_black,fa_left,fa_middle)
+draw_text(x+20,y+10,rank)
+draw_text(x+50,y+10,username)
+draw_text(x+150,y+10,time)
 </string>
           </argument>
         </arguments>

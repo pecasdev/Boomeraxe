@@ -2218,12 +2218,14 @@ if room=rm_main
                     if global.selected_profile=global.profiles[#0,user]
                     {
                         global.selected_profile='anonymous'
+                        overlay_init_lock=false
                     }
                     else
                     {
                         if global.local_save_mode
                         {
                             global.selected_profile=global.profiles[#0,user]
+                            overlay_init_lock=false
                                 
                             username=get_username_from_name(global.selected_profile)
                             login_bindings()
@@ -2334,6 +2336,7 @@ if room=rm_main
                 if global.login_pass[? global.profiles[#0,user]]=true
                 {
                     global.selected_profile=global.profiles[#0,user]
+                    overlay_init_lock=false
                     
                     username=get_username_from_name(global.selected_profile)
                     login_bindings()
@@ -2516,7 +2519,16 @@ if room=rm_main
                 {    
                     row=instance_create(400,492+27*(i-overlay_next_rank),obj_overlay_row)
                     row.rank=i+1
+
+                    /*****************************************************
                     
+                        this section of code replaces the profile instead
+                        of inserting under it, if the 'overlay_next_rank' variable is 0
+                        then the first profile will be overwritten by
+                        your user profile, and won't be displayed. rewrite
+                        the entire if statement and change the declaration
+                        of the 'user_profile' variable.
+                                        
                     if (i=overlay_next_rank and overlay_next_rank=0) or (i=overlay_next_rank+1 and overlay_next_rank&gt;1 and overlay_next_rank&lt;profile_count-2) or (i=overlay_next_rank+2 and overlay_next_rank=profile_count-1) or (i=overlay_next_rank+3 and overlay_next_rank=profile_count)
                     {
                         row.username=global.selected_profile
@@ -2527,7 +2539,8 @@ if room=rm_main
                         row.username=global.profiles[#0,i]
                         row.time=global.profiles[#1,i]
                     }
-                    
+                    *****************************************************/
+                                        
                     ds_list_add(rows,row)
                 }
             
@@ -2541,13 +2554,15 @@ if room=rm_main
 
             }
             
+            user_profile.time=global.game_time
+
             // Background
             draw_area(400,450,600,600,c_white,c_black,1)
             
             // Top Border
             draw_area(400,450,600,492,c_ltgray,c_black,2)
             
-            // Time until rank down
+            // Next Rank Updater
             if overlay_next_rank&lt;profile_count and global.game_time&gt;global.profiles[#1,overlay_next_rank]
             {
                 show_debug_message('ADDING 1 TO '+string(overlay_next_rank))
@@ -2557,9 +2572,9 @@ if room=rm_main
                 
                 if user_pos=0
                 {
-                    rows[| 0].y_target+=27
+                    rows[| 0].y_target=492+27*1
                     rows[| 0].rank+=1
-                    rows[| 1].y_target-=27
+                    rows[| 1].y_target=492+27*0
                     rows[| 1].rank-=1
                     
                     list_index_swap(0,1)
@@ -2569,12 +2584,12 @@ if room=rm_main
                 {
                     if overlay_next_rank&lt;=profile_count-3
                     {
-                        rows[| 0].y_target-=27
+                        rows[| 0].y_target=492+27*-1
                         rows[| 1].rank+=1
-                        rows[| 2].y_target-=54
+                        rows[| 2].y_target=492+27*0
                         rows[| 2].rank-=1
-                        rows[| 3].y_target-=27
-                        rows[| 4].y_target-=27
+                        rows[| 3].y_target=492+27*2
+                        rows[| 4].y_target=492+27*3
                         
                         rows[| 0]=rows[| 2]
                         rows[| 2]=rows[| 3]
@@ -2585,6 +2600,7 @@ if room=rm_main
                             row=instance_create(400,573,obj_overlay_row)
                             row.rank=overlay_next_rank+4
                             row.username=global.profiles[#0, overlay_next_rank+3]
+                            row.time=global.profiles[#1, overlay_next_rank+3]
                             rows[| 4]=row
                         }
                         else
@@ -2594,9 +2610,9 @@ if room=rm_main
                     }
                     else
                     {
-                        rows[| 1].y_target+=27
+                        rows[| 1].y_target=492+27*2
                         rows[| 1].rank+=1
-                        rows[| 2].y_target-=27
+                        rows[| 2].y_target=492+27*1
                         rows[| 2].rank-=1
                         
                         list_index_swap(1,2)
@@ -2605,9 +2621,9 @@ if room=rm_main
                 
                 if user_pos=2
                 {
-                    rows[| 2].y_target+=27
+                    rows[| 2].y_target=492+27*3
                     rows[| 2].rank+=1
-                    rows[| 3].y_target-=27
+                    rows[| 3].y_target=492+27*2
                     rows[| 3].rank-=1
                     
                     list_index_swap(2,3)
@@ -2619,7 +2635,7 @@ if room=rm_main
                 }
                 show_debug_message('------------------------------------------------------------')                       
             }
-            
+                        
             if overlay_next_rank&lt;profile_count
             {
                 draw_config(fnt_overlay,c_black,fa_middle,fa_middle)
