@@ -2507,6 +2507,8 @@ if room=rm_main
         {
             if overlay_init_lock=false
             {
+                show_debug_message('overlay reinitialized')
+                
                 rows=ds_list_create()
                 overlay_next_rank=0
                 
@@ -2661,7 +2663,7 @@ if room=rm_main
                             
             // Time until personal best
             draw_config(fnt_overlay,c_black,fa_middle,fa_middle)
-            if global.selected_profile!='anonymous' and global.profiles[#1,user]!=undefined
+            if global.selected_profile!='anonymous' and global.profiles[#1,global.selected_profile]!=undefined
             {
                 draw_text(550,463,format_time(global.game_time-global.profiles[#1,global.selected_profile],false))
             }
