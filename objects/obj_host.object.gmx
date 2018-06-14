@@ -2515,35 +2515,44 @@ if room=rm_main
                     overlay_next_rank+=1
                 }
                 
-                for(i=overlay_next_rank;i!=overlay_next_rank+5;i+=1)
-                {    
-                    row=instance_create(400,492+27*(i-overlay_next_rank),obj_overlay_row)
-                    row.rank=i+1
-
-                    /*****************************************************
-                    
-                        this section of code replaces the profile instead
-                        of inserting under it, if the 'overlay_next_rank' variable is 0
-                        then the first profile will be overwritten by
-                        your user profile, and won't be displayed. rewrite
-                        the entire if statement and change the declaration
-                        of the 'user_profile' variable.
-                                        
-                    if (i=overlay_next_rank and overlay_next_rank=0) or (i=overlay_next_rank+1 and overlay_next_rank&gt;1 and overlay_next_rank&lt;profile_count-2) or (i=overlay_next_rank+2 and overlay_next_rank=profile_count-1) or (i=overlay_next_rank+3 and overlay_next_rank=profile_count)
-                    {
-                        row.username=global.selected_profile
-                        user_profile=row
-                    }
-                    else
-                    {
-                        row.username=global.profiles[#0,i]
-                        row.time=global.profiles[#1,i]
-                    }
-                    *****************************************************/
-                                        
-                    ds_list_add(rows,row)
+                if overlay_next_rank=0
+                {
+                    create_overlay_row(0,global.selected_profile,overlay_next_rank+1,global.game_time)
+                    user_profile=row
+                    create_overlay_row(1,global.profiles[#0,overlay_next_rank],overlay_next_rank+2,global.profiles[#1,overlay_next_rank])
+                    create_overlay_row(2,global.profiles[#0,overlay_next_rank+1],overlay_next_rank+3,global.profiles[#1,overlay_next_rank+1])
+                    create_overlay_row(3,global.profiles[#0,overlay_next_rank+2],overlay_next_rank+4,global.profiles[#1,overlay_next_rank+2])
+                    create_overlay_row(4,global.profiles[#0,overlay_next_rank+3],overlay_next_rank+5,global.profiles[#1,overlay_next_rank+3])
                 }
-            
+                
+                if overlay_next_rank&gt;=1 and overlay_next_rank&lt;=profile_count-2
+                {    
+                    create_overlay_row(0,global.profiles[#0,overlay_next_rank-1],overlay_next_rank,global.profiles[#1,overlay_next_rank-1])
+                    create_overlay_row(1,global.selected_profile,overlay_next_rank+1,global.game_time)
+                    user_profile=row
+                    create_overlay_row(2,global.profiles[#0,overlay_next_rank],overlay_next_rank+2,global.profiles[#1,overlay_next_rank])
+                    create_overlay_row(3,global.profiles[#0,overlay_next_rank+1],overlay_next_rank+3,global.profiles[#1,overlay_next_rank+1])
+                    create_overlay_row(4,global.profiles[#0,overlay_next_rank+2],overlay_next_rank+4,global.profiles[#1,overlay_next_rank+2])
+                }
+                
+                if overlay_next_rank=profile_count-1
+                {
+                    create_overlay_row(0,global.profiles[#0,overlay_next_rank-2],overlay_next_rank-1,global.profiles[#1,overlay_next_rank-2])
+                    create_overlay_row(1,global.profiles[#0,overlay_next_rank-1],overlay_next_rank,global.profiles[#1,overlay_next_rank-1])
+                    create_overlay_row(2,global.selected_profile,overlay_next_rank+1,global.game_time)
+                    user_profile=row
+                    create_overlay_row(3,global.profiles[#0,overlay_next_rank],overlay_next_rank+2,global.profiles[#1,overlay_next_rank])                                    
+                }
+                
+                if overlay_next_rank=profile_count
+                {
+                    create_overlay_row(0,global.profiles[#0,overlay_next_rank-3],overlay_next_rank-2,global.profiles[#1,overlay_next_rank-3])
+                    create_overlay_row(1,global.profiles[#0,overlay_next_rank-2],overlay_next_rank-1,global.profiles[#1,overlay_next_rank-2])
+                    create_overlay_row(2,global.profiles[#0,overlay_next_rank-1],overlay_next_rank,global.profiles[#1,overlay_next_rank-1])                                   
+                    create_overlay_row(3,global.selected_profile,overlay_next_rank+1,global.game_time)     
+                    user_profile=row               
+                }
+                
                 overlay_init_lock=true
                 
                 for(i=0;i!=ds_list_size(rows);i+=1)

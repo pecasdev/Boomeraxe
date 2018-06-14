@@ -121,6 +121,7 @@
       <script>scripts\ascii_only.gml</script>
       <script>scripts\chance.gml</script>
       <script>scripts\check_username_availability.gml</script>
+      <script>scripts\create_overlay_row.gml</script>
     </scripts>
   </scripts>
   <fonts name="fonts">
