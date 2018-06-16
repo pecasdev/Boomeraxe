@@ -2218,14 +2218,12 @@ if room=rm_main
                     if global.selected_profile=global.profiles[#0,user]
                     {
                         global.selected_profile='anonymous'
-                        overlay_init_lock=false
                     }
                     else
                     {
                         if global.local_save_mode
                         {
                             global.selected_profile=global.profiles[#0,user]
-                            overlay_init_lock=false
                                 
                             username=get_username_from_name(global.selected_profile)
                             login_bindings()
@@ -2336,7 +2334,6 @@ if room=rm_main
                 if global.login_pass[? global.profiles[#0,user]]=true
                 {
                     global.selected_profile=global.profiles[#0,user]
-                    overlay_init_lock=false
                     
                     username=get_username_from_name(global.selected_profile)
                     login_bindings()
@@ -2501,187 +2498,217 @@ if room=rm_main
         }
     }
     
-    if global.overlay_toggle and (gui_state=s.idle or gui_state=s.pause or gui_state=s.options)
+    if global.overlay_toggle
     {
-        if global.profiles!=undefined
+        if gui_state=s.idle or gui_state=s.pause or gui_state=s.options
         {
-            if overlay_init_lock=false
+            if instance_exists(obj_overlay_row)
             {
-                show_debug_message('overlay reinitialized')
-                
-                rows=ds_list_create()
-                overlay_next_rank=0
-                
-                while global.game_time&gt;global.profiles[#1,overlay_next_rank]
-                {
-                    overlay_next_rank+=1
-                }
-                
-                if overlay_next_rank=0
-                {
-                    create_overlay_row(0,global.selected_profile,overlay_next_rank+1,global.game_time)
-                    user_profile=row
-                    create_overlay_row(1,global.profiles[#0,overlay_next_rank],overlay_next_rank+2,global.profiles[#1,overlay_next_rank])
-                    create_overlay_row(2,global.profiles[#0,overlay_next_rank+1],overlay_next_rank+3,global.profiles[#1,overlay_next_rank+1])
-                    create_overlay_row(3,global.profiles[#0,overlay_next_rank+2],overlay_next_rank+4,global.profiles[#1,overlay_next_rank+2])
-                    create_overlay_row(4,global.profiles[#0,overlay_next_rank+3],overlay_next_rank+5,global.profiles[#1,overlay_next_rank+3])
-                }
-                
-                if overlay_next_rank&gt;=1 and overlay_next_rank&lt;=profile_count-2
-                {    
-                    create_overlay_row(0,global.profiles[#0,overlay_next_rank-1],overlay_next_rank,global.profiles[#1,overlay_next_rank-1])
-                    create_overlay_row(1,global.selected_profile,overlay_next_rank+1,global.game_time)
-                    user_profile=row
-                    create_overlay_row(2,global.profiles[#0,overlay_next_rank],overlay_next_rank+2,global.profiles[#1,overlay_next_rank])
-                    create_overlay_row(3,global.profiles[#0,overlay_next_rank+1],overlay_next_rank+3,global.profiles[#1,overlay_next_rank+1])
-                    create_overlay_row(4,global.profiles[#0,overlay_next_rank+2],overlay_next_rank+4,global.profiles[#1,overlay_next_rank+2])
-                }
-                
-                if overlay_next_rank=profile_count-1
-                {
-                    create_overlay_row(0,global.profiles[#0,overlay_next_rank-2],overlay_next_rank-1,global.profiles[#1,overlay_next_rank-2])
-                    create_overlay_row(1,global.profiles[#0,overlay_next_rank-1],overlay_next_rank,global.profiles[#1,overlay_next_rank-1])
-                    create_overlay_row(2,global.selected_profile,overlay_next_rank+1,global.game_time)
-                    user_profile=row
-                    create_overlay_row(3,global.profiles[#0,overlay_next_rank],overlay_next_rank+2,global.profiles[#1,overlay_next_rank])                                    
-                }
-                
-                if overlay_next_rank=profile_count
-                {
-                    create_overlay_row(0,global.profiles[#0,overlay_next_rank-3],overlay_next_rank-2,global.profiles[#1,overlay_next_rank-3])
-                    create_overlay_row(1,global.profiles[#0,overlay_next_rank-2],overlay_next_rank-1,global.profiles[#1,overlay_next_rank-2])
-                    create_overlay_row(2,global.profiles[#0,overlay_next_rank-1],overlay_next_rank,global.profiles[#1,overlay_next_rank-1])                                   
-                    create_overlay_row(3,global.selected_profile,overlay_next_rank+1,global.game_time)     
-                    user_profile=row               
-                }
-                
-                overlay_init_lock=true
-                
-                for(i=0;i!=ds_list_size(rows);i+=1)
-                {
-                    show_debug_message('['+string(i)+'] &gt;&gt; ('+string(rows[| i].username)+') -- RANK: '+string(rows[| i].rank))
-                }
-                show_debug_message('------------------------------------------------------------')
-
+                obj_overlay_row.image_alpha=1
             }
             
-            user_profile.time=global.game_time
-
-            // Background
-            draw_area(400,450,600,600,c_white,c_black,1)
-            
-            // Top Border
-            draw_area(400,450,600,492,c_ltgray,c_black,2)
-            
-            // Next Rank Updater
-            if overlay_next_rank&lt;profile_count and global.game_time&gt;global.profiles[#1,overlay_next_rank]
+            if global.profiles!=undefined
             {
-                show_debug_message('ADDING 1 TO '+string(overlay_next_rank))
-                overlay_next_rank+=1 
-                
-                user_pos=get_user_profile_pos()
-                
-                if user_pos=0
+                if overlay_init_lock=false
                 {
-                    rows[| 0].y_target=492+27*1
-                    rows[| 0].rank+=1
-                    rows[| 1].y_target=492+27*0
-                    rows[| 1].rank-=1
+                    show_debug_message('overlay reinitialized')
+                                   
+                    rows=ds_list_create()
+                    overlay_next_rank=0
                     
-                    list_index_swap(0,1)
-                }
-                             
-                if user_pos=1
-                {
-                    if overlay_next_rank&lt;=profile_count-3
+                    while global.game_time&gt;=global.profiles[#1,overlay_next_rank]
                     {
-                        rows[| 0].y_target=492+27*-1
-                        rows[| 1].rank+=1
-                        rows[| 2].y_target=492+27*0
-                        rows[| 2].rank-=1
-                        rows[| 3].y_target=492+27*2
-                        rows[| 4].y_target=492+27*3
+                        overlay_next_rank+=1
+                    }
+                    
+                    if overlay_next_rank=0
+                    {
+                        create_overlay_row(0,global.selected_profile,overlay_next_rank+1,global.game_time)
+                        user_profile=row
+                        create_overlay_row(1,global.profiles[#0,overlay_next_rank],overlay_next_rank+2,global.profiles[#1,overlay_next_rank])
+                        create_overlay_row(2,global.profiles[#0,overlay_next_rank+1],overlay_next_rank+3,global.profiles[#1,overlay_next_rank+1])
+                        create_overlay_row(3,global.profiles[#0,overlay_next_rank+2],overlay_next_rank+4,global.profiles[#1,overlay_next_rank+2])
+                        create_overlay_row(4,global.profiles[#0,overlay_next_rank+3],overlay_next_rank+5,global.profiles[#1,overlay_next_rank+3])
+                    }
+                    
+                    if overlay_next_rank&gt;=1 and overlay_next_rank&lt;=profile_count-2
+                    {    
+                        create_overlay_row(0,global.profiles[#0,overlay_next_rank-1],overlay_next_rank,global.profiles[#1,overlay_next_rank-1])
+                        create_overlay_row(1,global.selected_profile,overlay_next_rank+1,global.game_time)
+                        user_profile=row
+                        create_overlay_row(2,global.profiles[#0,overlay_next_rank],overlay_next_rank+2,global.profiles[#1,overlay_next_rank])
+                        create_overlay_row(3,global.profiles[#0,overlay_next_rank+1],overlay_next_rank+3,global.profiles[#1,overlay_next_rank+1])
+                        create_overlay_row(4,global.profiles[#0,overlay_next_rank+2],overlay_next_rank+4,global.profiles[#1,overlay_next_rank+2])
+                    }
+                    
+                    if overlay_next_rank=profile_count-1
+                    {
+                        create_overlay_row(0,global.profiles[#0,overlay_next_rank-2],overlay_next_rank-1,global.profiles[#1,overlay_next_rank-2])
+                        create_overlay_row(1,global.profiles[#0,overlay_next_rank-1],overlay_next_rank,global.profiles[#1,overlay_next_rank-1])
+                        create_overlay_row(2,global.selected_profile,overlay_next_rank+1,global.game_time)
+                        user_profile=row
+                        create_overlay_row(3,global.profiles[#0,overlay_next_rank],overlay_next_rank+2,global.profiles[#1,overlay_next_rank])                                    
+                    }
+                    
+                    if overlay_next_rank=profile_count
+                    {
+                        create_overlay_row(0,global.profiles[#0,overlay_next_rank-3],overlay_next_rank-2,global.profiles[#1,overlay_next_rank-3])
+                        create_overlay_row(1,global.profiles[#0,overlay_next_rank-2],overlay_next_rank-1,global.profiles[#1,overlay_next_rank-2])
+                        create_overlay_row(2,global.profiles[#0,overlay_next_rank-1],overlay_next_rank,global.profiles[#1,overlay_next_rank-1])                                   
+                        create_overlay_row(3,global.selected_profile,overlay_next_rank+1,global.game_time)     
+                        user_profile=row               
+                    }
+                    
+                    overlay_init_lock=true
+                    
+                    for(i=0;i!=ds_list_size(rows);i+=1)
+                    {
+                        show_debug_message('['+string(i)+'] &gt;&gt; ('+string(rows[| i].username)+') -- RANK: '+string(rows[| i].rank))
+                    }
+                    show_debug_message('------------------------------------------------------------')
+    
+                }
+                
+                user_profile.time=global.game_time
+    
+                // Background
+                draw_area(400,450,600,600,c_white,c_black,1)
+                
+                // Top Border
+                draw_area(400,450,600,492,c_ltgray,c_black,2)
+                
+                            
+                // Next Rank Updater
+                if overlay_next_rank&lt;profile_count and global.game_time&gt;=global.profiles[#1,overlay_next_rank]
+                { 
+                    show_debug_message(global.game_time)
+                    show_debug_message(global.profiles[#1,overlay_next_rank])
+                             
+                    show_debug_message('ADDING 1 TO '+string(overlay_next_rank))
+                    overlay_next_rank+=1 
+                    
+                    user_pos=get_user_profile_pos()
+                    
+                    if user_pos=0
+                    {
+                        rows[| 0].y_target=492+27*1
+                        rows[| 0].rank+=1
+                        rows[| 1].y_target=492+27*0
+                        rows[| 1].rank-=1
                         
-                        rows[| 0]=rows[| 2]
-                        rows[| 2]=rows[| 3]
-                        rows[| 3]=rows[| 4]
-                        
-                        if overlay_next_rank!=profile_count-3
+                        list_index_swap(0,1)
+                    }
+                                 
+                    if user_pos=1
+                    {
+                        if overlay_next_rank&lt;=profile_count-2
                         {
-                            row=instance_create(400,573,obj_overlay_row)
-                            row.rank=overlay_next_rank+4
-                            row.username=global.profiles[#0, overlay_next_rank+3]
-                            row.time=global.profiles[#1, overlay_next_rank+3]
-                            rows[| 4]=row
+                            rows[| 0].y_target=492+27*-1
+                            rows[| 1].rank+=1
+                            rows[| 2].y_target=492+27*0
+                            rows[| 2].rank-=1
+                            rows[| 3].y_target=492+27*2
+                            rows[| 4].y_target=492+27*3
+                            
+                            rows[| 0]=rows[| 2]
+                            rows[| 2]=rows[| 3]
+                            rows[| 3]=rows[| 4]
+                            
+                            if overlay_next_rank!=profile_count-2
+                            {
+                                row=instance_create(400,573,obj_overlay_row)
+                                row.rank=overlay_next_rank+4
+                                row.username=global.profiles[#0, overlay_next_rank+2]
+                                row.time=global.profiles[#1, overlay_next_rank+2]
+                                rows[| 4]=row
+                                show_debug_message('new row created')
+                            }
+                            else
+                            {
+                                ds_list_delete(rows,4)
+                            }
                         }
                         else
                         {
-                            ds_list_delete(rows,4)
-                        }
+                            rows[| 1].y_target=492+27*2
+                            rows[| 1].rank+=1
+                            rows[| 2].y_target=492+27*1
+                            rows[| 2].rank-=1
+                            
+                            list_index_swap(1,2)
+                        }                    
+                    }
+                    
+                    if user_pos=2
+                    {
+                        rows[| 2].y_target=492+27*3
+                        rows[| 2].rank+=1
+                        rows[| 3].y_target=492+27*2
+                        rows[| 3].rank-=1
+                        
+                        list_index_swap(2,3)
+                    }     
+                        
+                    for(i=0;i!=ds_list_size(rows);i+=1)
+                    {
+                        show_debug_message('['+string(i)+'] &gt;&gt; ('+string(rows[| i].username)+') -- RANK: '+string(rows[| i].rank))
+                    }
+                    show_debug_message('------------------------------------------------------------')                      
+                }
+                            
+                if overlay_next_rank&lt;profile_count
+                {
+                    draw_config(fnt_overlay,c_black,fa_middle,fa_middle)
+                    draw_text(450,463,format_time(global.game_time-global.profiles[#1,overlay_next_rank],false))
+                }
+                else
+                {
+                    draw_config(fnt_overlay,c_black,fa_middle,fa_middle)
+                    draw_text(450,463,'N/A')
+                }
+                
+                draw_config(fnt_overlay_small,2302755,fa_middle,fa_middle)  // Light Charcoal
+                draw_text(450,479,'rank down')
+                                
+                // Time until personal best
+                draw_config(fnt_overlay,c_black,fa_middle,fa_middle)
+                user=get_username_from_name(global.selected_profile)
+                if user!="anonymous" and global.profiles[#1,global.selected_profile]!=undefined
+                {   
+                    show_debug_message(string(global.game_time)+' / '+string(global.profiles[#1,user]))
+                    if global.game_time&lt;global.profiles[#1,user]
+                    {
+                        draw_text(550,463,format_time(global.game_time-global.profiles[#1,user],false))
                     }
                     else
                     {
-                        rows[| 1].y_target=492+27*2
-                        rows[| 1].rank+=1
-                        rows[| 2].y_target=492+27*1
-                        rows[| 2].rank-=1
-                        
-                        list_index_swap(1,2)
-                    }                    
+                        draw_text(550,463,'passed')
+                    }
                 }
+                else
+                {
+                    draw_text(550,463,'not found')
+                }
+                draw_config(fnt_overlay_small,2302755,fa_middle,fa_middle) // Light Charcoal
+                draw_text(550,479,'personal best')              
+            }
+            else
+            {
+                // Background
+                draw_area(400,450,600,600,c_white,c_black,1)
                 
-                if user_pos=2
-                {
-                    rows[| 2].y_target=492+27*3
-                    rows[| 2].rank+=1
-                    rows[| 3].y_target=492+27*2
-                    rows[| 3].rank-=1
-                    
-                    list_index_swap(2,3)
-                }     
-                    
-                for(i=0;i!=ds_list_size(rows);i+=1)
-                {
-                    show_debug_message('['+string(i)+'] &gt;&gt; ('+string(rows[| i].username)+') -- RANK: '+string(rows[| i].rank))
-                }
-                show_debug_message('------------------------------------------------------------')                       
-            }
-                        
-            if overlay_next_rank&lt;profile_count
-            {
+                // Prompt
                 draw_config(fnt_overlay,c_black,fa_middle,fa_middle)
-                draw_text(450,463,format_time(global.game_time-global.profiles[#1,overlay_next_rank],false))
+                draw_text(500,525,'data not found##options-&gt;profiles#to download')
             }
-            else
-            {
-                draw_config(fnt_overlay,c_black,fa_middle,fa_middle)
-                draw_text(450,463,'N/A')
-            }
-            
-            draw_config(fnt_overlay_small,2302755,fa_middle,fa_middle)  // Light Charcoal
-            draw_text(450,479,'rank down')
-                            
-            // Time until personal best
-            draw_config(fnt_overlay,c_black,fa_middle,fa_middle)
-            if global.selected_profile!='anonymous' and global.profiles[#1,global.selected_profile]!=undefined
-            {
-                draw_text(550,463,format_time(global.game_time-global.profiles[#1,global.selected_profile],false))
-            }
-            else
-            {
-                draw_text(550,463,'not found')
-            }
-            draw_config(fnt_overlay_small,2302755,fa_middle,fa_middle) // Light Charcoal
-            draw_text(550,479,'personal best')              
         }
         else
         {
-            // Background
-            draw_area(400,450,600,600,c_white,c_black,1)
-            
-            // Prompt
-            draw_config(fnt_overlay,c_black,fa_middle,fa_middle)
-            draw_text(500,525,'data not found##options-&gt;profiles#to download')
+            if instance_exists(obj_overlay_row)
+            {
+                instance_destroy(obj_overlay_row)
+                overlay_init_lock=false
+            }        
         }            
     }
 }   
