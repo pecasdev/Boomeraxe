@@ -58,11 +58,45 @@ if abs(y_target-y)&lt;5
     }
 }
 
-draw_area(x,y,x+200,y+27,c_ltgray,c_black,1)
-draw_config(fnt_overlay_small,c_black,fa_left,fa_middle)
-draw_text(x+20,y+10,rank)
-draw_text(x+50,y+10,username)
-draw_text(x+150,y+10,time)
+if rank=1
+{
+    rc=3118552  // Darker Gold
+    bc=3517429  // Gold
+}
+
+if rank=2
+{
+    rc=11184288 // Darker Silver
+    bc=13157819 // Silver
+}
+
+if rank=3
+{
+    rc=4621262  // Darker Bronze
+    bc=5150699  // Bronze
+}
+
+if rank&gt;=4
+{
+    rc=3564704  // Darker Dirt
+    bc=3961266  // Dirt
+}
+
+// Background
+draw_area(x,y,x+250,y+27,bc,c_black,1)
+
+// Rank
+draw_area(x+2,y+2,x+25,y+25,rc,c_black,1)
+draw_config(fnt_overlay_big,c_black,fa_middle,fa_middle)
+draw_text(x+15,y+13,rank)
+
+// Username
+draw_config(fnt_overlay,c_black,fa_left,fa_middle)
+draw_text(x+35,y+13,username)
+
+// Time
+draw_config(fnt_overlay,c_black,fa_left,fa_middle)
+draw_text(x+160,y+13,format_time(time,false))
 </string>
           </argument>
         </arguments>
