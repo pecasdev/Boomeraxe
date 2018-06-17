@@ -51,6 +51,7 @@ blend=0
           <argument>
             <kind>1</kind>
             <string>/// Tinting
+/*
 if blend=0
 {
     up=true

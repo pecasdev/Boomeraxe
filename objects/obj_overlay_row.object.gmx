@@ -3,7 +3,7 @@
   <spriteName>&lt;undefined&gt;</spriteName>
   <solid>0</solid>
   <visible>-1</visible>
-  <depth>-50</depth>
+  <depth>5</depth>
   <persistent>0</persistent>
   <parentName>&lt;undefined&gt;</parentName>
   <maskName>&lt;undefined&gt;</maskName>
@@ -26,6 +26,7 @@
           <argument>
             <kind>1</kind>
             <string>y_target=y
+flash=0
 </string>
           </argument>
         </arguments>
@@ -97,6 +98,15 @@ draw_text(x+35,y+13,username)
 // Time
 draw_config(fnt_overlay,c_black,fa_left,fa_middle)
 draw_text(x+160,y+13,format_time(time,false))
+
+if flash&gt;0
+{
+    flash-=1
+    draw_set_alpha(flash/30)
+    draw_set_colour(c_white)
+    draw_rectangle(x,y,x+250,y+27,0)
+    draw_set_alpha(1)
+}
 </string>
           </argument>
         </arguments>

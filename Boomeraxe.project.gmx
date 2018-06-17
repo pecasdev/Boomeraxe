@@ -19,7 +19,7 @@
       </sprites>
       <sprites name="enemy">
         <sprite>sprites\spr_enemy0_attack</sprite>
-        <sprite>sprites\spr_enemy0_idle</sprite>
+        <sprite>sprites\spr_enemy0_attack_new</sprite>
         <sprite>sprites\spr_enemy1</sprite>
         <sprite>sprites\spr_enemy2</sprite>
         <sprites name="props">

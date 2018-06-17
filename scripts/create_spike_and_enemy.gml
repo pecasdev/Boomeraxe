@@ -47,6 +47,7 @@ with(obj_enemy0)
     if place_meeting(x-1,y,obj_wall)
     {
         image_angle=180
+        image_yscale=-1
     }
     else if place_meeting(x+1,y,obj_wall)
     {
@@ -54,7 +55,7 @@ with(obj_enemy0)
     }
     else if place_meeting(x,y-1,obj_wall)
     {
-        image_angle=90
+        image_angle=90        
     }
     else if place_meeting(x,y+1,obj_wall)
     {

@@ -332,39 +332,6 @@ if async_load[? 'type']=network_type_data
         </arguments>
       </action>
     </event>
-    <event eventtype="7" enumb="5">
-      <action>
-        <libid>1</libid>
-        <id>603</id>
-        <kind>7</kind>
-        <userelative>0</userelative>
-        <isquestion>0</isquestion>
-        <useapplyto>-1</useapplyto>
-        <exetype>2</exetype>
-        <functionname></functionname>
-        <codestring></codestring>
-        <whoName>self</whoName>
-        <relative>0</relative>
-        <isnot>0</isnot>
-        <arguments>
-          <argument>
-            <kind>1</kind>
-            <string>/// Write run data
-
-/*
-if game_time&lt;best_time and !running
-{
-    ini_open('times.ini')
-
-    ini_write_real('best','0',game_time)
-    
-    ini_close()
-}
-</string>
-          </argument>
-        </arguments>
-      </action>
-    </event>
     <event eventtype="7" enumb="4">
       <action>
         <libid>1</libid>
@@ -524,6 +491,7 @@ prev_select=0
 search_toggle=false
 binding_select=undefined
 download_overlay=0
+
 </string>
           </argument>
         </arguments>
@@ -2570,14 +2538,10 @@ if room=rm_main
                 }
                 
                 user_profile.time=global.game_time
-    
-                // Background
-                draw_area(350,450,600,600,c_white,c_black,1)
-                
+                  
                 // Top Border
                 draw_area(350,450,600,492,c_ltgray,c_black,2)
                 
-                            
                 // Next Rank Updater
                 if overlay_next_rank&lt;profile_count and global.game_time&gt;=global.profiles[#1,overlay_next_rank]
                 { 
@@ -2648,6 +2612,8 @@ if room=rm_main
                         
                         list_index_swap(2,3)
                     }     
+                    
+                    user_profile.flash=30
                         
                     for(i=0;i!=ds_list_size(rows);i+=1)
                     {
