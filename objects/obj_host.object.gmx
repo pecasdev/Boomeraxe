@@ -942,7 +942,7 @@ if room=rm_title
                 show_debug_message(create_name=='')
                 show_debug_message(create_pass0=='')
                 show_debug_message(create_pass1=='')
-                show_debug_message(global.local_save_mode=false)
+                show_debug_message(global.local_save_mode==false)
                 if select=3
                 {
                     // keybindings
@@ -988,21 +988,7 @@ if room=rm_title
                                 ini_write_string(string_lower(create_name),'pass',create_pass0)
                                 ini_write_real(string_lower(create_name),'best_time',0)
                                 ini_write_real(string_lower(create_name),'best_date',0)
-                                    ini_write_real(string_lower(create_name),'run_count',0)
-                                    ini_write_real(string_lower(create_name),'up',global.k[? 'up'])
-                                    ini_write_real(string_lower(create_name),'down',global.k[? 'down'])
-                                    ini_write_real(string_lower(create_name),'left',global.k[? 'left'])
-                                    ini_write_real(string_lower(create_name),'right',global.k[? 'right'])
-                                    ini_write_real(string_lower(create_name),'jump',global.k[? 'jump'])
-                                    ini_write_real(string_lower(create_name),'throw',global.k[? 'throw'])
-                                ini_write_real(string_lower(create_name),'dash',global.k[? 'dash'])
-                                
-                                ini_close()
-                                
-                                
-                                ini_open(string_lower(create_name)+'.boomeraxe')
-                                
-                                ini_write_string(string_lower(create_name),'pass',create_pass0)
+                                ini_write_real(string_lower(create_name),'run_count',0)
                                 ini_write_real(string_lower(create_name),'up',global.k[? 'up'])
                                 ini_write_real(string_lower(create_name),'down',global.k[? 'down'])
                                 ini_write_real(string_lower(create_name),'left',global.k[? 'left'])
@@ -1010,6 +996,20 @@ if room=rm_title
                                 ini_write_real(string_lower(create_name),'jump',global.k[? 'jump'])
                                 ini_write_real(string_lower(create_name),'throw',global.k[? 'throw'])
                                 ini_write_real(string_lower(create_name),'dash',global.k[? 'dash'])
+                                
+                                ini_close()
+                                
+                                
+                                ini_open(string_lower(create_name)+'.boomeraxe')
+                                
+                                ini_write_string('save','pass',create_pass0)
+                                ini_write_real('save','up',global.k[? 'up'])
+                                ini_write_real('save','down',global.k[? 'down'])
+                                ini_write_real('save','left',global.k[? 'left'])
+                                ini_write_real('save','right',global.k[? 'right'])
+                                ini_write_real('save','jump',global.k[? 'jump'])
+                                ini_write_real('save','throw',global.k[? 'throw'])
+                                ini_write_real('save','dash',global.k[? 'dash'])
                                 
                                 ini_close()
                                 
@@ -2734,22 +2734,16 @@ if room=rm_end
                 {
                     
                     ini_open(name+'.boomeraxe')
-                    run_count=ini_read_real(name,'run_count',0)
+                    run_count=ini_read_real('save','run_count',0)
                     
-                    ini_write_real(name,string(run_count)+'0',global.game_time)
-                    ini_write_real(name,string(run_count)+'1',int64(date_second_span(global.unix_start,date_current_datetime())))
-                    ini_write_real(name,string(run_count)+'2',global.kill_count)
-                    ini_write_real(name,string(run_count)+'3',global.death_count)
-                    ini_write_real(name,string(run_count)+'4',global.jump_count)
-                    ini_write_real(name,string(run_count)+'5',global.dash_count)
-                    
-                    if global.game_time&lt;ini_read_real(name,'best_time',global.game_time+1) or ini_read_real(name,'run_count',0)=0
-                    {
-                        ini_write_real(name,'best_time',global.game_time)
-                        ini_write_real(name,'best_date',int64(date_second_span(global.unix_start,date_current_datetime())))
-                    }
-                    
-                    ini_write_real(name,'run_count',run_count+1)  
+                    ini_write_real('save',string(run_count)+'0',global.game_time)
+                    ini_write_real('save',string(run_count)+'1',int64(date_second_span(global.unix_start,date_current_datetime())))
+                    ini_write_real('save',string(run_count)+'2',global.kill_count)
+                    ini_write_real('save',string(run_count)+'3',global.death_count)
+                    ini_write_real('save',string(run_count)+'4',global.jump_count)
+                    ini_write_real('save',string(run_count)+'5',global.dash_count)
+                                        
+                    ini_write_real('save','run_count',run_count+1)  
                       
                     ini_close()     
                 }
@@ -2757,16 +2751,14 @@ if room=rm_end
                 {
                     ini_open(name+'.boomeraxe')
                     
-                    ini_write_real(name,'best_time',global.game_time)
-                    ini_write_real(name,'best_date',int64(date_second_span(global.unix_start,date_current_datetime())))
-                    ini_write_real(name,'run_count',1)
+                    ini_write_real('save','run_count',1)
                     
-                    ini_write_real(name,'00',global.game_time)
-                    ini_write_real(name,'01',int64(date_second_span(global.unix_start,date_current_datetime())))
-                    ini_write_real(name,'02',global.kill_count)
-                    ini_write_real(name,'03',global.death_count)
-                    ini_write_real(name,'04',global.jump_count)
-                    ini_write_real(name,'05',global.dash_count)
+                    ini_write_real('save','00',global.game_time)
+                    ini_write_real('save','01',int64(date_second_span(global.unix_start,date_current_datetime())))
+                    ini_write_real('save','02',global.kill_count)
+                    ini_write_real('save','03',global.death_count)
+                    ini_write_real('save','04',global.jump_count)
+                    ini_write_real('save','05',global.dash_count)
                     
                     ini_close()
                 }             
