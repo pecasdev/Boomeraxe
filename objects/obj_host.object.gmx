@@ -2191,9 +2191,8 @@ if room=rm_main
                     {
                         if global.local_save_mode
                         {
-                            global.selected_profile=global.profiles[#0,user]
-                                
-                            username=get_username_from_name(global.selected_profile)
+                            global.selected_profile=global.profiles[#0,user]    
+                            username=user
                             login_bindings()
                                 
                             logged_in_prompt=120

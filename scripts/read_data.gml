@@ -69,7 +69,7 @@ if file_exists('boomeraxe.ini')
     {
         profile_matches=1
         
-        if i+profile_matches<=profile_count-1 and global.profiles[#1,i]=global.profiles[#1,i+profile_matches]
+        if i+profile_matches<=profile_count-empty_profiles-1 and global.profiles[#1,i]=global.profiles[#1,i+profile_matches]
         {
             while global.profiles[#1,i]=global.profiles[#1,i+profile_matches]
             {
