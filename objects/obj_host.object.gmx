@@ -103,25 +103,22 @@ if room=rm_main
         if global.selected_profile!='anonymous'
         {
             send_payload('push_run',global.selected_profile,global.game_time,int64(date_second_span(global.unix_start,date_current_datetime())),global.kill_count,global.death_count,global.jump_count,global.dash_count)
-            room=rm_end
-            global.push_run_timer=240
-            global.push_run_reciept=false
-            global.push_run_attempt=0
-            global.local_save_lock=false
         }
-        else
-        {
-            game_end()
-        }
+        
+        room=rm_end
+        global.push_run_timer=240
+        global.push_run_reciept=false
+        global.push_run_attempt=0
+        global.local_save_lock=false
     }
-    else if !paused
+    else if !paused and !instance_exists(obj_player_death)
     {
         global.game_time+=2    // Room speed is 50, so this should be an accurate timer
     }
     
     // Game Stats
 
-    // death_count &amp; jump_coung &amp; dash_count being updated by obj_player
+    // death_count &amp; jump_count &amp; dash_count being updated by obj_player
     // kill_count being updated by obj_enemy
     
     if instance_exists(obj_player) and obj_player.y&gt;room_height
@@ -466,11 +463,14 @@ if room=rm_main
 
 if room=rm_end
 {
-    selected_profile=ds_grid_value_y(global.profiles,0,0,0,ds_grid_height(global.profiles),global.selected_profile)
-    show_debug_message(selected_profile)
-    new_profiles=ds_grid_create(ds_grid_width(global.profiles),ds_grid_height(global.profiles))
-    ds_grid_copy(new_profiles,global.profiles)
-    new_rank=min(selected_profile+1,calculate_rank())
+    if global.selected_profile!='anonymous'
+    {
+        selected_profile=ds_grid_value_y(global.profiles,0,0,0,ds_grid_height(global.profiles),global.selected_profile)
+        show_debug_message(selected_profile)
+        new_profiles=ds_grid_create(ds_grid_width(global.profiles),ds_grid_height(global.profiles))
+        ds_grid_copy(new_profiles,global.profiles)
+        new_rank=min(selected_profile+1,calculate_rank())
+    }    
 }
 
 // Global
@@ -2692,106 +2692,114 @@ if room=rm_end
     
     // Title
     draw_config(fnt_end_small,4995380,fa_middle,fa_middle)     // Grayish
-    if !global.local_save_mode
+    
+    if global.selected_profile!='anonymous'
     {
-        if global.push_run_reciept=false
+        if !global.local_save_mode
         {
-            if global.push_run_attempt=0
+            if global.push_run_reciept=false
             {
-                draw_text(300,32,'Waiting for server confirmation...')
+                if global.push_run_attempt=0
+                {
+                    draw_text(300,32,'Waiting for server confirmation...')
+                }
+                else
+                {
+                    draw_text(300,32,'confirmation failed, retrying ('+string(global.push_run_attempt)+')')
+                }
+                
+                global.push_run_timer-=1
             }
             else
             {
-                draw_text(300,32,'confirmation failed, retrying ('+string(global.push_run_attempt)+')')
+                draw_text(300,32,'Run saved to server!')
             }
             
-            global.push_run_timer-=1
+            if global.push_run_timer=0
+            {
+                global.push_run_attempt+=1
+                global.push_run_timer=150
+                send_payload('push_run',global.selected_profile,global.game_time,int64(date_second_span(global.unix_start,date_current_datetime())),global.kill_count,global.death_count,global.jump_count,global.dash_count)
+            }
         }
         else
         {
-            draw_text(300,32,'Run saved to server!')
-        }
-        
-        if global.push_run_timer=0
-        {
-            global.push_run_attempt+=1
-            global.push_run_timer=150
-            send_payload('push_run',global.selected_profile,global.game_time,int64(date_second_span(global.unix_start,date_current_datetime())),global.kill_count,global.death_count,global.jump_count,global.dash_count)
+            if global.local_save_lock=false
+            {
+                if global.selected_profile!='anonymous'
+                {                            
+                    name=global.selected_profile
+                    if file_exists(name+'.boomeraxe')
+                    {
+                        
+                        ini_open(name+'.boomeraxe')
+                        run_count=ini_read_real('save','run_count',0)
+                        
+                        ini_write_real('save',string(run_count)+'0',global.game_time)
+                        ini_write_real('save',string(run_count)+'1',int64(date_second_span(global.unix_start,date_current_datetime())))
+                        ini_write_real('save',string(run_count)+'2',global.kill_count)
+                        ini_write_real('save',string(run_count)+'3',global.death_count)
+                        ini_write_real('save',string(run_count)+'4',global.jump_count)
+                        ini_write_real('save',string(run_count)+'5',global.dash_count)
+                                            
+                        ini_write_real('save','run_count',run_count+1)  
+                          
+                        ini_close()     
+                    }
+                    else
+                    {
+                        ini_open(name+'.boomeraxe')
+                        
+                        ini_write_real('save','run_count',1)
+                        
+                        ini_write_real('save','00',global.game_time)
+                        ini_write_real('save','01',int64(date_second_span(global.unix_start,date_current_datetime())))
+                        ini_write_real('save','02',global.kill_count)
+                        ini_write_real('save','03',global.death_count)
+                        ini_write_real('save','04',global.jump_count)
+                        ini_write_real('save','05',global.dash_count)
+                        
+                        ini_close()
+                    }             
+                            
+                    ini_open('boomeraxe.ini')
+                    
+                    run_count=ini_read_real(name,'run_count',0)
+                    
+                    ini_write_real(name,string(run_count)+'0',global.game_time)
+                    ini_write_real(name,string(run_count)+'1',int64(date_second_span(global.unix_start,date_current_datetime())))
+                    ini_write_real(name,string(run_count)+'2',global.kill_count)
+                    ini_write_real(name,string(run_count)+'3',global.death_count)
+                    ini_write_real(name,string(run_count)+'4',global.jump_count)
+                    ini_write_real(name,string(run_count)+'5',global.dash_count)
+                    
+                    if global.game_time&lt;ini_read_real(name,'best_time',0) or ini_read_real(name,'run_count',0)=0
+                    {
+                        ini_write_real(name,'best_time',global.game_time)
+                        ini_write_real(name,'best_date',int64(date_second_span(global.unix_start,date_current_datetime())))
+                    }
+                    
+                    if global.game_time&lt;ini_read_real('meta','best',0)
+                    {
+                        ini_write_real('meta','best',global.game_time)
+                    }
+                    
+                    
+                    ini_write_real(name,'run_count',run_count+1)
+                    
+                    ini_close()
+                    global.local_save_lock=true
+                }            
+            }
+            else
+            {
+                draw_text(300,32,'Run saved to file!')
+            }
         }
     }
     else
     {
-        if global.local_save_lock=false
-        {
-            if global.selected_profile!='anonymous'
-            {                            
-                name=global.selected_profile
-                if file_exists(name+'.boomeraxe')
-                {
-                    
-                    ini_open(name+'.boomeraxe')
-                    run_count=ini_read_real('save','run_count',0)
-                    
-                    ini_write_real('save',string(run_count)+'0',global.game_time)
-                    ini_write_real('save',string(run_count)+'1',int64(date_second_span(global.unix_start,date_current_datetime())))
-                    ini_write_real('save',string(run_count)+'2',global.kill_count)
-                    ini_write_real('save',string(run_count)+'3',global.death_count)
-                    ini_write_real('save',string(run_count)+'4',global.jump_count)
-                    ini_write_real('save',string(run_count)+'5',global.dash_count)
-                                        
-                    ini_write_real('save','run_count',run_count+1)  
-                      
-                    ini_close()     
-                }
-                else
-                {
-                    ini_open(name+'.boomeraxe')
-                    
-                    ini_write_real('save','run_count',1)
-                    
-                    ini_write_real('save','00',global.game_time)
-                    ini_write_real('save','01',int64(date_second_span(global.unix_start,date_current_datetime())))
-                    ini_write_real('save','02',global.kill_count)
-                    ini_write_real('save','03',global.death_count)
-                    ini_write_real('save','04',global.jump_count)
-                    ini_write_real('save','05',global.dash_count)
-                    
-                    ini_close()
-                }             
-                        
-                ini_open('boomeraxe.ini')
-                
-                run_count=ini_read_real(name,'run_count',0)
-                
-                ini_write_real(name,string(run_count)+'0',global.game_time)
-                ini_write_real(name,string(run_count)+'1',int64(date_second_span(global.unix_start,date_current_datetime())))
-                ini_write_real(name,string(run_count)+'2',global.kill_count)
-                ini_write_real(name,string(run_count)+'3',global.death_count)
-                ini_write_real(name,string(run_count)+'4',global.jump_count)
-                ini_write_real(name,string(run_count)+'5',global.dash_count)
-                
-                if global.game_time&lt;ini_read_real(name,'best_time',0) or ini_read_real(name,'run_count',0)=0
-                {
-                    ini_write_real(name,'best_time',global.game_time)
-                    ini_write_real(name,'best_date',int64(date_second_span(global.unix_start,date_current_datetime())))
-                }
-                
-                if global.game_time&lt;ini_read_real('meta','best',0)
-                {
-                    ini_write_real('meta','best',global.game_time)
-                }
-                
-                
-                ini_write_real(name,'run_count',run_count+1)
-                
-                ini_close()
-                global.local_save_lock=true
-            }            
-        }
-        else
-        {
-            draw_text(300,32,'Run saved to file!')
-        }
+        draw_text(300,32,'Run Completed!')
     }
         
     // Runtime
@@ -2820,7 +2828,7 @@ if room=rm_end
     // Personal Record
     draw_config(fnt_end_medium,4995380,fa_middle,fa_middle)     // Grayish
     
-    if global.profiles[#1,selected_profile]=undefined
+    if global.selected_profile='anonymous' or profiles[#1,selected_profile]=undefined
     {
         draw_text(150,280,"N/A")
     }
@@ -2832,9 +2840,9 @@ if room=rm_end
     draw_config(fnt_end_tiny,4079406,fa_middle,fa_middle)       // Murky Turquoise
     draw_text(150,310,'Personal Record')
 
-    if global.profiles[#1,selected_profile]=undefined
+    if global.selected_profile='anonymous' or global.profiles[#1,selected_profile]=undefined
     {
-        draw_config(fnt_end_small,2852688,fa_middle,fa_middle)  // Radioactive
+        draw_config(fnt_end_small,c_dkgray,fa_middle,fa_middle)
         draw_text(450,280,'N/A')
     }
     else
@@ -2851,8 +2859,12 @@ if room=rm_end
         }        
     }
     // Rank
-       
-    if new_rank=1
+    
+    if global.selected_profile='anonymous'
+    {
+        c_rank=c_dkgray
+    }   
+    else if new_rank=1
     {
         c_rank=3118552
     }
@@ -2872,11 +2884,29 @@ if room=rm_end
     draw_area(149-35,370-35,149+35,370+35,c_rank,c_black,2)
     draw_config(fnt_end_tiny,4079406,fa_middle,fa_middle)       // Murky Turquoise
     draw_text(150,416,'New Rank')
-    draw_config(fnt_end_medium,c_black,fa_middle,fa_middle)
-    draw_text(152,369,new_rank)
-    draw_config(fnt_end_small,27357,fa_middle,fa_middle)        // Dirty Orange
-    draw_text_transformed(450,370,string(clamp(selected_profile+1-new_rank,0,10000))+' Ranks Gained!',0.75,0.75,0)
+        
+    if global.selected_profile!='anonymous'
+    {
+        draw_config(fnt_end_medium,c_black,fa_middle,fa_middle)
+        draw_text(152,369,new_rank)
+    }
+    else
+    {
+        draw_config(fnt_end_medium,c_white,fa_middle,fa_middle)
+        draw_text(152,369,'?')
+    }
     
+    if global.selected_profile!='anonymous'
+    {
+        draw_config(fnt_end_small,27357,fa_middle,fa_middle)        // Dirty Orange
+        draw_text_transformed(450,370,string(clamp(selected_profile+1-new_rank,0,10000))+' Ranks Gained!',0.75,0.75,0)
+    }
+    else
+    {
+        draw_config(fnt_end_small,c_dkgray,fa_middle,fa_middle)
+        draw_text_transformed(450,370,'anonymous runs#not ranked!',0.75,0.75,0)
+    }
+        
     // Stats
     draw_config(fnt_end_medium,4995380,fa_middle,fa_middle)     // Grayish
     draw_text(90,475,global.kill_count)
