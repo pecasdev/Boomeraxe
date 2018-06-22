@@ -164,7 +164,7 @@ switch(state)
         if k_dash and dash_count&gt;0
         {
             state=s.dash
-            dash_dir=image_xscale
+            dash_timer=0
         }
         
         if k_jump and jump_count&gt;0
@@ -220,7 +220,7 @@ switch(state)
         if k_dash and dash_count&gt;0
         {
             state=s.dash
-            dash_dir=image_xscale
+            dash_timer=0
         }
         
         if k_jump and jump_count&gt;0
@@ -309,9 +309,8 @@ switch(state)
         vsp=0
         
         sprite_index=spr_player_dash
-        image_xscale=dash_dir
         
-        dash_hsp=dash_dir*19
+        dash_hsp=image_xscale*19
         
         dash_timer-=1
         
@@ -371,7 +370,7 @@ switch(state)
         if k_dash and dash_count&gt;0
         {
             state=s.dash
-            dash_dir=image_xscale
+            dash_timer=0
         }
         
         if k_jump and jump_count&gt;0
@@ -441,7 +440,7 @@ switch(state)
         if k_dash and dash_count&gt;0
         {
             state=s.dash
-            dash_dir=image_xscale
+            dash_timer=0
         }
                 
         if k_attack and can_throw

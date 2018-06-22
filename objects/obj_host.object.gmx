@@ -470,7 +470,7 @@ if room=rm_end
     show_debug_message(selected_profile)
     new_profiles=ds_grid_create(ds_grid_width(global.profiles),ds_grid_height(global.profiles))
     ds_grid_copy(new_profiles,global.profiles)
-    new_rank=calculate_rank()
+    new_rank=min(selected_profile+1,calculate_rank())
 }
 
 // Global
@@ -2182,7 +2182,9 @@ if room=rm_main
             if keyboard_check_pressed(vk_enter) or keyboard_check_pressed(global.k[? 'jump'])
             {
                 if select=0
-                {                    
+                {
+                    overlay_init_lock=false
+                                        
                     if global.selected_profile=global.profiles[#0,user]
                     {
                         global.selected_profile='anonymous'
@@ -2458,14 +2460,13 @@ if room=rm_main
     
     if global.overlay_toggle=false
     {
-        overlay_init_lock=false
+        overlay_init_lock=false 
         if instance_exists(obj_overlay_row)
         {
             instance_destroy(obj_overlay_row)
         }
-    }
-    
-    if global.overlay_toggle
+    }    
+    else
     {
         if gui_state=s.idle or gui_state=s.pause or gui_state=s.options
         {
@@ -2479,7 +2480,12 @@ if room=rm_main
                 if overlay_init_lock=false
                 {
                     show_debug_message('overlay reinitialized')
-                                   
+                    
+                    if instance_exists(obj_overlay_row)
+                    {
+                        instance_destroy(obj_overlay_row)
+                    }
+                                               
                     rows=ds_list_create()
                     overlay_next_rank=0
                     
@@ -2498,7 +2504,7 @@ if room=rm_main
                         create_overlay_row(4,global.profiles[#0,overlay_next_rank+3],overlay_next_rank+5,global.profiles[#1,overlay_next_rank+3])
                     }
                     
-                    if overlay_next_rank&gt;=1 and overlay_next_rank&lt;=profile_count-2
+                    if overlay_next_rank&gt;=1 and overlay_next_rank&lt;=profile_count-empty_profiles-2
                     {    
                         create_overlay_row(0,global.profiles[#0,overlay_next_rank-1],overlay_next_rank,global.profiles[#1,overlay_next_rank-1])
                         create_overlay_row(1,global.selected_profile,overlay_next_rank+1,global.game_time)
@@ -2508,7 +2514,7 @@ if room=rm_main
                         create_overlay_row(4,global.profiles[#0,overlay_next_rank+2],overlay_next_rank+4,global.profiles[#1,overlay_next_rank+2])
                     }
                     
-                    if overlay_next_rank=profile_count-1
+                    if overlay_next_rank=profile_count-empty_profiles-1
                     {
                         create_overlay_row(0,global.profiles[#0,overlay_next_rank-2],overlay_next_rank-1,global.profiles[#1,overlay_next_rank-2])
                         create_overlay_row(1,global.profiles[#0,overlay_next_rank-1],overlay_next_rank,global.profiles[#1,overlay_next_rank-1])
@@ -2517,7 +2523,7 @@ if room=rm_main
                         create_overlay_row(3,global.profiles[#0,overlay_next_rank],overlay_next_rank+2,global.profiles[#1,overlay_next_rank])                                    
                     }
                     
-                    if overlay_next_rank=profile_count
+                    if overlay_next_rank=profile_count-empty_profiles
                     {
                         create_overlay_row(0,global.profiles[#0,overlay_next_rank-3],overlay_next_rank-2,global.profiles[#1,overlay_next_rank-3])
                         create_overlay_row(1,global.profiles[#0,overlay_next_rank-2],overlay_next_rank-1,global.profiles[#1,overlay_next_rank-2])
@@ -2542,7 +2548,7 @@ if room=rm_main
                 draw_area(350,450,600,492,c_ltgray,c_black,2)
                 
                 // Next Rank Updater
-                if overlay_next_rank&lt;profile_count and global.game_time&gt;=global.profiles[#1,overlay_next_rank]
+                if overlay_next_rank&lt;profile_count-empty_profiles and global.game_time&gt;=global.profiles[#1,overlay_next_rank]
                 { 
                     show_debug_message(global.game_time)
                     show_debug_message(global.profiles[#1,overlay_next_rank])
@@ -2564,7 +2570,7 @@ if room=rm_main
                                  
                     if user_pos=1
                     {
-                        if overlay_next_rank&lt;=profile_count-2
+                        if overlay_next_rank&lt;=profile_count-empty_profiles-2
                         {
                             rows[| 0].y_target=492+27*-1
                             rows[| 1].rank+=1
@@ -2577,7 +2583,7 @@ if room=rm_main
                             rows[| 2]=rows[| 3]
                             rows[| 3]=rows[| 4]
                             
-                            if overlay_next_rank!=profile_count-2
+                            if overlay_next_rank!=profile_count-empty_profiles-2
                             {
                                 row=instance_create(350,573,obj_overlay_row)
                                 row.rank=overlay_next_rank+4
@@ -2621,7 +2627,7 @@ if room=rm_main
                     show_debug_message('------------------------------------------------------------')                      
                 }
                             
-                if overlay_next_rank&lt;profile_count
+                if overlay_next_rank&lt;profile_count-empty_profiles
                 {
                     draw_config(fnt_overlay_big,c_black,fa_middle,fa_middle)
                     draw_text(413,463,format_time(global.game_time-global.profiles[#1,overlay_next_rank],false))
@@ -2638,9 +2644,8 @@ if room=rm_main
                 // Time until personal best
                 draw_config(fnt_overlay_big,c_black,fa_middle,fa_middle)
                 user=get_username_from_name(global.selected_profile)
-                if user!="anonymous" and global.profiles[#1,global.selected_profile]!=undefined
+                if user!="anonymous" and global.profiles[#1,user]!=undefined
                 {   
-                    show_debug_message(string(global.game_time)+' / '+string(global.profiles[#1,user]))
                     if global.game_time&lt;global.profiles[#1,user]
                     {
                         draw_text(537,463,format_time(global.game_time-global.profiles[#1,user],false))
@@ -2667,14 +2672,6 @@ if room=rm_main
                 draw_text(500,525,'data not found##options-&gt;profiles#to download')
             }
         }
-        else
-        {
-            if instance_exists(obj_overlay_row)
-            {
-                instance_destroy(obj_overlay_row)
-                overlay_init_lock=false
-            }        
-        }            
     }
 }   
 

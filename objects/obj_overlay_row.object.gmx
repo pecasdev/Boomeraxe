@@ -89,7 +89,8 @@ draw_area(x,y,x+250,y+27,bc,c_black,1)
 // Rank
 draw_area(x+2,y+2,x+25,y+25,rc,c_black,1)
 draw_config(fnt_overlay_big,c_black,fa_middle,fa_middle)
-draw_text(x+15,y+13,rank)
+scale=1-0.14*(string_length(rank)-1)
+draw_text_transformed(x+15,y+13,rank,scale,scale,0)
 
 // Username
 draw_config(fnt_overlay,c_black,fa_left,fa_middle)
