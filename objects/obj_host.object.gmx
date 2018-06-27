@@ -845,7 +845,7 @@ if room=rm_title
                 draw_select(300,135,300,52,3)
                 if create_name=''
                 {                    
-                    draw_cursor(300,135,4,28,cursor_blink)
+                    draw_cursor(300,135,4,28,cursor_blink,c_white)
                 }
                                 
                 if keyboard_string='placehold'  
@@ -883,7 +883,7 @@ if room=rm_title
                 draw_select(300,270,300,52,3)
                 if create_pass0=''
                 {
-                    draw_cursor(300,270,4,28,cursor_blink)
+                    draw_cursor(300,270,4,28,cursor_blink,c_white)
                 }
                 
                 if keyboard_string='placehold'
@@ -903,7 +903,7 @@ if room=rm_title
                 draw_select(300,362,300,52,3)
                 if create_pass1=''
                 {
-                    draw_cursor(300,362,4,28,cursor_blink)
+                    draw_cursor(300,362,4,28,cursor_blink,c_white)
                 }
 
                 if keyboard_string='placehold'
@@ -1763,7 +1763,7 @@ if room=rm_main
                 }
                 else if search_toggle
                 {
-                    draw_text(300,40-y_match,"{ }")
+                    draw_cursor(300,40-y_match,4,28,mix,c_black)
                 }
                 else
                 {
@@ -1823,6 +1823,7 @@ if room=rm_main
                                         select=0
                                         y_view_cur=0
                                         y_view_tar=0
+                                        search_toggle=false
                                         break
                                     }    
                                                             
@@ -1847,6 +1848,7 @@ if room=rm_main
                     {                    
                         entry_select=undefined
                         gui_state=s.profile
+                        search_toggle=false
                         user=select
                         select=0
                         y_view_cur=0
@@ -2269,7 +2271,7 @@ if room=rm_main
             
             if keyboard_string=""
             {
-                draw_cursor(300,330,4,28,cursor_blink)
+                draw_cursor(300,330,4,28,cursor_blink,c_white)
                 
                 if cursor_blink=0.2
                 {
@@ -2828,7 +2830,7 @@ if room=rm_end
     // Personal Record
     draw_config(fnt_end_medium,4995380,fa_middle,fa_middle)     // Grayish
     
-    if global.selected_profile='anonymous' or profiles[#1,selected_profile]=undefined
+    if global.selected_profile='anonymous' or global.profiles[#1,selected_profile]=undefined
     {
         draw_text(150,280,"N/A")
     }
