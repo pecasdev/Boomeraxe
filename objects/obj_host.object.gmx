@@ -523,7 +523,7 @@ global.unix_start=date_create_datetime(1970,1,1,0,0,0)
 global.udp_socket=network_create_socket(network_socket_udp)
 global.public_udp_ip='99.237.192.34'
 global.private_udp_ip='192.168.0.200'
-global.ip=global.public_udp_ip //global.ip=global.private_udp_ip
+global.ip=global.public_udp_ip//global.ip=global.private_udp_ip
 global.udp_port=9000 
 global.server_connection=undefined
 global.ping_retry=0
