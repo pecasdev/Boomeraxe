@@ -211,7 +211,7 @@ if keyboard_check_pressed(ord('R')) and gui_state!=s.profile_create and gui_stat
 if async_load[? 'type']=network_type_data
 {
     show_debug_message('contact')
-    timeout=50
+    timeout=150
     
     buffer=async_load[? 'buffer']
     packet_id=buffer_read(buffer,buffer_string)
@@ -236,13 +236,16 @@ if async_load[? 'type']=network_type_data
     if packet_id='pull'
     {
         check=buffer_read(buffer,buffer_string)
+        show_debug_message('Package ID: '+string(check))
         buffer_seek(buffer,buffer_seek_start,0)    
         
         if check='done'
-        {
+        {            
             buffer_read(buffer,buffer_string)
             buffer_read(buffer,buffer_string)
             complete_size=int64(buffer_read(buffer,buffer_string))
+            show_message('received terminating package with value: '+string(complete_size))
+            show_message('current data stack has size of: '+string(ds_map_size(data_stack)))
         }
         else
         {
@@ -252,7 +255,7 @@ if async_load[? 'type']=network_type_data
                 if buffer_tell(buffer)!=buffer_get_size(buffer)
                 {
                    pos=buffer_read(buffer,buffer_string)
-                   //show_debug_message(pos)
+                   //show_debug_message('packet id: '+string(pos))
                    lin=buffer_read(buffer,buffer_string)
                    
                    data_stack[? pos]=lin
@@ -260,6 +263,7 @@ if async_load[? 'type']=network_type_data
                 }
                 else
                 {
+                    //show_debug_message('buffer packet completed')
                     break
                 }
             }
@@ -268,8 +272,13 @@ if async_load[? 'type']=network_type_data
         if complete_size=ds_map_size(data_stack)
         {   
             if complete_size!=0
-            {         
+            {
+                show_message('rewriting boomeraxe.ini')         
                 write_leaderboard()
+            }
+            else
+            {
+                show_message('data stack size 0')
             }
             leaderboard_state=s.reading
             show_debug_message('complete size reached')
@@ -1533,6 +1542,7 @@ if room=rm_main
             {
                 case s.downloading:
                 {
+                    //show_message('leaderboard state is s.downloading')
                     if global.local_save_mode=true or global.server_connection=false
                     {
                         read_data()
@@ -1547,20 +1557,23 @@ if room=rm_main
                 
                 case s.download_wait:
                 {
+                    //show_message('leaderboard state is s.download_wait')
                     if timeout=0
                     {
+                        show_message("timed out error")
                         read_data()
                         leaderboard_state=s.idle
                     }
                     else
                     {
-                        timeout-=1
+                        //timeout-=1
                     }
                     
                 }break
                 
                 case s.reading:
                 {
+                    //show_message('leaderboard state is s.reading')
                     read_data()
                     leaderboard_state=s.idle
                     
