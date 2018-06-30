@@ -438,7 +438,6 @@ if room=rm_main
     
     Peter
     "  
-
 }
 
 if room=rm_end
@@ -579,7 +578,7 @@ if room=rm_title
             draw_config(fnt_title,c_white,fa_middle,fa_middle)
             draw_text(300,230,'New Run')
             draw_text(300,320,'New Profile')
-            draw_text(300,410,'Options')
+            draw_text(300,410,'Feedback')
             
             if !exit_confirm
             {
@@ -1042,65 +1041,22 @@ if room=rm_title
                                           
         }break
         
-        case s.options:
+        case s.feedback:
         {
-            draw_config(fnt_title_big,c_white,fa_middle,fa_middle)
-            draw_text(300,75,'- Options -')
+            // Profile Login Title
+            draw_config(fnt_login,14803425,fa_middle,fa_middle) // Wisp   
+            draw_text_transformed(300,50,'- Feedback -',1.4,1.4,0)
             
-            draw_config(fnt_title,c_white,fa_middle,fa_middle)
-            draw_text(300,225,'SFX : ')
-            draw_text(300,300,'MUSIC : ')
-            draw_text(300,375,'Overlay: '   )
-            draw_text(300,450,'Keybindings')
-            draw_text(300,525,'Back')
-            
-            draw_config(fnt_title_big,c_white,fa_left,fa_middle)
-            draw_text(400,300,string(global.volume_effects))
-            draw_text(400,375,string(global.volume_music))
+            // Cancel Prompt
+            draw_config(fnt_login_small,9868950,fa_middle,fa_middle)    // Pastel
+            draw_text(300,100,'ESC to Cancel')
 
-            if global.overlay_toggle
-            {
-                draw_text(410,450,"On")
-            }
-            else
-            {
-                draw_text(410,450,"Off")
-            }    
+            draw_text(100,150,'Creativity')
+            draw_text(100,'Enjoyment')
+            draw_text(100,'Bugless'
+            draw_text(100,300,'Art')
+            draw_text(100,450,'Audio')
             
-            // User Input
-            select=clamp(select,0,4)
-            draw_select(300,225+select*75,195,45,2)
-            
-            if select=0
-            {
-                global.volume_effects+=keyboard_check_pressed(global.k[? 'right']) - keyboard_check_pressed(global.k[? 'left'])
-            }
-            
-            if select=1
-            {
-                global.volume_music+=keyboard_check_pressed(global.k[? 'right']) - keyboard_check_pressed(global.k[? 'left'])
-            }
-
-                
-            if keyboard_check_pressed(vk_enter) or keyboard_check_pressed(global.k[? 'jump'])
-            {                
-                if select=2
-                {
-                    global.overlay_toggle=global.overlay_toggle==false
-                }
-                
-                if select=3
-                {
-                    binding_select=undefined
-                    gui_state=s.keybind
-                }
-                
-                if select=4
-                {
-                    gui_state=s.title
-                    select=0
-                }
-            }
             
             if keyboard_check_pressed(vk_escape)
             {

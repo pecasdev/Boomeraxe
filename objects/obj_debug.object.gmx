@@ -59,7 +59,7 @@ if instance_exists(obj_player) and obj_host.gui_state=s.idle and debug_enabled a
     draw_area(450,450,600,600,c_white,c_black,2)
     draw_config(fnt_debug,c_black,fa_middle,fa_middle)
     draw_text(525,465,'(x,y) : ('+string(obj_player.x)+','+string(obj_player.y)+')')
-    draw_text(525,485,'state : ('+string(obj_player.state)+')')
+    draw_text(525,485,'objects : ('+string(instance_count-instance_number(obj_wall)-instance_number(obj_spike_shard))+')')
     draw_text(525,505,'kills : ('+string(global.kill_count)+')')
     draw_text(525,525,'deaths : ('+string(global.death_count)+')')
     draw_text(525,545,'jumps : ('+string(global.jump_count)+')')
