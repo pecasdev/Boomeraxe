@@ -94,58 +94,6 @@ switch(global.bg_enabled)
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>/// Counters and run_over
-if room=rm_main
-{
-    if run_over
-    {
-        paused=true
-        if global.selected_profile!='anonymous'
-        {
-            send_payload('push_run',global.selected_profile,global.game_time,int64(date_second_span(global.unix_start,date_current_datetime())),global.kill_count,global.death_count,global.jump_count,global.dash_count)
-        }
-        
-        room=rm_end
-        global.push_run_timer=240
-        global.push_run_reciept=false
-        global.push_run_attempt=0
-        global.local_save_lock=false
-    }
-    else if !paused and !instance_exists(obj_player_death)
-    {
-        global.game_time+=2    // Room speed is 50, so this should be an accurate timer
-    }
-    
-    // Game Stats
-
-    // death_count &amp; jump_count &amp; dash_count being updated by obj_player
-    // kill_count being updated by obj_enemy
-    
-    if instance_exists(obj_player) and obj_player.y&gt;room_height
-    {
-        run_over=true
-    }
-}
-</string>
-          </argument>
-        </arguments>
-      </action>
-      <action>
-        <libid>1</libid>
-        <id>603</id>
-        <kind>7</kind>
-        <userelative>0</userelative>
-        <isquestion>0</isquestion>
-        <useapplyto>-1</useapplyto>
-        <exetype>2</exetype>
-        <functionname></functionname>
-        <codestring></codestring>
-        <whoName>self</whoName>
-        <relative>0</relative>
-        <isnot>0</isnot>
-        <arguments>
-          <argument>
-            <kind>1</kind>
             <string>/// Server Ping
 
 if global.ping_retry&gt;=global.ping_timer
@@ -385,6 +333,7 @@ if room=rm_title
     
     // Animations
     name_oversized=false
+    pass_oversized=false
     pass_mismatch=false
     name_taken=false
     name_invalid=false
@@ -449,6 +398,7 @@ if room=rm_main
     gui_state=s.idle
     network_state=s.idle
     paused=false
+    timeout=0
         
     // Scrolling
     y_view_cur=0
@@ -463,6 +413,7 @@ if room=rm_main
     login_fail=0
     logged_in_prompt=0    
     overlay_init_lock=false
+    credit_scroll=0
        
     global.kill_count=0
     global.death_count=0
@@ -472,7 +423,22 @@ if room=rm_main
     login_update=0
     
     leaderboard_state=s.idle 
-    complete_size=0  
+    complete_size=0
+      
+    left_side=
+    "
+    CREDITS
+    
+    Programmer: 
+    "
+    
+    right_side=
+    "
+    CREDITS
+    
+    Peter
+    "  
+
 }
 
 if room=rm_end
@@ -484,7 +450,14 @@ if room=rm_end
         new_profiles=ds_grid_create(ds_grid_width(global.profiles),ds_grid_height(global.profiles))
         ds_grid_copy(new_profiles,global.profiles)
         new_rank=min(selected_profile+1,calculate_rank())
-    }    
+        
+        send_payload('push_run',global.selected_profile,global.game_time,int64(date_second_span(global.unix_start,date_current_datetime())),global.kill_count,global.death_count,global.jump_count,global.dash_count)
+    }
+            
+    global.push_run_timer=240
+    global.push_run_reciept=false
+    global.push_run_attempt=0
+    global.local_save_lock=false  
 }
 
 // Global
@@ -749,9 +722,13 @@ if room=rm_title
             draw_config(fnt_profile_create,9868950,fa_middle,fa_middle)   // Pastel
             draw_text_transformed(300,352,string_repeat('.',string_length(create_pass1)),1.25,1.5,0)
             
-            draw_config(fnt_profile_create_small,c_create_pass,fa_middle,fa_middle)            
-
-            if pass_mismatch
+            draw_config(fnt_profile_create_small,c_create_pass,fa_middle,fa_middle) 
+                       
+            if pass_oversized
+            {
+                draw_text(300,414,"password must be 20#characters or less")
+            }
+            else if pass_mismatch
             {
                 draw_text(300,402,"passwords do not match")
             }
@@ -771,6 +748,16 @@ if room=rm_title
                 name_oversized=false
             }
 
+            if string_length(create_pass0)&gt;20
+            {
+                pass_oversized=true
+                pass_error=120
+            }
+            else
+            {
+                pass_oversized=false
+            }
+            
             if name_taken
             {
                 name_error=120
@@ -849,7 +836,7 @@ if room=rm_title
             
             cursor_blink+=(up-down)*0.03
             
-            if keyboard_check_pressed(vk_anykey)
+            if ascii_only(keyboard_key) and keyboard_check_pressed(keyboard_key) and select=0
             {
                 check_name_timer=25
             }
@@ -857,7 +844,27 @@ if room=rm_title
             if check_name_timer&gt;0
             {
                 check_name_timer-=1
-                name_taken=undefined
+                if select=0
+                {
+                   name_taken=undefined
+                }
+            }
+
+            if create_name!='' and !name_oversized and !name_invalid and check_name_timer=0
+            {
+                if global.local_save_mode=false
+                {
+                    send_payload('create_name_check',string_lower(create_name))
+                }
+                else
+                {
+                    name_taken=check_username_availability(string_lower(create_name))
+                }
+                check_name_timer=-1
+            }
+            else if create_name=''
+            {
+                name_taken=false
             }
             
             if select=0
@@ -875,23 +882,6 @@ if room=rm_title
                 else
                 {
                     create_name=keyboard_string
-                    
-                    if keyboard_string!='' and check_name_timer=0
-                    {
-                        if global.local_save_mode=false
-                        {
-                            send_payload('create_name_check',create_name)
-                        }
-                        else
-                        {
-                            name_taken=check_username_availability(create_name)
-                        }
-                        check_name_timer=-1
-                    }
-                    else if keyboard_string=''
-                    {
-                        name_taken=false
-                    }
                 }
                 
                 name_left_blank=0          
@@ -989,7 +979,7 @@ if room=rm_title
                     }
                     else
                     {
-                        if name_taken='pass' and name_invalid=false and name_oversized=false and pass_mismatch=false
+                        if name_taken='pass' and name_invalid=false and name_oversized=false and pass_mismatch=false and pass_oversized=false
                         {
                             if global.local_save_mode=false
                             {
@@ -1555,6 +1545,7 @@ if room=rm_main
                     //show_message('leaderboard state is s.downloading')
                     if global.local_save_mode=true or global.server_connection=false
                     {
+                        download_overlay=80
                         read_data()
                         leaderboard_state=s.idle                    
                     }
@@ -1576,7 +1567,7 @@ if room=rm_main
                     }
                     else
                     {
-                        //timeout-=1
+                        timeout-=1
                     }
                     
                 }break
@@ -1920,18 +1911,26 @@ if room=rm_main
                 draw_set_alpha(download_overlay/25)
                 draw_area(0,0,599,599,c_white,c_black,1)
                 draw_config(fnt_profiles_medium,c_black,fa_middle,fa_middle)
-                draw_text(300,200,'Retrieving leaderboard#from server...#(this might take a while)')
-                
-                if timeout=0
+                if global.local_save_mode or global.server_connection=false
                 {
+                    draw_text(300,200,"You are in offline mode#Leaderboard cannot update")
                     draw_config(fnt_profiles,c_black,fa_middle,fa_middle)
-                    draw_text(300,400,'Could not connect to server#Loading cached leaderboard...')
-                }                
-                else if global.profiles!=undefined
-                {
-                    draw_text(300,400,'Success! Loading leaderboard...')
+                    draw_text(300,400,"(Press 'R' while outside of profiles#to attempt reconnection)")
                 }
-                
+                else
+                {
+                    draw_text(300,200,'Retrieving leaderboard#from server...#(this might take a while)')
+                    
+                    if timeout=0
+                    {
+                        draw_config(fnt_profiles,c_black,fa_middle,fa_middle)
+                        draw_text(300,400,'Could not connect to server#Loading cached leaderboard...')
+                    }                
+                    else if global.profiles!=undefined
+                    {
+                        draw_text(300,400,'Success! Loading leaderboard...')
+                    }
+                }
                 download_overlay-=1
             }
 
@@ -3017,6 +3016,49 @@ if !search_toggle and binding_select=undefined
     else
     {
         hold_dn=0
+    }
+}
+</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>/// Counters and run_over
+if room=rm_main
+{
+    if run_over
+    {
+        draw_credits()
+        credit_scroll+=2
+    }
+    else if !paused and !instance_exists(obj_player_death)
+    {
+        global.game_time+=2    // Room speed is 50, so this should be an accurate timer
+    }
+    
+    // Game Stats
+
+    // death_count &amp; jump_count &amp; dash_count being updated by obj_player
+    // kill_count being updated by obj_enemy
+    
+    if instance_exists(obj_player) and obj_player.y&gt;room_height
+    {
+        run_over=true
     }
 }
 </string>

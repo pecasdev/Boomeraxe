@@ -99,6 +99,7 @@
       <script>scripts\profile_create_notify.gml</script>
       <script>scripts\get_user_profile_pos.gml</script>
       <script>scripts\list_index_swap.gml</script>
+      <script>scripts\draw_credits.gml</script>
     </scripts>
     <scripts name="else">
       <script>scripts\create_particles.gml</script>
@@ -158,6 +159,7 @@
     <font>fonts\fnt_connection_notify</font>
     <font>fonts\fnt_overlay_big</font>
     <font>fonts\fnt_overlay</font>
+    <font>fonts\fnt_credits</font>
     <font>fonts\fnt_overlay_small</font>
   </fonts>
   <objects name="objects">
