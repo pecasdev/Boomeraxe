@@ -98,6 +98,5 @@ if file_exists('boomeraxe.ini')
     }
         
     ini_close()
-    show_message('boomeraxe.ini successfully read')
 }
 

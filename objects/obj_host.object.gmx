@@ -244,44 +244,49 @@ if async_load[? 'type']=network_type_data
             buffer_read(buffer,buffer_string)
             buffer_read(buffer,buffer_string)
             complete_size=int64(buffer_read(buffer,buffer_string))
-            show_message('received terminating package with value: '+string(complete_size))
-            show_message('current data stack has size of: '+string(ds_map_size(data_stack)))
         }
         else
         {
             buffer_read(buffer,buffer_string)
-            repeat(200)
-            {
-                if buffer_tell(buffer)!=buffer_get_size(buffer)
+            copy=buffer_create(1,buffer_grow,1)
+            buffer_copy(buffer,0,buffer_get_size(buffer),copy,0)
+            ds_list_add(buffer_stack,copy)
+        }
+        show_debug_message(ds_list_size(buffer_stack))
+
+        if complete_size!=undefined and ds_list_size(buffer_stack)*200&gt;=complete_size
+        { 
+            show_debug_message('compiling packets') 
+            for (i=0;i!=ds_list_size(buffer_stack);i+=1)
+            {   
+                buffer_seek(buffer_stack[| i],buffer_seek_start,0) 
+                buffer_read(buffer_stack[| i],buffer_string)       
+                repeat(200)
                 {
-                   pos=buffer_read(buffer,buffer_string)
-                   //show_debug_message('packet id: '+string(pos))
-                   lin=buffer_read(buffer,buffer_string)
-                   
-                   data_stack[? pos]=lin
-                   //show_debug_message('packet recieved :  '+pos+' &gt;&gt; '+lin+'  '+string(buffer_tell(buffer))+"/"+string(buffer_get_size(buffer)))
-                }
-                else
-                {
-                    //show_debug_message('buffer packet completed')
-                    break
+                    if buffer_tell(buffer_stack[| i])!=buffer_get_size(buffer_stack[| i])
+                    {
+                       pos=buffer_read(buffer_stack[| i],buffer_string)
+                       lin=buffer_read(buffer_stack[| i],buffer_string)
+                       
+                       data_stack[? pos]=lin
+                    }
+                    else
+                    {
+                        break
+                    }
                 }
             }
-        }
-        show_debug_message(string(ds_map_size(data_stack))+'/'+string(complete_size))
-        if complete_size=ds_map_size(data_stack)
-        {   
+            for (i=0;i!=ds_list_size(buffer_stack);i+=1)
+            {
+                buffer_delete(buffer_stack[| i])
+            }
+            show_debug_message('done')
+            
             if complete_size!=0
             {
-                show_message('rewriting boomeraxe.ini')         
                 write_leaderboard()
             }
-            else
-            {
-                show_message('data stack size 0')
-            }
             leaderboard_state=s.reading
-            show_debug_message('complete size reached')
         }
     }
     
@@ -388,7 +393,7 @@ if room=rm_title
     pass0_left_blank=0
     pass1_left_blank=0
     
-    check_name_lock=false
+    check_name_timer=0
     name_error=0
     pass_error=0
     c_create_name=c_white
@@ -846,7 +851,13 @@ if room=rm_title
             
             if keyboard_check_pressed(vk_anykey)
             {
-                check_name_lock=false
+                check_name_timer=25
+            }
+            
+            if check_name_timer&gt;0
+            {
+                check_name_timer-=1
+                name_taken=undefined
             }
             
             if select=0
@@ -865,18 +876,17 @@ if room=rm_title
                 {
                     create_name=keyboard_string
                     
-                    if keyboard_string!='' and check_name_lock=false
+                    if keyboard_string!='' and check_name_timer=0
                     {
                         if global.local_save_mode=false
                         {
-                            name_taken=undefined
                             send_payload('create_name_check',create_name)
                         }
                         else
                         {
                             name_taken=check_username_availability(create_name)
                         }
-                        check_name_lock=true
+                        check_name_timer=-1
                     }
                     else if keyboard_string=''
                     {
