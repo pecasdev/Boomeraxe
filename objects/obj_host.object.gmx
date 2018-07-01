@@ -835,9 +835,12 @@ if room=rm_title
             
             cursor_blink+=(up-down)*0.03
             
-            if ascii_only(keyboard_key) and keyboard_check_pressed(keyboard_key) and select=0
+            if keyboard_key!=0
             {
-                check_name_timer=25
+                if ascii_only(keyboard_key) and select=0
+                {
+                    check_name_timer=25
+                }
             }
             
             if check_name_timer&gt;0
@@ -848,7 +851,7 @@ if room=rm_title
                    name_taken=undefined
                 }
             }
-
+            show_debug_message(check_name_timer)
             if create_name!='' and !name_oversized and !name_invalid and check_name_timer=0
             {
                 if global.local_save_mode=false
@@ -1050,13 +1053,13 @@ if room=rm_title
             // Cancel Prompt
             draw_config(fnt_login_small,9868950,fa_middle,fa_middle)    // Pastel
             draw_text(300,100,'ESC to Cancel')
-
+/*
             draw_text(100,150,'Creativity')
             draw_text(100,'Enjoyment')
             draw_text(100,'Bugless'
             draw_text(100,300,'Art')
             draw_text(100,450,'Audio')
-            
+*/            
             
             if keyboard_check_pressed(vk_escape)
             {
@@ -1859,6 +1862,10 @@ if room=rm_main
             else
             {
                 download_overlay=25
+                if keyboard_check_pressed(vk_escape)
+                {
+                    gui_state=s.pause
+                }
             }
             
             if download_overlay&gt;0
