@@ -63,6 +63,10 @@ if obj_host.paused
     image_speed=0
     exit
 }
+if global.maximize_performance=true
+{
+    instance_destroy()
+}
 </string>
           </argument>
         </arguments>

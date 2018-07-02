@@ -55,23 +55,9 @@ blend=0
           <argument>
             <kind>1</kind>
             <string>/// Physics and Tinting
-
-if retract
+if global.maximize_performance
 {
-    if timer=0
-    {
-        timer=60
-        x+=lengthdir_x(5,direction)
-        y+=lengthdir_y(5,direction)
-    }
-    
-    if timer=30
-    {
-        x-=lengthdir_x(5,direction)
-        y-=lengthdir_y(5,direction)
-    }
-    
-    timer-=1
+    instance_destroy()
 }
 
 if blend=0

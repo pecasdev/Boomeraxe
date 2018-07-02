@@ -2,6 +2,10 @@ x_spawn=argument0
 y_spawn=argument1
 type=argument2
 
+if global.maximize_performance
+{
+    exit
+}
 if !(x_spawn>view_xview[0] and x_spawn<view_xview[0]+view_wview[0] and y_spawn>view_yview[0] and y_spawn<view_yview[0]+view_hview[0])
 {
     exit
