@@ -51,6 +51,8 @@
       <sprite>sprites\spr_axe</sprite>
       <sprite>sprites\spr_axe_new</sprite>
       <sprite>sprites\spr_savepoint_background</sprite>
+      <sprite>sprites\spr_credits_bloop</sprite>
+      <sprite>sprites\spr_credits_floop</sprite>
     </sprites>
   </sprites>
   <backgrounds name="background">
@@ -125,6 +127,9 @@
       <script>scripts\create_overlay_row.gml</script>
     </scripts>
   </scripts>
+  <shaders name="shaders">
+    <shader type="GLSLES">shaders\flash_white.shader</shader>
+  </shaders>
   <fonts name="fonts">
     <font>fonts\fnt_debug</font>
     <font>fonts\fnt_savepoint</font>
@@ -159,8 +164,9 @@
     <font>fonts\fnt_connection_notify</font>
     <font>fonts\fnt_overlay_big</font>
     <font>fonts\fnt_overlay</font>
-    <font>fonts\fnt_credits</font>
     <font>fonts\fnt_overlay_small</font>
+    <font>fonts\fnt_credits</font>
+    <font>fonts\fnt_credits_small</font>
   </fonts>
   <objects name="objects">
     <objects name="visible">

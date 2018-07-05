@@ -425,19 +425,9 @@ if room=rm_main
     leaderboard_state=s.idle 
     complete_size=0
       
-    left_side=
-    "
-    CREDITS
-    
-    Programmer: 
-    "
-    
-    right_side=
-    "
-    CREDITS
-    
-    Peter
-    "  
+    left_side="Coding###Art####Music###SFX###Debugging&amp;#Testing######Huge Thanks"
+
+    right_side="Pecas###Hazetrance#Pecas###Hazetrance###Pecas###Pecas#Hazetrance#Eric Wang#Arano#Morgoth###GML Discord#You!"
 }
 
 if room=rm_end
@@ -524,6 +514,7 @@ global.volume_mute=false
 global.volume_effects=5
 global.volume_music=5
 global.overlay_toggle=false
+global.flash_enabled=true
 global.bg_enabled=true
 global.bg_value=4
 global.bg_alpha=5.5
@@ -544,6 +535,29 @@ else
     global.local_save_mode=false
     instance_create(0,0,obj_connection_notify)
 }
+</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>/// SPECIAL CASE, DELETE BEFORE GAME LAUNCH
+
+global.maximize_performance=true
 </string>
           </argument>
         </arguments>
@@ -1277,26 +1291,36 @@ if room=rm_main
             draw_text(100,100,"- Video -")
             
             draw_config(fnt_pause,c_black,fa_left,fa_middle)
-            draw_text(25,180,"BG : ")
+            draw_text(25,240,"BG : ")
+            draw_text(25,180,"Flash : ")
             
             if global.bg_enabled
             {
-                draw_text(25,240,"Sat : ")            
-                draw_text(25,300,"Alpha : ")
-                draw_text(25,360,"Back")
+                draw_text(25,300,"Sat : ")            
+                draw_text(25,360,"Alpha : ")
+                draw_text(25,420,"Back")
             }
             else
             {
-                draw_text(25,240,"Back")
+                draw_text(25,300,"Back")
             }
 
             draw_config(fnt_pause_big,c_black,fa_left,fa_middle)
 
             if global.bg_enabled
             {
+                draw_text(125,240,'on')
+                draw_text(125,300,string(global.bg_value/10))
+                draw_text(125,360,string(global.bg_alpha/10)) 
+            }
+            else
+            {
+                draw_text(125,240,'off')
+            }
+            
+            if global.flash_enabled
+            {
                 draw_text(125,180,'on')
-                draw_text(125,240,string(global.bg_value/10))
-                draw_text(125,300,string(global.bg_alpha/10)) 
             }
             else
             {
@@ -1325,7 +1349,7 @@ if room=rm_main
             if global.bg_enabled
             {
                 // User Input
-                select=clamp(select,0,3)
+                select=clamp(select,0,4)
                 draw_select(100+pause_x,180+select*60,195,45,2)
                 
                 if select=1
@@ -1345,10 +1369,15 @@ if room=rm_main
                 {
                     if select=0
                     {
+                        global.flash_enabled=(global.flash_enabled==false)
+                    }
+                    
+                    if select=1
+                    {
                         global.bg_enabled=(global.bg_enabled==false)
                     }
                     
-                    if select=3
+                    if select=4
                     {            
                         gui_state=s.options
                         exit_confirm=false
@@ -1357,17 +1386,22 @@ if room=rm_main
             }
             else
             {
-                select=clamp(select,0,1)
+                select=clamp(select,0,2)
                 draw_select(100+pause_x,180+select*60,195,45,2)
                 
                 if keyboard_check_pressed(vk_enter) or keyboard_check_pressed(global.k[? 'jump'])
                 {
                     if select=0
                     {
-                        global.bg_enabled=(global.bg_enabled==false)
+                        global.flash_enabled=(global.flash_enabled==false)
                     }
                     
                     if select=1
+                    {
+                        global.bg_enabled=(global.bg_enabled==false)
+                    }
+                    
+                    if select=2
                     {            
                         gui_state=s.options
                         exit_confirm=false
@@ -1501,7 +1535,6 @@ if room=rm_main
             {
                 case s.downloading:
                 {
-                    //show_message('leaderboard state is s.downloading')
                     if global.local_save_mode=true or global.server_connection=false
                     {
                         download_overlay=80
@@ -1517,7 +1550,6 @@ if room=rm_main
                 
                 case s.download_wait:
                 {
-                    //show_message('leaderboard state is s.download_wait')
                     if timeout=0
                     {
                         show_message("timed out error")
@@ -1533,7 +1565,6 @@ if room=rm_main
                 
                 case s.reading:
                 {
-                    //show_message('leaderboard state is s.reading')
                     read_data()
                     leaderboard_state=s.idle
                     
