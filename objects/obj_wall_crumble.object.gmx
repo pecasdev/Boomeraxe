@@ -104,6 +104,11 @@ if crumble=true
     }
 }
 
+if image_index!=0 and image_index mod 1 = 0
+{
+    create_particles(x+10,y+10,'crumble')
+}
+
 if image_index=7
 {
     instance_destroy()

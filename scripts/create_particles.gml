@@ -2,7 +2,7 @@ x_spawn=argument0
 y_spawn=argument1
 type=argument2
 
-if !(x_spawn>view_xview[0] and x_spawn<view_xview[0]+view_wview[0] and y_spawn>view_yview[0] and y_spawn<view_yview[0]+view_hview[0])
+if type!='teleport_savepoint' and type!='telepoint_telepoint' and!(x_spawn>view_xview[0] and x_spawn<view_xview[0]+view_wview[0] and y_spawn>view_yview[0] and y_spawn<view_yview[0]+view_hview[0])
 {
     exit
 }
@@ -23,15 +23,15 @@ if type=='dash'
 
 if type=='blood' and instance_exists(obj_axe)
 {
-    repeat(10)
+    repeat(30)
     {
         p=instance_create(x_spawn,y_spawn,obj_particle)
         p.direction=point_direction(0,0,obj_axe.hsp,obj_axe.vsp)+random_range(-20,20)
-        p.speed=random_range(1,3)
+        p.speed=random_range(1,6)
         p.gravity=0.05
-        p.colour=merge_colour(c_red,c_black,random_range(0,0.5))
+        p.colour=merge_colour(28599,18551,random_range(0,1))  // Trump, Dark Trump
         p.life=irandom_range(10,40)
-        p.scale=2
+        p.scale=random_range(2,4)
     }
 }
 
@@ -150,7 +150,21 @@ if type=='savepoint_get'
         p.gravity=0
         p.colour=merge_colour(c_silver,c_lime,random_range(0,0.6))
         p.life=irandom_range(10,40)
-        p.scale=2
+        p.scale=3.5
+    }
+}
+
+if type=='telepoint_get'
+{
+    repeat(30)
+    {
+        p=instance_create(x_spawn,y_spawn,obj_particle)
+        p.direction=random_range(0,360)
+        p.speed=random_range(1,2)
+        p.gravity=0
+        p.colour=merge_colour(c_silver,c_aqua,random_range(0,0.6))
+        p.life=irandom_range(10,40)
+        p.scale=3.5
     }
 }
 
@@ -164,7 +178,21 @@ if type=='savepoint'
         p.gravity=0
         p.colour=merge_colour(c_silver,c_lime,random_range(0,0.6))
         p.life=irandom_range(20,30)
-        p.scale=2
+        p.scale=2.5
+    }
+}
+
+if type=='telepoint'
+{
+    repeat(2)
+    {
+        p=instance_create(x_spawn+random_range(-5,5),y_spawn+random_range(-7,7),obj_particle)
+        p.direction=90
+        p.speed=random_range(1,2)
+        p.gravity=0
+        p.colour=merge_colour(c_silver,c_aqua,random_range(0,0.6))
+        p.life=irandom_range(20,30)
+        p.scale=2.5
     }
 }
 
@@ -247,5 +275,17 @@ if type=='dirtball_hit'
         p.colour=3959009    // Dirty Caramel
         p.life=irandom_range(10,40)
         p.scale=random_range(2,3)
+    }
+}
+
+if type=='crumble'
+{
+    repeat(5)
+    {
+        p=instance_create(x_spawn+random_range(-9,9),y_spawn+random_range(-9,9),obj_particle)
+        p.gravity=0.075
+        p.colour=merge_colour(923951,2636898,random(1))     // Brownie, Milk Chocolate
+        p.life=irandom_range(10,40)
+        p.scale=random_range(1,2)
     }
 }

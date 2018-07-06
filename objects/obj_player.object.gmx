@@ -601,6 +601,8 @@ if tp!=noone
     jump_count=jump_max
     dash_count=dash_max
     
+    create_particles(tp.x+10,tp.y+10,'telepoint_get')
+    
     with(tp)
     {
         instance_destroy()

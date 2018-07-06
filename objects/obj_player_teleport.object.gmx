@@ -57,21 +57,28 @@ alpha=1
             <string>if init_lock=false
 {
     target_x=target.x
-    target_y=target.y
+    if target.object_index=obj_telepoint
+    {
+        target_y=target.y_origin
+    }
+    else
+    {
+        target_y=target.y
+    }
     target_object_index=target.object_index
-    size=floor(point_distance(x,y,target_x+10,target_y+5)/15)
-    distance=point_distance(x,y,target_x+10,target_y+5)/size
+    quantity=floor(point_distance(x,y,target_x+10,target_y+5)/12)
+    spacing=point_distance(x,y,target_x+10,target_y+5)/quantity
     angle=point_direction(x,y,target_x+10,target_y+5)
-    
-    for(i=0;i!=size+1;i+=1)
+
+    for(i=0;i!=quantity+1;i+=1)
     {
         if target.object_index=obj_savepoint
         {
-            create_particles(x+lengthdir_x(distance*i,angle),y+lengthdir_y(distance*i,angle),'teleport_savepoint')
+            create_particles(x+lengthdir_x(spacing*i,angle),y+lengthdir_y(spacing*i,angle),'teleport_savepoint')
         }
         else
         {
-            create_particles(x+lengthdir_x(distance*i,angle),y+lengthdir_y(distance*i,angle),'teleport_telepoint')
+            create_particles(x+lengthdir_x(spacing*i,angle),y+lengthdir_y(spacing*i,angle),'teleport_telepoint')
         }        
     }
         

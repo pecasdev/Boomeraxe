@@ -557,7 +557,7 @@ else
             <kind>1</kind>
             <string>/// SPECIAL CASE, DELETE BEFORE GAME LAUNCH
 
-global.maximize_performance=true
+global.maximize_performance=true//false
 </string>
           </argument>
         </arguments>
@@ -3042,7 +3042,9 @@ if room=rm_main
     }
     else if !paused and !instance_exists(obj_player_death)
     {
-        global.game_time+=2    // Room speed is 50, so this should be an accurate timer
+        global.game_time+=round(1*(delta_time/10000))
+        show_debug_message(round(1*(delta_time/10000)))
+
     }
     
     // Game Stats

@@ -186,16 +186,16 @@
           <object>objects\obj_wall</object>
           <object>objects\obj_wall_crumble</object>
         </objects>
+        <objects name="else">
+          <object>objects\obj_savepoint</object>
+          <object>objects\obj_telepoint</object>
+        </objects>
         <objects name="trap">
           <object>objects\obj_spike</object>
           <object>objects\obj_spike_retract</object>
           <object>objects\obj_spike_shard</object>
           <object>objects\obj_pendulum</object>
           <object>objects\obj_pendulum_bob</object>
-        </objects>
-        <objects name="else">
-          <object>objects\obj_savepoint</object>
-          <object>objects\obj_telepoint</object>
         </objects>
       </objects>
       <objects name="else">
