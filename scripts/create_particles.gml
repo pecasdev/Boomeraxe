@@ -2,7 +2,7 @@ x_spawn=argument0
 y_spawn=argument1
 type=argument2
 
-if type!='teleport_savepoint' and type!='telepoint_telepoint' and!(x_spawn>view_xview[0] and x_spawn<view_xview[0]+view_wview[0] and y_spawn>view_yview[0] and y_spawn<view_yview[0]+view_hview[0])
+if (type='dirtball' or type='dirtball_hit' or type='savepoint' or type='telepoint') and!(x_spawn>view_xview[0] and x_spawn<view_xview[0]+view_wview[0] and y_spawn>view_yview[0] and y_spawn<view_yview[0]+view_hview[0])
 {
     exit
 }
@@ -29,12 +29,12 @@ if type=='blood' and instance_exists(obj_axe)
         p.direction=point_direction(0,0,obj_axe.hsp,obj_axe.vsp)+random_range(-20,20)
         p.speed=random_range(1,6)
         p.gravity=0.05
-        p.colour=merge_colour(28599,18551,random_range(0,1))  // Trump, Dark Trump
+        p.colour=merge_colour(28599,18551,random_range(0,1))  // Mandarin, Dark Mandarin
         p.life=irandom_range(10,40)
         p.scale=random_range(2,4)
     }
 }
-
+     
 if type=='axe_hit' and instance_exists(obj_axe)
 {
     repeat(10)
@@ -45,20 +45,6 @@ if type=='axe_hit' and instance_exists(obj_axe)
         p.gravity=0.05
         p.colour=merge_colour(72246,c_black,random_range(0,0.4))    // First colour is brown
         p.life=irandom_range(10,40)
-        p.scale=2
-    }
-}
-
-if type=='jump'
-{
-    repeat(10)
-    {
-        p=instance_create(x_spawn+random_range(-10,10),y_spawn,obj_particle)
-        p.direction=270//+random_range(-40,40)
-        p.speed=random_range(1,2)
-        p.gravity=0.05
-        p.colour=c_white//merge_colour(c_white,random_range(0,0.4))
-        p.life=irandom_range(20,30)
         p.scale=2
     }
 }

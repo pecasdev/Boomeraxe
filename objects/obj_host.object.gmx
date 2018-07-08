@@ -1090,7 +1090,7 @@ if room=rm_main
     {
         case s.idle:
         {
-            if keyboard_check_pressed(vk_escape)
+            if keyboard_check_pressed(vk_escape) and !run_over
             {
                 pause_x=-200
                 gui_state=s.pause
@@ -3043,8 +3043,6 @@ if room=rm_main
     else if !paused and !instance_exists(obj_player_death)
     {
         global.game_time+=round(1*(delta_time/10000))
-        show_debug_message(round(1*(delta_time/10000)))
-
     }
     
     // Game Stats

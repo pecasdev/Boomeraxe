@@ -207,7 +207,7 @@ if sp!=noone and sp.state=s.close
     sp.state=s.open
     sp.peek=120
 
-
+    create_particles(sp.x+10,sp.y+10,'savepoint_get')
     global.death_count-=1     // counters player's kill_count addition
     if instance_exists(obj_player)
     {
