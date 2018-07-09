@@ -43,6 +43,7 @@ vsp=0
 grav=0.6
 
 dash_dir=0
+
 // Other
 can_throw=true
 state=s.idle
@@ -82,6 +83,9 @@ flash_lock=false
             <string>/// obj_host.death_count
 
 global.death_count+=1
+
+stop_snd(snd_player_move_wall)
+
 </string>
           </argument>
         </arguments>
@@ -110,6 +114,71 @@ if obj_host.paused
 {
     image_speed=0
     exit
+}
+</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>/// Non-Wall Collisions
+
+sp=instance_place(x,y,obj_savepoint)
+if sp!=noone and sp.state=s.close
+{
+    obj_savepoint.state=s.close
+    sp.state=s.open
+    sp.peek=120
+    create_particles(sp.x+10,sp.y+10,'savepoint_get')
+}
+
+if obj_debug.player_invincible!=true
+{
+    if place_meeting(x,y,obj_spike_shard)
+    {
+        instance_destroy()
+        instance_create(x,y,obj_player_death)
+    }
+    
+    db=instance_place(x,y,obj_dirtball)
+    if db!=noone
+    {
+        instance_destroy()
+        instance_create(x,y,obj_player_death)
+        with(db)
+        {
+            instance_destroy()
+            //create_particles('dirtball_hit')
+        }
+    }
+}
+
+tp=instance_place(x,y,obj_telepoint)
+if tp!=noone
+{
+    jump_count=jump_max
+    dash_count=dash_max
+    
+    create_particles(tp.x+10,tp.y+10,'telepoint_get')
+    
+    with(tp)
+    {
+        instance_destroy()
+    }
 }
 </string>
           </argument>
@@ -250,8 +319,9 @@ switch(state)
         
         move_hsp=move_speed*move_x
         
-        if move_timer=5
+        if image_index=2 or image_index=6
         {
+            play_snd(snd_player_move)
             create_particles(x,y+10,'move')
             move_timer=0
         }
@@ -269,9 +339,9 @@ switch(state)
         vsp=-jump_speed
         jump_count-=1
         
-        //create_particles(x,y,'jump')
         state=s.fall
         global.jump_count+=1
+        play_snd(snd_player_jump)
         
     break}
     
@@ -311,6 +381,7 @@ switch(state)
             dash_count-=1
             dash_timer=5
             global.dash_count+=1
+            play_snd(snd_player_dash)
         }
         
         if (place_meeting(x+1,y,obj_collision) and move_x=1) or (place_meeting(x-1,y,obj_collision) and move_x=-1)
@@ -401,7 +472,7 @@ switch(state)
     break}
     
     case(s.wall):
-    {
+    {           
         sprite_index=spr_player_wall
         
         wall_hsp=move_speed*move_x
@@ -411,11 +482,17 @@ switch(state)
         if vsp&gt;grav*3
         {
             vsp=grav*3
+            if !audio_is_playing(snd_player_move_wall)
+            {
+                play_snd(snd_player_move_wall,'repeat')
+            }
+
         }
        
         if !((place_meeting(x+1,y,obj_collision) and move_x=1) or (place_meeting(x-1,y,obj_collision) and move_x=-1))
         {
             state=s.fall
+            stop_snd(snd_player_move_wall)
         }
         
         if place_meeting(x,y+vsp,obj_collision)
@@ -432,6 +509,7 @@ switch(state)
             else
             {
                 state=s.idle
+                stop_snd(snd_player_move_wall)
             }
         }
         
@@ -450,17 +528,20 @@ switch(state)
             }
 
             state=s.jump
+            stop_snd(snd_player_move_wall)
         }
         
         if k_dash and dash_count&gt;0
         {
             state=s.dash
             dash_timer=0
+            stop_snd(snd_player_move_wall)
         }
                 
         if k_attack and can_throw
         {
             state=s.attack
+            stop_snd(snd_player_move_wall)
         }
         
         if wall_timer=5
@@ -547,71 +628,6 @@ move_snap(1,1)
           </argument>
         </arguments>
       </action>
-      <action>
-        <libid>1</libid>
-        <id>603</id>
-        <kind>7</kind>
-        <userelative>0</userelative>
-        <isquestion>0</isquestion>
-        <useapplyto>-1</useapplyto>
-        <exetype>2</exetype>
-        <functionname></functionname>
-        <codestring></codestring>
-        <whoName>self</whoName>
-        <relative>0</relative>
-        <isnot>0</isnot>
-        <arguments>
-          <argument>
-            <kind>1</kind>
-            <string>/// Non-Wall Collisions
-
-sp=instance_place(x,y,obj_savepoint)
-if sp!=noone and sp.state=s.close
-{
-    obj_savepoint.state=s.close
-    sp.state=s.open
-    sp.peek=120
-    create_particles(sp.x+10,sp.y+10,'savepoint_get')
-}
-
-if obj_debug.player_invincible!=true
-{
-    if place_meeting(x,y,obj_spike_shard)
-    {
-        instance_destroy()
-        instance_create(x,y,obj_player_death)
-    }
-    
-    db=instance_place(x,y,obj_dirtball)
-    if db!=noone
-    {
-        instance_destroy()
-        instance_create(x,y,obj_player_death)
-        with(db)
-        {
-            instance_destroy()
-            //create_particles('dirtball_hit')
-        }
-    }
-}
-
-tp=instance_place(x,y,obj_telepoint)
-if tp!=noone
-{
-    jump_count=jump_max
-    dash_count=dash_max
-    
-    create_particles(tp.x+10,tp.y+10,'telepoint_get')
-    
-    with(tp)
-    {
-        instance_destroy()
-    }
-}
-</string>
-          </argument>
-        </arguments>
-      </action>
     </event>
     <event eventtype="8" enumb="0">
       <action>
@@ -630,10 +646,7 @@ if tp!=noone
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>if keyboard_check_pressed(vk_space)
-{
-    flash=0.5
-}
+            <string>/// Flash
 
 if flash&gt;0
 {

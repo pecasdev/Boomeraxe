@@ -4,7 +4,19 @@
     <Config>Configs\Default</Config>
   </Configs>
   <NewExtensions/>
-  <sounds name="sound"/>
+  <sounds name="sound">
+    <sounds name="effects">
+      <sound>sound\snd_player_move</sound>
+      <sound>sound\snd_player_dash</sound>
+      <sound>sound\snd_player_move_wall</sound>
+      <sound>sound\snd_player_jump</sound>
+      <sound>sound\snd_menu_navigate_up</sound>
+      <sound>sound\snd_menu_navigate_down</sound>
+      <sound>sound\snd_menu_error</sound>
+      <sound>sound\snd_menu_select</sound>
+      <sound>sound\snd_menu_exit</sound>
+    </sounds>
+  </sounds>
   <sprites name="sprites">
     <sprites name="live">
       <sprites name="player">
@@ -125,6 +137,8 @@
       <script>scripts\chance.gml</script>
       <script>scripts\check_username_availability.gml</script>
       <script>scripts\create_overlay_row.gml</script>
+      <script>scripts\play_snd.gml</script>
+      <script>scripts\stop_snd.gml</script>
     </scripts>
   </scripts>
   <shaders name="shaders">

@@ -468,6 +468,8 @@ search_toggle=false
 binding_select=undefined
 download_overlay=0
 
+skip_navigate_sound=false
+previous_select=0
 </string>
           </argument>
         </arguments>
@@ -592,7 +594,7 @@ if room=rm_title
             draw_config(fnt_title,c_white,fa_middle,fa_middle)
             draw_text(300,230,'New Run')
             draw_text(300,320,'New Profile')
-            draw_text(300,410,'Feedback')
+            draw_text(300,410,'Tutorial')
             
             if !exit_confirm
             {
@@ -630,6 +632,7 @@ if room=rm_title
                 if select=0
                 {
                     room=rm_main
+                    play_snd(snd_menu_select)
                 }
                 
                 if select=1
@@ -638,17 +641,20 @@ if room=rm_title
                     profile_create_exit=false
                     
                     select=0
+                    skip_navigate_sound=true
                     
                     keyboard_string=''                    
                     mix=0.2                    
                     create_name=''
                     create_pass0=''
                     create_pass1=''
+                    play_snd(snd_menu_select)
                 }
                 
                 if select=2
                 {
-                    gui_state=s.options
+                    gui_state=s.tutorial
+                    play_snd(snd_menu_select)
                 }
                 
                 if select=3
@@ -656,6 +662,7 @@ if room=rm_title
                     if exit_confirm
                     {                    
                         game_end()
+                        play_snd(snd_menu_exit)
                     }
                     else
                     {
@@ -851,7 +858,7 @@ if room=rm_title
             
             if keyboard_key!=0
             {
-                if ascii_only(keyboard_key) and select=0
+                if ascii_only(string(keyboard_key)) and select=0
                 {
                     check_name_timer=25
                 }
@@ -865,7 +872,7 @@ if room=rm_title
                    name_taken=undefined
                 }
             }
-            show_debug_message(check_name_timer)
+            
             if create_name!='' and !name_oversized and !name_invalid and check_name_timer=0
             {
                 if global.local_save_mode=false
@@ -960,14 +967,6 @@ if room=rm_title
             
             if keyboard_check_pressed(vk_enter) or keyboard_check_pressed(global.k[? 'jump'])
             {
-                show_debug_message(name_taken)
-                show_debug_message(name_invalid)
-                show_debug_message(name_oversized)
-                show_debug_message(pass_mismatch)
-                show_debug_message(create_name=='')
-                show_debug_message(create_pass0=='')
-                show_debug_message(create_pass1=='')
-                show_debug_message(global.local_save_mode==false)
                 if select=3
                 {
                     // keybindings
@@ -978,20 +977,21 @@ if room=rm_title
                     if create_name='' or create_pass0='' or create_pass1=''
                     {
                         // Error checking for entries left blank
-                        if name_left_blank=0 and create_name='' and select!=0
+                        if create_name='' and select!=0
                         {
                             name_left_blank=120
                         }
                         
-                        if pass0_left_blank=0 and create_pass0='' and select!=1
+                        if create_pass0='' and select!=1
                         {
                             pass0_left_blank=120
                         }
                         
-                        if pass1_left_blank=0 and create_pass1='' and select!=2
+                        if create_pass1='' and select!=2
                         {
                             pass1_left_blank=120
                         }
+                        play_snd(snd_menu_error)
                     }
                     else
                     {
@@ -1048,38 +1048,21 @@ if room=rm_title
                 if select=5
                 {
                     gui_state=s.title
+                    play_snd(snd_menu_exit)
                 }
             } 
             
             if keyboard_check_pressed(vk_escape)
             {
                 gui_state=s.title
+                play_snd(snd_menu_exit)
             } 
                                           
         }break
         
-        case s.feedback:
+        case s.tutorial:
         {
-            // Profile Login Title
-            draw_config(fnt_login,14803425,fa_middle,fa_middle) // Wisp   
-            draw_text_transformed(300,50,'- Feedback -',1.4,1.4,0)
-            
-            // Cancel Prompt
-            draw_config(fnt_login_small,9868950,fa_middle,fa_middle)    // Pastel
-            draw_text(300,100,'ESC to Cancel')
-/*
-            draw_text(100,150,'Creativity')
-            draw_text(100,'Enjoyment')
-            draw_text(100,'Bugless'
-            draw_text(100,300,'Art')
-            draw_text(100,450,'Audio')
-*/            
-            
-            if keyboard_check_pressed(vk_escape)
-            {
-                gui_state=s.title
-                select=0
-            }                    
+        
         }break
     }   
 }
@@ -1097,6 +1080,8 @@ if room=rm_main
                 exit_confirm=false
                 paused=true
                 select=0
+                skip_navigate_sound=true
+                play_snd(snd_menu_select)
             }            
         }break
                 
@@ -1111,6 +1096,7 @@ if room=rm_main
             {
                 gui_state=s.idle
                 paused=false
+                play_snd(snd_menu_exit)
             }
             
             // Display
@@ -1163,24 +1149,29 @@ if room=rm_main
                 {
                     gui_state=s.idle
                     paused=false
+                    play_snd(snd_menu_exit)
                 }
                 
                 if select=1
                 {
                     room_restart()
+                    play_snd(snd_menu_select)
                 }
                 
                 if select=2
                 {
                     select=0
+                    skip_navigate_sound=true
                     gui_state=s.profiles
                     keyboard_string=''
                     leaderboard_state=s.downloading
+                    play_snd(snd_menu_select)
                 }
                 
                 if select=3
                 {
                     gui_state=s.options
+                    play_snd(snd_menu_select)
                 }
                 
                 if select=4
@@ -1188,6 +1179,7 @@ if room=rm_main
                     if exit_confirm=true
                     {
                         room=rm_title
+                        play_snd(snd_menu_exit)
                     }
                     else
                     {
@@ -1251,27 +1243,32 @@ if room=rm_main
                 if select=0
                 {
                     gui_state=s.options_video
+                    play_snd(snd_menu_select)
                 }
                 
                 if select=1
                 {
                     gui_state=s.options_audio
+                    play_snd(snd_menu_select)
                 }               
                 if select=2
                 {
                      global.overlay_toggle=global.overlay_toggle==false
+                     play_snd(snd_menu_select)
                 }
                 
                 if select=3
                 {
                     binding_select=undefined
                     gui_state=s.keybind
+                    play_snd(snd_menu_select)
                 }
                 
                 if select=4
                 {
                     gui_state=s.pause
                     exit_confirm=false
+                    play_snd(snd_menu_exit)
                 }
             }
             
@@ -1279,6 +1276,7 @@ if room=rm_main
             {
                 gui_state=s.pause
                 exit_confirm=false
+                play_snd(snd_menu_exit)
             }
         }break
         
@@ -1370,17 +1368,20 @@ if room=rm_main
                     if select=0
                     {
                         global.flash_enabled=(global.flash_enabled==false)
+                        play_snd(snd_menu_select)
                     }
                     
                     if select=1
                     {
                         global.bg_enabled=(global.bg_enabled==false)
+                        play_snd(snd_menu_select)
                     }
                     
                     if select=4
                     {            
                         gui_state=s.options
                         exit_confirm=false
+                        play_snd(snd_menu_exit)
                     }
                 }
             }
@@ -1405,6 +1406,7 @@ if room=rm_main
                     {            
                         gui_state=s.options
                         exit_confirm=false
+                        play_snd(snd_menu_exit)
                     }
                 }
             }
@@ -1412,6 +1414,7 @@ if room=rm_main
             {
                 gui_state=s.options
                 exit_confirm=false
+                play_snd(snd_menu_exit)
             }
         }break
         
@@ -1499,6 +1502,7 @@ if room=rm_main
                     {            
                         gui_state=s.options
                         exit_confirm=false
+                        play_snd(snd_menu_exit)
                     }
                 }
             }
@@ -1518,6 +1522,7 @@ if room=rm_main
                     {
                         gui_state=s.options
                         exit_confirm=false
+                        play_snd(snd_menu_exit)
                     }
                 }
             }                
@@ -1525,6 +1530,7 @@ if room=rm_main
             {
                 gui_state=s.options
                 exit_confirm=false
+                play_snd(snd_menu_exit)
             }
    
         }break
@@ -1778,6 +1784,7 @@ if room=rm_main
                 {   
                     draw_config(fnt_profiles,c_search,fa_middle,fa_middle)
                     draw_text(300,55,'This profile does not exist!')
+                    play_snd(snd_menu_error)
                 }
                 
                 // Selection Box
@@ -1825,9 +1832,11 @@ if room=rm_main
                                         gui_state=s.profile
                                         user=select
                                         select=0
+                                        skip_navigate_sound=true
                                         y_view_cur=0
                                         y_view_tar=0
                                         search_toggle=false
+                                        play_snd(snd_menu_select)
                                         break
                                     }    
                                                             
@@ -1855,6 +1864,7 @@ if room=rm_main
                         search_toggle=false
                         user=select
                         select=0
+                        skip_navigate_sound=true
                         y_view_cur=0
                         y_view_tar=0
                     }
@@ -1886,7 +1896,8 @@ if room=rm_main
                     else
                     {                    
                         gui_state=s.pause
-                        exit_confirm=false    
+                        exit_confirm=false   
+                        play_snd(snd_menu_exit) 
                     }                    
                 }
             }
@@ -1896,6 +1907,7 @@ if room=rm_main
                 if keyboard_check_pressed(vk_escape)
                 {
                     gui_state=s.pause
+                    play_snd(snd_menu_exit)
                 }
             }
             
@@ -2222,6 +2234,7 @@ if room=rm_main
                             gui_state=s.login
                             keyboard_string=''
                             mix=0.2 
+                            play_snd(snd_menu_select)
                         }
                     }                   
                 }
@@ -2239,8 +2252,10 @@ if room=rm_main
                     gui_state=s.profiles
                     keyboard_string=''
                     select=0
+                    skip_navigate_sound=true
                     y_view_cur=0
                     y_view_tar=0
+                    play_snd(snd_menu_exit)
                 }
                 else
                 {
@@ -2326,12 +2341,14 @@ if room=rm_main
                     login_bindings()
                     
                     logged_in_prompt=120
-                    gui_state=s.profile                    
+                    gui_state=s.profile
+                    play_snd(snd_menu_select)                    
                 }
                 
                 if global.login_pass[? global.profiles[#0,user]]=false
                 {
                     login_fail=1
+                    play_snd(snd_menu_error)
                 }
                 
                 login_update=false
@@ -2340,6 +2357,7 @@ if room=rm_main
             if keyboard_check_pressed(vk_escape)
             {
                 gui_state=s.profile
+                play_snd(snd_menu_exit)
             }
                                 
         }break
@@ -2466,12 +2484,15 @@ if room=rm_main
             if keyboard_check_pressed(vk_enter)
             {
                 binding_select=select
+                play_snd(snd_menu_select)
             }
                 
             if keyboard_check_pressed(vk_escape)
             {
                 gui_state=s.options
                 select=0
+                skip_navigate_sound=true
+                play_snd(snd_menu_exit)
             }                                 
         }break        
     }
@@ -2666,10 +2687,12 @@ if room=rm_main
                 {   
                     if global.game_time&lt;global.profiles[#1,user]
                     {
+                        draw_config(fnt_overlay_big,c_black,fa_middle,fa_middle)
                         draw_text(537,463,format_time(global.game_time-global.profiles[#1,user],false))
                     }
                     else
                     {
+                        draw_config(fnt_overlay_big,c_black,fa_middle,fa_middle)
                         draw_text(537,463,'passed')
                     }
                 }
@@ -2980,10 +3003,27 @@ if room=rm_end
         {
             game_end()
         }
+        
+        play_snd(snd_menu_select)
     }
 }
 
-if !search_toggle and binding_select=undefined
+if !skip_navigate_sound
+{
+    if select&gt;previous_select
+    {     
+        play_snd(snd_menu_navigate_down)
+    }
+    else if select&lt;previous_select
+    {
+        play_snd(snd_menu_navigate_up)
+    }
+}
+
+skip_navigate_sound=false
+previous_select=select
+
+if !search_toggle and binding_select=undefined and gui_state!=s.idle
 {
     // User Input
     if keyboard_check(global.k[? 'up'])
@@ -3053,6 +3093,7 @@ if room=rm_main
     if instance_exists(obj_player) and obj_player.y&gt;room_height
     {
         run_over=true
+        global.overlay_toggle=false
     }
 }
 </string>

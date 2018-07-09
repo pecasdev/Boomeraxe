@@ -32,7 +32,7 @@ enum s
     downloading     ,
     download_wait   ,
     reading         ,
-    feedback        ,
+    tutorial        ,
 }
 
 global.k=ds_map_create()
