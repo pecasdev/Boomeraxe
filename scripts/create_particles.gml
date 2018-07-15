@@ -12,7 +12,7 @@ if type=='dash'
     repeat(3)
     {
         p=instance_create(x_spawn,y_spawn,obj_particle)
-        p.direction=random(360)
+        pdirection=random(360)
         p.speed=random_range(0,1)
         p.gravity=0.05
         p.colour=c_aqua
@@ -49,7 +49,7 @@ if type=='axe_hit' and instance_exists(obj_axe)
     }
 }
 
-if type=='wall'
+if type=='wall' and instance_exists(obj_player)
 {
     repeat(2)
     {
@@ -72,7 +72,7 @@ if type=='wall'
     }
 }
 
-if type=='wall_jump'
+if type=='wall_jump' and instance_exists(obj_player)
 {
     repeat(5)
     {
@@ -95,7 +95,7 @@ if type=='wall_jump'
     }
 }
 
-if type=='move'
+if type=='move' and instance_exists(obj_player)
 {
     repeat(5)
     {

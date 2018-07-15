@@ -137,6 +137,76 @@ if keyboard_check_pressed(ord('R')) and gui_state!=s.profile_create and gui_stat
           </argument>
         </arguments>
       </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>/// Music Blender
+
+if global.switch_tracks
+{
+    if global.track_fade_out
+    {
+        global.track_fade_volume-=0.0625
+        show_debug_message('fading out: '+string(global.track_fade_volume))
+        
+        if global.track_fade_volume=0
+        {
+            global.track_fade_in=true
+            global.track_fade_out=false
+            
+            if global.current_track!=undefined and audio_is_playing(global.current_track)
+            {
+                stop_snd(global.current_track)
+            }
+            global.current_track=global.next_track
+            
+            if global.current_track!=snd_run_complete
+            {            
+                play_snd(global.current_track,'repeat')
+            }
+            else
+            {
+                play_snd(global.current_track)
+            }
+            show_debug_message('tracks switched')
+        }
+    }
+    
+    if global.track_fade_in
+    {
+        global.track_fade_volume+=0.0625
+        show_debug_message('fading in: '+string(global.track_fade_volume))
+        
+        if global.track_fade_volume=1
+        {
+            global.switch_tracks=false
+            global.track_fade_in=false
+        }
+    }        
+}
+
+if global.current_track!=undefined and audio_is_playing(global.current_track)
+{
+    audio_sound_gain(global.current_track,global.track_fade_volume,0)
+}
+
+</string>
+          </argument>
+        </arguments>
+      </action>
     </event>
     <event eventtype="7" enumb="68">
       <action>
@@ -348,6 +418,8 @@ if room=rm_title
     c_create_name=c_white
     c_create_pass=c_white
     exit_confirm=false
+    
+    change_track(snd_title)
 }
 
 if room=rm_main
@@ -428,6 +500,8 @@ if room=rm_main
     left_side="Coding###Art####Music###SFX###Debugging&amp;#Testing######Huge Thanks"
 
     right_side="Pecas###Hazetrance#Pecas###Hazetrance###Pecas###Pecas#Hazetrance#Eric Wang#Arano#Morgoth###GML Discord#You!"
+    
+    change_track(snd_main)
 }
 
 if room=rm_end
@@ -447,6 +521,8 @@ if room=rm_end
     global.push_run_reciept=false
     global.push_run_attempt=0
     global.local_save_lock=false  
+    
+    change_track(snd_run_complete)
 }
 
 // Global
@@ -537,6 +613,14 @@ else
     global.local_save_mode=false
     instance_create(0,0,obj_connection_notify)
 }
+
+// Music
+global.switch_tracks=false
+global.current_track=undefined
+global.next_track=undefined
+global.track_fade_volume=1
+global.track_fade_out=false
+global.track_fade_in=false
 </string>
           </argument>
         </arguments>
@@ -559,7 +643,7 @@ else
             <kind>1</kind>
             <string>/// SPECIAL CASE, DELETE BEFORE GAME LAUNCH
 
-global.maximize_performance=true//false
+global.maximize_performance=false//true
 </string>
           </argument>
         </arguments>
@@ -1166,6 +1250,8 @@ if room=rm_main
                     keyboard_string=''
                     leaderboard_state=s.downloading
                     play_snd(snd_menu_select)
+                    
+                    change_track(snd_profiles)
                 }
                 
                 if select=3
@@ -1898,6 +1984,8 @@ if room=rm_main
                         gui_state=s.pause
                         exit_confirm=false   
                         play_snd(snd_menu_exit) 
+                        
+                        change_track(snd_main)
                     }                    
                 }
             }
@@ -1908,6 +1996,8 @@ if room=rm_main
                 {
                     gui_state=s.pause
                     play_snd(snd_menu_exit)
+                    
+                    change_track(snd_main)
                 }
             }
             
@@ -3023,7 +3113,7 @@ if !skip_navigate_sound
 skip_navigate_sound=false
 previous_select=select
 
-if !search_toggle and binding_select=undefined and gui_state!=s.idle
+if !search_toggle and binding_select=undefined and room!=rm_end and gui_state!=s.idle
 {
     // User Input
     if keyboard_check(global.k[? 'up'])

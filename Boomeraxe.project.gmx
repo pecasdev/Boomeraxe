@@ -16,6 +16,12 @@
       <sound>sound\snd_menu_select</sound>
       <sound>sound\snd_menu_exit</sound>
     </sounds>
+    <sounds name="music">
+      <sound>sound\snd_title</sound>
+      <sound>sound\snd_main</sound>
+      <sound>sound\snd_profiles</sound>
+      <sound>sound\snd_run_complete</sound>
+    </sounds>
   </sounds>
   <sprites name="sprites">
     <sprites name="live">
@@ -114,6 +120,7 @@
       <script>scripts\get_user_profile_pos.gml</script>
       <script>scripts\list_index_swap.gml</script>
       <script>scripts\draw_credits.gml</script>
+      <script>scripts\change_track.gml</script>
     </scripts>
     <scripts name="else">
       <script>scripts\create_particles.gml</script>
