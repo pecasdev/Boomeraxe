@@ -15,6 +15,11 @@
       <sound>sound\snd_menu_error</sound>
       <sound>sound\snd_menu_select</sound>
       <sound>sound\snd_menu_exit</sound>
+      <sound>sound\snd_crumble_crumble</sound>
+      <sound>sound\snd_player_death</sound>
+      <sound>sound\snd_enemy_death</sound>
+      <sound>sound\snd_enemy_bullet_fire</sound>
+      <sound>sound\snd_enemy_bullet_hit</sound>
     </sounds>
     <sounds name="music">
       <sound>sound\snd_title</sound>
@@ -213,7 +218,6 @@
         </objects>
         <objects name="trap">
           <object>objects\obj_spike</object>
-          <object>objects\obj_spike_retract</object>
           <object>objects\obj_spike_shard</object>
           <object>objects\obj_pendulum</object>
           <object>objects\obj_pendulum_bob</object>

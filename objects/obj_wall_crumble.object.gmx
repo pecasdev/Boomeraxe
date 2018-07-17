@@ -32,6 +32,7 @@ reset=false
 crumble=false
 crumble_delay=8
 added=false
+sound_played=false
 </string>
           </argument>
         </arguments>
@@ -98,6 +99,11 @@ if crumble=true
 {
     if crumble_delay=0
     {
+        if !sound_played
+        {
+            play_snd(snd_crumble_crumble)
+            sound_played=true
+        }
         image_speed=0.25
     }
     else

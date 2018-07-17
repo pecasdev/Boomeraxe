@@ -152,6 +152,7 @@ if obj_debug.player_invincible!=true
     {
         instance_destroy()
         instance_create(x,y,obj_player_death)
+        play_snd(snd_player_death)
     }
     
     db=instance_place(x,y,obj_dirtball)
@@ -164,6 +165,7 @@ if obj_debug.player_invincible!=true
             instance_destroy()
             //create_particles('dirtball_hit')
         }
+        play_snd(snd_player_death)
     }
 }
 

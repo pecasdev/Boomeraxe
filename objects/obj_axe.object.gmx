@@ -146,6 +146,7 @@ if instance_exists(enemy) and point_distance(x,y,enemy.x,enemy.y)&lt;10
         create_particles(e_collisions[| i].x,e_collisions[| i].y,'blood')
         
         e_collisions[| i].death=true
+        play_snd(snd_enemy_death)
     }
 }
 

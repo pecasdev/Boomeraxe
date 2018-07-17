@@ -116,7 +116,8 @@ timer+=1
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>blend=1
+            <string>/// Blending
+blend=1
 image_blend=merge_colour(c_white,c_red,blend)
 </string>
           </argument>

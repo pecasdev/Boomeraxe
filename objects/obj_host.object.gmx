@@ -154,7 +154,7 @@ if keyboard_check_pressed(ord('R')) and gui_state!=s.profile_create and gui_stat
           <argument>
             <kind>1</kind>
             <string>/// Music Blender
-
+/*
 if global.switch_tracks
 {
     if global.track_fade_out
