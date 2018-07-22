@@ -99,7 +99,6 @@ switch(state)
         if image_index=5
         {
             dirtball=instance_create(x,y,obj_dirtball)
-            play_snd(snd_enemy_bullet_fire,'in_view')
             dirtball.direction=image_angle-180
             
             image_index=6   // Force skip to fix pause bug

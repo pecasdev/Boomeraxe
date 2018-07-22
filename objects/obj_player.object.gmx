@@ -140,6 +140,8 @@ if obj_host.paused
 sp=instance_place(x,y,obj_savepoint)
 if sp!=noone and sp.state=s.close
 {
+    play_snd(snd_savepoint_get)
+    
     obj_savepoint.state=s.close
     sp.state=s.open
     sp.peek=120
@@ -172,6 +174,8 @@ if obj_debug.player_invincible!=true
 tp=instance_place(x,y,obj_telepoint)
 if tp!=noone
 {
+    play_snd(snd_telepoint_get)
+    
     jump_count=jump_max
     dash_count=dash_max
     

@@ -32,6 +32,8 @@ state=s.forward
 
 forward_hit=ds_list_create()
 backward_hit=ds_list_create()
+
+play_snd(snd_player_axe_throw)
 </string>
           </argument>
         </arguments>
@@ -96,6 +98,7 @@ switch(state)
         if place_meeting(x+hsp,y,obj_collision) or place_meeting(x,y+vsp,obj_collision)
         {
             state=s.hit
+            play_snd(snd_player_axe_hit)
         }
         
         if axe_clock=0
@@ -128,6 +131,7 @@ switch(state)
         {
             obj_player.can_throw=true
             instance_destroy()
+            play_snd(snd_player_axe_catch)
         }
         
     break}
@@ -203,7 +207,8 @@ image_angle+=25
 
 sp=instance_place(x,y,obj_savepoint)
 if sp!=noone and sp.state=s.close
-{
+{   
+    
     obj_savepoint.state=s.close
     sp.state=s.open
     sp.peek=120
@@ -217,14 +222,15 @@ if sp!=noone and sp.state=s.close
             instance_destroy()
             teleport=instance_create(x,y,obj_player_teleport)
             teleport.target=other.sp
+            
+            play_snd(snd_savepoint_get)            
         } 
     }
 }
 
 tp=instance_nearest(x,y,obj_telepoint)
 if tp!=noone
-{
-    
+{  
     if point_distance(x,y,tp.x,tp.y)&lt;75
     {
         x-=sign(x-tp.x)*5
@@ -241,7 +247,7 @@ if tp!=noone
             {
                 instance_destroy()
                 teleport=instance_create(x,y,obj_player_teleport)
-                teleport.target=other.tp     
+                teleport.target=other.tp   
             }        
         }
     }

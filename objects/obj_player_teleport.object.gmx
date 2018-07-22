@@ -32,6 +32,8 @@ init_x=x
 init_y=y
 
 alpha=1
+
+play_snd(snd_player_teleport)
 </string>
           </argument>
         </arguments>

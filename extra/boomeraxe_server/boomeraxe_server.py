@@ -15,26 +15,38 @@ while True:
         print log('ping',client[0],data[1])
         client_send(['ping'],client)
         
-    if msg_id=='pull':
-	print log('pull',client[0],data[1],data[2])
+    if msg_id=='pull':	
 	
         # READ boomeraxe.ini AND SEND TO CLIENT LINE BY LINE
         tag=0
         if int(data[2])!=int(float(ini_read('meta','version'))):
             with open('boomeraxe.ini','r') as f:
                 lines=f.readlines()
-                                
+
+                z=0
+                
                 while lines:
+                    time.sleep(1) #remove this
                     payload=[]
-                    for i in range(10):
+                    for i in range(200):
                         try:
                             payload+=[tag,lines.pop(0)]
                             tag+=1
+                            
                         except:
                             break
+                    print "sent package #",z
+                    z+=1
+                        
                     client_send(['pull']+payload,client)
                     
+            print log('pull',client[0],'outdated version',data[1],data[2])
+
+        else:
+            print log('pull',client[0],'current version',data[1],data[2])
+            
         client_send(['pull','done',tag],client)
+        print tag
                 
     if msg_id=='push_run':
 	print log('push_run',client[0],data[1],data[2])

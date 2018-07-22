@@ -9,7 +9,7 @@ def ini_write(key,value,data,write_asis):
     else:
         config.set(key,value,'"{}"'.format(data+'.000000'))
         
-    config.set('meta','version',str(int(time.time()))+'.000000')
+    config.set('meta','version','"{}"'.format(str(int(time.time()))+'.000000'))
     
 def client_recieve():
     global s

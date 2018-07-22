@@ -10,7 +10,7 @@ else
 
 // Background
 draw_area(-150+clamp(credit_scroll*3,0,150),0,0+clamp(credit_scroll*3,0,150),600,c_dkgray,c_black,2)
-draw_area(750-clamp(credit_scroll*3,0,150),0,600-clamp(credit_scroll*3,0,150),600,c_dkgray,c_black,2)
+draw_area(600-clamp(credit_scroll*3,0,150),0,750-clamp(credit_scroll*3,0,150),600,c_dkgray,c_black,2)
 
 // Text Alpha
 if credit_scroll>1600

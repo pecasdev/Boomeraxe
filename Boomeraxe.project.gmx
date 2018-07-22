@@ -20,6 +20,12 @@
       <sound>sound\snd_enemy_death</sound>
       <sound>sound\snd_enemy_bullet_fire</sound>
       <sound>sound\snd_enemy_bullet_hit</sound>
+      <sound>sound\snd_telepoint_get</sound>
+      <sound>sound\snd_savepoint_get</sound>
+      <sound>sound\snd_player_teleport</sound>
+      <sound>sound\snd_player_axe_throw</sound>
+      <sound>sound\snd_player_axe_catch</sound>
+      <sound>sound\snd_player_axe_hit</sound>
     </sounds>
     <sounds name="music">
       <sound>sound\snd_title</sound>
@@ -77,6 +83,7 @@
       <sprite>sprites\spr_credits_bloop</sprite>
       <sprite>sprites\spr_credits_floop</sprite>
     </sprites>
+    <sprite>sprites\spr_guide_arrow</sprite>
   </sprites>
   <backgrounds name="background">
     <backgrounds name="bg_forest">
@@ -151,6 +158,7 @@
       <script>scripts\create_overlay_row.gml</script>
       <script>scripts\play_snd.gml</script>
       <script>scripts\stop_snd.gml</script>
+      <script>scripts\adjust_volumes.gml</script>
     </scripts>
   </scripts>
   <shaders name="shaders">
@@ -229,6 +237,7 @@
         <object>objects\obj_player_death</object>
         <object>objects\obj_player_death_animation</object>
         <object>objects\obj_player_teleport</object>
+        <object>objects\obj_guide_arrow</object>
       </objects>
     </objects>
     <objects name="invisible">

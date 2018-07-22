@@ -26,13 +26,13 @@
 (200,100,100) = obj_pendulum		(counter_clockwise - left position)
 (200,150,100) = obj_pendulum		(counter_clockwise - right position)
 
+(225,225,0)   = obj_guide_arrow		(up)
+(225,225,50)  = obj_guide_arrow		(left)
+(225,225,100) = obj_guide_arrow		(down)
+(225,225,150) = obj_guide_arrow		(right)
+
 (0,200,0)     = obj_savepoint
 (0,200,200)   = obj_telepoint
 
 (250,0,0)     = obj_enemy0
 (250,0,100)   = obj_enemy1
-
-lime is player movement
-pink is player jump
-cyan is player dash
-orange is axe throw

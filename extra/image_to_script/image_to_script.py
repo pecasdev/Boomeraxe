@@ -12,7 +12,11 @@ def read_pixel(x,y,pixel):
     
     if pixel==(000,000,000):    obj='obj_wall'
     if pixel==(000,000,200):    obj='obj_wall_crumble'
-    
+
+    if pixel[0]==225 and pixel[1]==225:
+        obj='obj_guide_arrow'
+        variant=pixel[2]/50
+        
     if pixel[0]==100 and pixel[1]==000:    
         obj='obj_spike'
         variant=pixel[2]/10 
@@ -35,7 +39,7 @@ def read_pixel(x,y,pixel):
             obj='obj_enemy1'
 
     if obj!='empty':
-        if obj=='obj_spike' or obj=='obj_spike_retract' or obj=='obj_pendulum':
+        if obj=='obj_spike' or obj=='obj_spike_retract' or obj=='obj_pendulum' or obj=='obj_guide_arrow':
             script[x+y*img.size[0]]='block=instance_create({},{},{})'.format(x*20,y*20,obj).ljust(40)+'; block.variant={}'.format(variant)
         else:
             script[x+y*img.size[0]]='block=instance_create({},{},{})'.format(x*20,y*20,obj)
