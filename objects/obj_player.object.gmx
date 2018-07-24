@@ -656,10 +656,10 @@ move_snap(1,1)
 
 if flash&gt;0
 {
-    shader_set(flash_white)  
-    shader_set_uniform_f(shader_get_uniform(flash_white,'alpha'),flash)      
-    draw_self()    
-    shader_reset()
+    draw_self()
+    d3d_set_fog(true, c_white, 0, 0)
+    draw_sprite_ext(sprite_index, image_index, x, y,image_xscale,image_yscale,image_angle,image_blend,flash)
+    d3d_set_fog(false, c_black, 0, 0)    
     
     flash-=0.125
 }

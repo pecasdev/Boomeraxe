@@ -195,17 +195,20 @@ if global.switch_tracks
     }        
 }
 
-
-
-if global.current_track!=undefined and audio_is_playing(global.current_track)
+if global.volume_mute
 {
-    audio_sound_gain(global.current_track,global.track_fade_volume,0)
+    audio_sound_gain(snd_main,0,0)
+    audio_sound_gain(snd_title,0,0)
+    audio_sound_gain(snd_profiles,0,0)
+    audio_sound_gain(snd_run_complete,0,0)
 }
-
-audio_sound_gain(snd_main,global.track_fade_volume*global.volume_music/10/2,0)
-audio_sound_gain(snd_title,global.track_fade_volume*global.volume_music/10/2,0)
-audio_sound_gain(snd_profiles,global.track_fade_volume*global.volume_music/10/2,0)
-audio_sound_gain(snd_run_complete,global.track_fade_volume*global.volume_music/10/2,0)
+else
+{
+    audio_sound_gain(snd_main,global.track_fade_volume*global.volume_music/10/3,0)
+    audio_sound_gain(snd_title,global.track_fade_volume*global.volume_music/10/3,0)
+    audio_sound_gain(snd_profiles,global.track_fade_volume*global.volume_music/10/3,0)
+    audio_sound_gain(snd_run_complete,global.track_fade_volume*global.volume_music/10/3,0)
+}
 </string>
           </argument>
         </arguments>
@@ -432,7 +435,7 @@ if room=rm_main
 
     room_width=4000
     room_height=2000    
-    
+
     read_data()
     create_level()
     create_spike_and_enemy()
@@ -1924,7 +1927,8 @@ if room=rm_main
                                         y_view_cur=0
                                         y_view_tar=0
                                         search_toggle=false
-                                        play_snd(snd_menu_select)
+                                        none=false
+                                        play_snd(snd_menu_select)                                        
                                         break
                                     }    
                                                             
@@ -1956,6 +1960,7 @@ if room=rm_main
                         skip_navigate_sound=true
                         y_view_cur=0
                         y_view_tar=0
+                        play_snd(snd_menu_select)
                     }
                 }
                 
@@ -2311,6 +2316,7 @@ if room=rm_main
                     if global.selected_profile=global.profiles[#0,user]
                     {
                         global.selected_profile='anonymous'
+                        play_snd(snd_menu_exit)
                     }
                     else
                     {
@@ -2335,6 +2341,7 @@ if room=rm_main
                 {
                     entry_select=select
                     prev_select=select
+                    play_snd(snd_menu_select)
                 }
             }
             
@@ -2353,6 +2360,7 @@ if room=rm_main
                 else
                 {
                     entry_select=undefined
+                    play_snd(snd_menu_exit)
                 }
             }                    
         }break

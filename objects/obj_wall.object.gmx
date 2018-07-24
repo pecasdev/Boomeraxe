@@ -28,14 +28,6 @@
             <string>/// Initialize
 
 image_index=0
-
-/*
-if chance(10)
-{
-    image_index=random_range(1,image_number-1)
-}
-*/
-
 image_speed=0
 </string>
           </argument>

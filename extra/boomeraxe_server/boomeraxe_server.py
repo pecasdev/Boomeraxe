@@ -22,11 +22,9 @@ while True:
         if int(data[2])!=int(float(ini_read('meta','version'))):
             with open('boomeraxe.ini','r') as f:
                 lines=f.readlines()
-
-                z=0
                 
                 while lines:
-                    time.sleep(1) #remove this
+                    time.sleep(0.02) # Not too fast or gamemaker will miss some
                     payload=[]
                     for i in range(200):
                         try:
@@ -35,8 +33,6 @@ while True:
                             
                         except:
                             break
-                    print "sent package #",z
-                    z+=1
                         
                     client_send(['pull']+payload,client)
                     

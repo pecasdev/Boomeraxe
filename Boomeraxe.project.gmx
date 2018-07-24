@@ -161,9 +161,6 @@
       <script>scripts\adjust_volumes.gml</script>
     </scripts>
   </scripts>
-  <shaders name="shaders">
-    <shader type="GLSLES">shaders\flash_white.shader</shader>
-  </shaders>
   <fonts name="fonts">
     <font>fonts\fnt_debug</font>
     <font>fonts\fnt_savepoint</font>

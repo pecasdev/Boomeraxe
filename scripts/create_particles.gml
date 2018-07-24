@@ -12,7 +12,7 @@ if type=='dash'
     repeat(3)
     {
         p=instance_create(x_spawn,y_spawn,obj_particle)
-        pdirection=random(360)
+        p.direction=random(360)
         p.speed=random_range(0,1)
         p.gravity=0.05
         p.colour=c_aqua

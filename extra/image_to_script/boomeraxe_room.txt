@@ -4166,7 +4166,7 @@ block=instance_create(3140,400,obj_spike); block.variant=6
 //(3300,400,empty)
 //(3320,400,empty)
 //(3340,400,empty)
-block=instance_create(3360,400,obj_spike); block.variant=5
+block=instance_create(3360,400,obj_spike); block.variant=4
 block=instance_create(3380,400,obj_spike); block.variant=0
 block=instance_create(3400,400,obj_spike); block.variant=0
 block=instance_create(3420,400,obj_spike); block.variant=0
