@@ -361,6 +361,11 @@ if async_load[? 'type']=network_type_data
             name_taken=true
         }
     }
+    
+    if packet_id='in_queue'
+    {
+        global.queue_position=buffer_read(buffer,buffer_string)
+    }
 }
 </string>
           </argument>
@@ -476,7 +481,6 @@ if room=rm_main
     gui_state=s.idle
     network_state=s.idle
     paused=false
-    timeout=0
         
     // Scrolling
     y_view_cur=0
@@ -492,6 +496,9 @@ if room=rm_main
     logged_in_prompt=0    
     overlay_init_lock=false
     credit_scroll=0
+    cache_failed=0
+    
+    reset_timer=0
        
     global.kill_count=0
     global.death_count=0
@@ -586,6 +593,7 @@ global.private_udp_ip='192.168.0.200'
 global.ip=global.public_udp_ip//global.ip=global.private_udp_ip
 global.udp_port=9000 
 global.server_connection=undefined
+global.queue_position=undefined
 global.ping_retry=0
 global.fail_timer=0
 global.fail_retries=2
@@ -744,6 +752,7 @@ if room=rm_title
                 if select=2
                 {
                     gui_state=s.tutorial
+                    select=0
                     play_snd(snd_menu_select)
                 }
                 
@@ -785,374 +794,402 @@ if room=rm_title
             draw_config(fnt_profile_create_big,c_white,fa_middle,fa_middle)
             draw_text(300,40,"Profile Create")
             
-            // Username Box
-            draw_area(300-150,135-26,300+150,135+26,4210752,merge_colour(c_white,c_red,clamp(name_left_blank,0,120)/120),2)          // Graphite
-            draw_config(fnt_profile_create_small,9868950,fa_middle,fa_middle)   // Pastel
-            draw_text(300,135,create_name)    
-            
-            draw_config(fnt_profile_create_small,c_create_name,fa_middle,fa_middle)
-                               
-            if name_invalid
+            if global.server_connection=false      
             {
-                draw_text(300,190,"name contains illegal characters")
-            }
-            else if name_oversized
-            {
-                draw_text(300,190,"Name must be 10#characters or less")
-            }
-            else if name_taken
-            {
-                draw_text(300,190,"Name is unavailable")
-            }
-            else if name_taken=undefined
-            {
-                draw_set_colour(c_white)
-                draw_text(300,190,"Checking name...")
-            }
-            else if name_taken='pass'
-            {
-                draw_set_colour(c_lime)
-                draw_text(300,190,'Name Available!')
+                draw_config(fnt_profile_create,c_red,fa_middle,fa_middle)
+                draw_text(300,260,"Profiles cannot be created#in offline mode")
+                
+                draw_config(fnt_profile_create_small,c_red,fa_middle,fa_middle)
+                draw_text(300,370,"press 'r' outside of profile create#to attempt reconnection")  
             }
             else
-            {
-                draw_text(300,177,"Choose a Username")
-            }
-            
-            // Password Box
-            draw_area(300-150,270-26,300+150,270+26,4210752,merge_colour(c_white,c_red,clamp(pass0_left_blank/120,0,120)),2)          // Graphite
-            draw_config(fnt_profile_create,9868950,fa_middle,fa_middle)   // Pastel
-            draw_text_transformed(300,260,string_repeat('.',string_length(create_pass0)),1.25,1.5,0)
-            
-            draw_config(fnt_profile_create_small,c_white,fa_middle,fa_middle)
-            draw_text(300,307,"Enter a Password")
-            
-            // Confirm Password Box
-            draw_area(300-150,362-26,300+150,362+26,4210752,merge_colour(c_white,c_red,clamp(pass1_left_blank/120,0,120)),2)          // Graphite
-            draw_config(fnt_profile_create,9868950,fa_middle,fa_middle)   // Pastel
-            draw_text_transformed(300,352,string_repeat('.',string_length(create_pass1)),1.25,1.5,0)
-            
-            draw_config(fnt_profile_create_small,c_create_pass,fa_middle,fa_middle) 
-                       
-            if pass_oversized
-            {
-                draw_text(300,414,"password must be 20#characters or less")
-            }
-            else if pass_mismatch
-            {
-                draw_text(300,402,"passwords do not match")
-            }
-            else
-            {
-                draw_text(300,402,"Confirm Password")
-            }
-            
-            // Error Checking
-            if string_length(create_name)&gt;10
-            {
-                name_oversized=true
-                name_error=120
-            }
-            else
-            {
-                name_oversized=false
-            }
-
-            if string_length(create_pass0)&gt;20
-            {
-                pass_oversized=true
-                pass_error=120
-            }
-            else
-            {
-                pass_oversized=false
-            }
-            
-            if name_taken
-            {
-                name_error=120
-            }
-                        
-            if string_count('#',create_name)&gt;0 or string_count('%',create_name)&gt;0 or string_count('[',create_name)&gt;0 or string_count(']',create_name)&gt;0 or !ascii_only(create_name)
-            {
-                name_error=120
-                name_invalid=true
-            }
-            else
-            {
-                name_invalid=false
-            }
-                        
-            if create_pass0 != create_pass1
-            {
-                pass_mismatch=true
-                pass_error=120
-            }
-            else
-            {
-                pass_mismatch=false
-            }
-                        
-            // Fade out
-            if name_left_blank&gt;0
-            {
-                name_left_blank-=5
-            }
-            
-            if pass0_left_blank&gt;0
-            {
-                pass0_left_blank-=5
-            }
-            
-            if pass1_left_blank&gt;0
-            {
-                pass1_left_blank-=5
-            }
-            
-            // Keybindings Button
-            draw_area(300-105,478-25,300+105,478+25,4210752,c_white,2)          // Graphite
-            
-            draw_config(fnt_profile_create_small,c_white,fa_middle,fa_middle)
-            draw_text(300,478,"Change Bindings")
-
-            // Create/Cancel Buttons
-            draw_area(210-70,552-26,210+70,552+26,4210752,c_white,2)            // Graphite
-            draw_area(390-70,552-26,390+70,552+26,4210752,c_white,2)            // Graphite
-            
-            draw_config(fnt_profile_create_small,c_white,fa_middle,fa_middle)
-            draw_text(210,552,"Create")
-            draw_text(390,552,"Cancel")  
-                                    
-            select+=(keyboard_check_pressed(global.k[? 'right']) or keyboard_check_pressed(vk_tab))-keyboard_check_pressed(global.k[? 'left'])
-            select=clamp(select,0,5)
-
-            if prev_select!=select
-            {
-                keyboard_string='placehold'    // must be a string that noone will likely use, hopefully noone wants this as their username
-                prev_select=select
-            }
-                                                        
-            if cursor_blink=0.2
-            {
-                up=true
-                down=false
-            }
-            
-            if cursor_blink=0.8
-            {
-                up=false
-                down=true
-            }
-            
-            cursor_blink+=(up-down)*0.03
-            
-            if keyboard_key!=0
-            {
-                if ascii_only(string(keyboard_key)) and select=0
+            {   
+                // Username Box
+                draw_area(300-150,135-26,300+150,135+26,4210752,merge_colour(c_white,c_red,clamp(name_left_blank,0,120)/120),2)          // Graphite
+                draw_config(fnt_profile_create_small,9868950,fa_middle,fa_middle)   // Pastel
+                draw_text(300,135,create_name)    
+                
+                draw_config(fnt_profile_create_small,c_create_name,fa_middle,fa_middle)
+                                   
+                if name_invalid
                 {
-                    check_name_timer=25
+                    draw_text(300,190,"name contains illegal characters")
                 }
-            }
-            
-            if check_name_timer&gt;0
-            {
-                check_name_timer-=1
+                else if name_oversized
+                {
+                    draw_text(300,190,"Name must be 10#characters or less")
+                }
+                else if name_taken
+                {
+                    draw_text(300,190,"Name is unavailable")
+                }
+                else if name_taken=undefined
+                {
+                    draw_set_colour(c_white)
+                    draw_text(300,190,"Checking name...")
+                }
+                else if name_taken='pass'
+                {
+                    draw_set_colour(c_lime)
+                    draw_text(300,190,'Name Available!')
+                }
+                else
+                {
+                    draw_text(300,177,"Choose a Username")
+                }
+                
+                // Password Box
+                draw_area(300-150,270-26,300+150,270+26,4210752,merge_colour(c_white,c_red,clamp(pass0_left_blank/120,0,120)),2)          // Graphite
+                draw_config(fnt_profile_create,9868950,fa_middle,fa_middle)   // Pastel
+                draw_text_transformed(300,260,string_repeat('.',string_length(create_pass0)),1.25,1.5,0)
+                
+                draw_config(fnt_profile_create_small,c_white,fa_middle,fa_middle)
+                draw_text(300,307,"Enter a Password")
+                
+                // Confirm Password Box
+                draw_area(300-150,362-26,300+150,362+26,4210752,merge_colour(c_white,c_red,clamp(pass1_left_blank/120,0,120)),2)          // Graphite
+                draw_config(fnt_profile_create,9868950,fa_middle,fa_middle)   // Pastel
+                draw_text_transformed(300,352,string_repeat('.',string_length(create_pass1)),1.25,1.5,0)
+                
+                draw_config(fnt_profile_create_small,c_create_pass,fa_middle,fa_middle) 
+                           
+                if pass_oversized
+                {
+                    draw_text(300,414,"password must be 20#characters or less")
+                }
+                else if pass_mismatch
+                {
+                    draw_text(300,402,"passwords do not match")
+                }
+                else
+                {
+                    draw_text(300,402,"Confirm Password")
+                }
+                
+                // Error Checking
+                if string_length(create_name)&gt;10
+                {
+                    name_oversized=true
+                    name_error=120
+                }
+                else
+                {
+                    name_oversized=false
+                }
+    
+                if string_length(create_pass0)&gt;20
+                {
+                    pass_oversized=true
+                    pass_error=120
+                }
+                else
+                {
+                    pass_oversized=false
+                }
+                
+                if name_taken
+                {
+                    name_error=120
+                }
+                            
+                if string_count('#',create_name)&gt;0 or string_count('%',create_name)&gt;0 or string_count('[',create_name)&gt;0 or string_count(']',create_name)&gt;0 or !ascii_only(create_name)
+                {
+                    name_error=120
+                    name_invalid=true
+                }
+                else
+                {
+                    name_invalid=false
+                }
+                            
+                if create_pass0 != create_pass1
+                {
+                    pass_mismatch=true
+                    pass_error=120
+                }
+                else
+                {
+                    pass_mismatch=false
+                }
+                            
+                // Fade out
+                if name_left_blank&gt;0
+                {
+                    name_left_blank-=5
+                }
+                
+                if pass0_left_blank&gt;0
+                {
+                    pass0_left_blank-=5
+                }
+                
+                if pass1_left_blank&gt;0
+                {
+                    pass1_left_blank-=5
+                }
+                
+                // Keybindings Button
+                draw_area(300-105,478-25,300+105,478+25,4210752,c_white,2)          // Graphite
+                
+                draw_config(fnt_profile_create_small,c_white,fa_middle,fa_middle)
+                draw_text(300,478,"Change Bindings")
+    
+                // Create/Cancel Buttons
+                draw_area(210-70,552-26,210+70,552+26,4210752,c_white,2)            // Graphite
+                draw_area(390-70,552-26,390+70,552+26,4210752,c_white,2)            // Graphite
+                
+                draw_config(fnt_profile_create_small,c_white,fa_middle,fa_middle)
+                draw_text(210,552,"Create")
+                draw_text(390,552,"Cancel")  
+                                        
+                select+=(keyboard_check_pressed(global.k[? 'right']) or keyboard_check_pressed(vk_tab))-keyboard_check_pressed(global.k[? 'left'])
+                select=clamp(select,0,5)
+    
+                if prev_select!=select
+                {
+                    keyboard_string='placehold'    // must be a string that noone will likely use, hopefully noone wants this as their username
+                    prev_select=select
+                }
+                                                            
+                if cursor_blink=0.2
+                {
+                    up=true
+                    down=false
+                }
+                
+                if cursor_blink=0.8
+                {
+                    up=false
+                    down=true
+                }
+                
+                cursor_blink+=(up-down)*0.03
+                
+                if keyboard_key!=0
+                {
+                    if ascii_only(string(keyboard_key)) and select=0
+                    {
+                        check_name_timer=25
+                    }
+                }
+                
+                if check_name_timer&gt;0
+                {
+                    check_name_timer-=1
+                    if select=0
+                    {
+                       name_taken=undefined
+                    }
+                }
+                
+                if create_name!='' and !name_oversized and !name_invalid and check_name_timer=0
+                {
+                    if global.local_save_mode=false
+                    {
+                        send_payload('create_name_check',string_lower(create_name))
+                    }
+                    else
+                    {
+                        name_taken=check_username_availability(string_lower(create_name))
+                    }
+                    check_name_timer=-1
+                }
+                else if create_name=''
+                {
+                    name_taken=false
+                }
+                
                 if select=0
                 {
-                   name_taken=undefined
-                }
-            }
-            
-            if create_name!='' and !name_oversized and !name_invalid and check_name_timer=0
-            {
-                if global.local_save_mode=false
-                {
-                    send_payload('create_name_check',string_lower(create_name))
-                }
-                else
-                {
-                    name_taken=check_username_availability(string_lower(create_name))
-                }
-                check_name_timer=-1
-            }
-            else if create_name=''
-            {
-                name_taken=false
-            }
-            
-            if select=0
-            {
-                draw_select(300,135,300,52,3)
-                if create_name=''
-                {                    
-                    draw_cursor(300,135,4,28,cursor_blink,c_white)
-                }
-                                
-                if keyboard_string='placehold'  
-                {
-                    keyboard_string=create_name
-                }
-                else
-                {
-                    create_name=keyboard_string
+                    draw_select(300,135,300,52,3)
+                    if create_name=''
+                    {                    
+                        draw_cursor(300,135,4,28,cursor_blink,c_white)
+                    }
+                                    
+                    if keyboard_string='placehold'  
+                    {
+                        keyboard_string=create_name
+                    }
+                    else
+                    {
+                        create_name=keyboard_string
+                    }
+                    
+                    name_left_blank=0          
                 }
                 
-                name_left_blank=0          
-            }
-            
-            if select=1
-            {
-                draw_select(300,270,300,52,3)
-                if create_pass0=''
+                if select=1
                 {
-                    draw_cursor(300,270,4,28,cursor_blink,c_white)
+                    draw_select(300,270,300,52,3)
+                    if create_pass0=''
+                    {
+                        draw_cursor(300,270,4,28,cursor_blink,c_white)
+                    }
+                    
+                    if keyboard_string='placehold'
+                    {
+                        keyboard_string=create_pass0
+                    }
+                    else
+                    {
+                        create_pass0=keyboard_string
+                    }
+                    
+                    pass0_left_blank=0
                 }
                 
-                if keyboard_string='placehold'
+                if select=2
                 {
-                    keyboard_string=create_pass0
-                }
-                else
-                {
-                    create_pass0=keyboard_string
-                }
-                
-                pass0_left_blank=0
-            }
-            
-            if select=2
-            {
-                draw_select(300,362,300,52,3)
-                if create_pass1=''
-                {
-                    draw_cursor(300,362,4,28,cursor_blink,c_white)
-                }
-
-                if keyboard_string='placehold'
-                {
-                    keyboard_string=create_pass1
-                }
-                else
-                {
-                    create_pass1=keyboard_string
+                    draw_select(300,362,300,52,3)
+                    if create_pass1=''
+                    {
+                        draw_cursor(300,362,4,28,cursor_blink,c_white)
+                    }
+    
+                    if keyboard_string='placehold'
+                    {
+                        keyboard_string=create_pass1
+                    }
+                    else
+                    {
+                        create_pass1=keyboard_string
+                    }
+                    
+                    pass1_left_blank=0         
                 }
                 
-                pass1_left_blank=0         
-            }
-            
-            if select=3
-            {
-                draw_select(300,478,210,50,3)
-            }
-            
-            if select=4
-            {
-                draw_select(210,552,140,52,3)
-            }
-            
-            if select=5
-            {
-                draw_select(390,552,140,52,3)
-            }  
-            
-            if keyboard_check_pressed(vk_enter) or keyboard_check_pressed(global.k[? 'jump'])
-            {
                 if select=3
                 {
-                    // keybindings
+                    draw_select(300,478,210,50,3)
                 }
                 
                 if select=4
                 {
-                    if create_name='' or create_pass0='' or create_pass1=''
-                    {
-                        // Error checking for entries left blank
-                        if create_name='' and select!=0
-                        {
-                            name_left_blank=120
-                        }
-                        
-                        if create_pass0='' and select!=1
-                        {
-                            pass0_left_blank=120
-                        }
-                        
-                        if create_pass1='' and select!=2
-                        {
-                            pass1_left_blank=120
-                        }
-                        play_snd(snd_menu_error)
-                    }
-                    else
-                    {
-                        if name_taken='pass' and name_invalid=false and name_oversized=false and pass_mismatch=false and pass_oversized=false
-                        {
-                            if global.local_save_mode=false
-                            {
-                                send_payload('create',string_lower(create_name),create_pass0,global.k[? 'up'],global.k[? 'down'],global.k[? 'left'],global.k[? 'right'],global.k[? 'jump'],global.k[? 'throw'],global.k[? 'dash'])
-                                profile_create_notify('checking')
-                            }
-                            else
-                            {
-                                ini_open('boomeraxe.ini')
-                                
-                                profile_count=ini_read_real('meta','profile_count',0)
-                                
-                                ini_write_real('meta','profile_count',profile_count+1)
-                                ini_write_string('meta',string(profile_count),string_lower(create_name))
-                                ini_write_string(string_lower(create_name),'pass',create_pass0)
-                                ini_write_real(string_lower(create_name),'best_time',0)
-                                ini_write_real(string_lower(create_name),'best_date',0)
-                                ini_write_real(string_lower(create_name),'run_count',0)
-                                ini_write_real(string_lower(create_name),'up',global.k[? 'up'])
-                                ini_write_real(string_lower(create_name),'down',global.k[? 'down'])
-                                ini_write_real(string_lower(create_name),'left',global.k[? 'left'])
-                                ini_write_real(string_lower(create_name),'right',global.k[? 'right'])
-                                ini_write_real(string_lower(create_name),'jump',global.k[? 'jump'])
-                                ini_write_real(string_lower(create_name),'throw',global.k[? 'throw'])
-                                ini_write_real(string_lower(create_name),'dash',global.k[? 'dash'])
-                                
-                                ini_close()
-                                
-                                
-                                ini_open(string_lower(create_name)+'.boomeraxe')
-                                
-                                ini_write_string('save','pass',create_pass0)
-                                ini_write_real('save','up',global.k[? 'up'])
-                                ini_write_real('save','down',global.k[? 'down'])
-                                ini_write_real('save','left',global.k[? 'left'])
-                                ini_write_real('save','right',global.k[? 'right'])
-                                ini_write_real('save','jump',global.k[? 'jump'])
-                                ini_write_real('save','throw',global.k[? 'throw'])
-                                ini_write_real('save','dash',global.k[? 'dash'])
-                                
-                                ini_close()
-                                
-                                profile_create_notify('pass')
-                                show_debug_message('CREATED')
-                            } 
-                        }
-                    }
+                    draw_select(210,552,140,52,3)
                 }
                 
                 if select=5
                 {
-                    gui_state=s.title
-                    play_snd(snd_menu_exit)
-                }
+                    draw_select(390,552,140,52,3)
+                }  
+                
+                if keyboard_check_pressed(vk_enter) or keyboard_check_pressed(global.k[? 'jump'])
+                {
+                    if select=3
+                    {
+                        // keybindings
+                    }
+                    
+                    if select=4
+                    {
+                        if create_name='' or create_pass0='' or create_pass1=''
+                        {
+                            // Error checking for entries left blank
+                            if create_name='' and select!=0
+                            {
+                                name_left_blank=120
+                            }
+                            
+                            if create_pass0='' and select!=1
+                            {
+                                pass0_left_blank=120
+                            }
+                            
+                            if create_pass1='' and select!=2
+                            {
+                                pass1_left_blank=120
+                            }
+                            play_snd(snd_menu_error)
+                        }
+                        else
+                        {
+                            if name_taken='pass' and name_invalid=false and name_oversized=false and pass_mismatch=false and pass_oversized=false
+                            {
+                                if global.local_save_mode=false
+                                {
+                                    send_payload('create',string_lower(create_name),create_pass0,global.k[? 'up'],global.k[? 'down'],global.k[? 'left'],global.k[? 'right'],global.k[? 'jump'],global.k[? 'throw'],global.k[? 'dash'])
+                                    profile_create_notify('checking')
+                                }
+                                else
+                                {
+                                    ini_open('boomeraxe.ini')
+                                    
+                                    profile_count=ini_read_real('meta','profile_count',0)
+                                    
+                                    ini_write_real('meta','profile_count',profile_count+1)
+                                    ini_write_string('meta',string(profile_count),string_lower(create_name))
+                                    ini_write_string(string_lower(create_name),'pass',create_pass0)
+                                    ini_write_real(string_lower(create_name),'best_time',0)
+                                    ini_write_real(string_lower(create_name),'best_date',0)
+                                    ini_write_real(string_lower(create_name),'run_count',0)
+                                    ini_write_real(string_lower(create_name),'up',global.k[? 'up'])
+                                    ini_write_real(string_lower(create_name),'down',global.k[? 'down'])
+                                    ini_write_real(string_lower(create_name),'left',global.k[? 'left'])
+                                    ini_write_real(string_lower(create_name),'right',global.k[? 'right'])
+                                    ini_write_real(string_lower(create_name),'jump',global.k[? 'jump'])
+                                    ini_write_real(string_lower(create_name),'throw',global.k[? 'throw'])
+                                    ini_write_real(string_lower(create_name),'dash',global.k[? 'dash'])
+                                    
+                                    ini_close()
+                                    
+                                    
+                                    ini_open(string_lower(create_name)+'.boomeraxe')
+                                    
+                                    ini_write_string('save','pass',create_pass0)
+                                    ini_write_real('save','up',global.k[? 'up'])
+                                    ini_write_real('save','down',global.k[? 'down'])
+                                    ini_write_real('save','left',global.k[? 'left'])
+                                    ini_write_real('save','right',global.k[? 'right'])
+                                    ini_write_real('save','jump',global.k[? 'jump'])
+                                    ini_write_real('save','throw',global.k[? 'throw'])
+                                    ini_write_real('save','dash',global.k[? 'dash'])
+                                    
+                                    ini_close()
+                                    
+                                    profile_create_notify('pass')
+                                    show_debug_message('CREATED')
+                                } 
+                            }
+                        }
+                    }
+                    
+                    if select=5
+                    {
+                        gui_state=s.title
+                        play_snd(snd_menu_exit)
+                    }
+                } 
             } 
-            
+               
             if keyboard_check_pressed(vk_escape)
             {
                 gui_state=s.title
                 play_snd(snd_menu_exit)
             } 
-                                          
+                                              
         }break
-        
+            
         case s.tutorial:
         {
-        
+            select+=keyboard_check_pressed(global.k[? 'right'])-keyboard_check_pressed(global.k[? 'left'])
+            select=clamp(select,0,3)
+            
+            draw_set_alpha(0.7)
+            draw_set_colour(c_dkgray)
+            draw_rectangle(0,0,600,600,0)
+            draw_set_alpha(1)
+            
+            draw_sprite(spr_tutorial,select,0,0)
+            
+            if keyboard_check_pressed(vk_escape)
+            {
+                gui_state=s.title
+                play_snd(snd_menu_exit)
+            }
+            
+            draw_config(fnt_tutorial,c_white,fa_middle,fa_bottom)
+            draw_text(300,590,'Arrow keys to navigate, ESC to exit')
         }break
     }   
 }
@@ -1253,6 +1290,7 @@ if room=rm_main
                     select=0
                     skip_navigate_sound=true
                     gui_state=s.profiles
+                    global.profiles=undefined
                     keyboard_string=''
                     leaderboard_state=s.downloading
                     play_snd(snd_menu_select)
@@ -1635,9 +1673,8 @@ if room=rm_main
                 {
                     if global.local_save_mode=true or global.server_connection=false
                     {
-                        download_overlay=80
-                        read_data()
-                        leaderboard_state=s.idle                    
+                        leaderboard_state=s.download_wait
+                        download_overlay=50                   
                     }
                     else
                     {
@@ -1648,24 +1685,23 @@ if room=rm_main
                 
                 case s.download_wait:
                 {
-                    if timeout=0
+                    if keyboard_check_pressed(ord('C'))
                     {
-                        show_message("timed out error")
-                        read_data()
-                        leaderboard_state=s.idle
-                    }
-                    else
-                    {
-                        timeout-=1
-                    }
-                    
+                        if read_data()=false
+                        {
+                            cache_failed=50
+                        }
+                        else
+                        {
+                            leaderboard_state=s.idle
+                        }     
+                    }               
                 }break
                 
                 case s.reading:
                 {
                     read_data()
-                    leaderboard_state=s.idle
-                    
+                    leaderboard_state=s.idle                    
                 }break
             }
             
@@ -2019,25 +2055,28 @@ if room=rm_main
                 {
                     draw_text(300,200,"You are in offline mode#Leaderboard cannot update")
                     draw_config(fnt_profiles,c_black,fa_middle,fa_middle)
-                    draw_text(300,400,"(Press 'R' while outside of profiles#to attempt reconnection)")
+                    draw_text(300,400,"(Press 'R' while outside of profiles#to attempt reconnection)##ESC to exit")
                 }
                 else
                 {
                     draw_text(300,200,'Retrieving leaderboard#from server...#(this might take a while)')
                     
-                    if timeout=0
+                    if global.queue_position!=undefined
                     {
-                        draw_config(fnt_profiles,c_black,fa_middle,fa_middle)
-                        draw_text(300,400,'Could not connect to server#Loading cached leaderboard...')
-                    }                
-                    else if global.profiles!=undefined
-                    {
-                        draw_text(300,400,'Success! Loading leaderboard...')
+                        draw_text(300,375,'Current queue position: '+string(global.queue_position))
                     }
                 }
+                
+                draw_config(fnt_profiles,c_black,fa_middle,fa_middle)
+                draw_text(300,500,"press 'C' to attempt to load cached leaderboard#(Will not be up to date)")
+                
+                if cache_failed&gt;0
+                {
+                    draw_text(300,575,'boomeraxe leaderboard not locally found')
+                }
+
                 download_overlay-=1
             }
-
         }break
         
         case s.profile:
@@ -2470,9 +2509,13 @@ if room=rm_main
             draw_area(0,0,599,599,6581117,c_black,3)    // Kalamata
             
             draw_config(fnt_keybind_big,c_black,fa_middle,fa_middle)
-            draw_text(300,50,'KEYBINDINGS')
+            draw_text(300,30,'KEYBINDINGS')
+            
             draw_config(fnt_keybind,4995380,fa_middle,fa_middle)    // Grayish
-            draw_text(300,90,'ESC to exit')
+            draw_text(300,70,'hold ctrl to reset bindings')
+            
+            draw_config(fnt_keybind,4995380,fa_middle,fa_middle)    // Grayish
+            draw_text(300,100,'ESC to exit')
             
             draw_config(fnt_keybind_big,c_black,fa_middle,fa_middle)
             draw_text(150,163,'up')
@@ -2588,6 +2631,37 @@ if room=rm_main
                 play_snd(snd_menu_select)
             }
                 
+            if keyboard_check(vk_control)
+            {
+                reset_timer+=1
+                if reset_timer=100
+                {
+                    global.k[? 'up']   =vk_up
+                    global.k[? 'down'] =vk_down
+                    global.k[? 'left'] =vk_left
+                    global.k[? 'right']=vk_right
+                    global.k[? 'jump'] =ord('Z')
+                    global.k[? 'throw']=ord('X')
+                    global.k[? 'dash'] =vk_shift
+                    
+                    if global.selected_profile!="anonymous"
+                    {
+                        if global.local_save_mode=false
+                        {                                                    
+                            send_payload("push_bind",global.selected_profile,global.k[? 'up'],global.k[? 'down'],global.k[? 'left'],global.k[? 'right'],global.k[? 'jump'],global.k[? 'throw'],global.k[? 'dash'])
+                        }
+                        else
+                        {
+                            write_local_bindings()
+                        }
+                    }
+                }
+            }
+            else
+            {
+                reset_timer=0
+            }
+
             if keyboard_check_pressed(vk_escape)
             {
                 gui_state=s.options
@@ -2811,7 +2885,7 @@ if room=rm_main
                 
                 // Prompt
                 draw_config(fnt_overlay_big,c_black,fa_middle,fa_middle)
-                draw_text(500,525,'data not found##options-&gt;profiles#to download')
+                draw_text(475,525,'data not found##go to profiles#to download')
             }
         }
     }
@@ -3278,6 +3352,11 @@ if room=rm_main
     if logged_in_prompt&gt;0
     {
         logged_in_prompt-=1
+    }
+    
+    if cache_failed&gt;0
+    {
+        cache_failed-=1
     }
 }
 </string>

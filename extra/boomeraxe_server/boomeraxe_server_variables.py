@@ -14,3 +14,6 @@ s.bind((udp_ip,udp_port))
 
 # OTHER
 leaderboard_version=time.time()
+
+# QUEUE LIST
+server_queue=[]

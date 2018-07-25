@@ -82,8 +82,9 @@
       <sprite>sprites\spr_savepoint_background</sprite>
       <sprite>sprites\spr_credits_bloop</sprite>
       <sprite>sprites\spr_credits_floop</sprite>
+      <sprite>sprites\spr_guide_arrow</sprite>
+      <sprite>sprites\spr_tutorial</sprite>
     </sprites>
-    <sprite>sprites\spr_guide_arrow</sprite>
   </sprites>
   <backgrounds name="background">
     <backgrounds name="bg_forest">
@@ -198,6 +199,7 @@
     <font>fonts\fnt_overlay_small</font>
     <font>fonts\fnt_credits</font>
     <font>fonts\fnt_credits_small</font>
+    <font>fonts\fnt_tutorial</font>
   </fonts>
   <objects name="objects">
     <objects name="visible">
