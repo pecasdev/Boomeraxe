@@ -64,7 +64,6 @@
       </sprites>
       <sprites name="trap">
         <sprite>sprites\spr_spike</sprite>
-        <sprite>sprites\spr_spike_retract</sprite>
         <sprite>sprites\spr_spike_shard</sprite>
         <sprite>sprites\spr_pendulum</sprite>
         <sprite>sprites\spr_pendulum_bob</sprite>

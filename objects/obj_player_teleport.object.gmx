@@ -25,7 +25,8 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>init_lock=false
+            <string>/// Initialize
+init_lock=false
 spawn_lock=false
 
 init_x=x
@@ -33,6 +34,7 @@ init_y=y
 
 alpha=1
 
+forward_state=undefined
 play_snd(snd_player_teleport)
 </string>
           </argument>
@@ -56,7 +58,17 @@ play_snd(snd_player_teleport)
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>if init_lock=false
+            <string>if keyboard_check_pressed(global.k[? 'jump'])
+{
+    forward_state=s.jump
+}
+
+if keyboard_check_pressed(global.k[? 'dash'])
+{
+    forward_state=s.dash
+}
+
+if init_lock=false
 {
     target_x=target.x
     if target.object_index=obj_telepoint
@@ -92,6 +104,14 @@ if x=target_x+10 and y=target_y+5
     if spawn_lock=false
     {
         instance_create(x,y,obj_player)
+        obj_player.image_xscale=prev_image_xscale
+        
+        if forward_state!=undefined
+        {    
+            obj_player.state=forward_state
+            show_debug_message(obj_player.state)
+        }
+        
         spawn_lock=true
     }
     
@@ -134,8 +154,6 @@ else
 draw_set_alpha(alpha)
 draw_line_width(init_x,init_y,target_x+10,target_y+5,8)
 draw_set_alpha(1)
-
-
 </string>
           </argument>
         </arguments>

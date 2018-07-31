@@ -125,7 +125,7 @@ else
     global.server_connection=false
 }
     
-if keyboard_check_pressed(ord('R')) and gui_state!=s.profile_create and gui_state!=s.profiles and gui_state!=s.login
+if keyboard_check_pressed(ord('R')) and room!=rm_end and gui_state!=s.profile_create and gui_state!=s.profiles and gui_state!=s.login
 {
     global.server_connection=undefined
     global.fail_retries=2
@@ -178,6 +178,9 @@ if global.switch_tracks
             }
             else
             {
+                global.track_fade_in=false
+                global.switch_tracks=false
+                global.track_fade_volume=1
                 audio_play_sound(global.current_track,10,0)
             }
         }
@@ -418,6 +421,7 @@ if room=rm_title
     pass_mismatch=false
     name_taken=false
     name_invalid=false
+    prompt_timer=0
     
     name_left_blank=0
     pass0_left_blank=0
@@ -471,7 +475,7 @@ if room=rm_main
     // Create starting objects
     instance_create(100,160,obj_player)
     instance_create(64,64,obj_camera)
-    instance_create(0,0,obj_debug)
+    //instance_create(0,0,obj_debug)
         
     // Time
     global.game_time=0
@@ -512,7 +516,7 @@ if room=rm_main
       
     left_side="Coding###Art####Music###SFX###Debugging&amp;#Testing######Huge Thanks"
 
-    right_side="Pecas###Hazetrance#Pecas###Hazetrance###Pecas###Pecas#Hazetrance#Eric Wang#Arano#Morgoth###GML Discord#You!"
+    right_side="Pecas###Bill Li#Pecas###Bill Li###Pecas###Pecas#Bill Li#Eric Wang#Arano#Morgoth###GML Discord#You!"
     
     change_track(snd_main)
 }
@@ -1078,7 +1082,8 @@ if room=rm_title
                 {
                     if select=3
                     {
-                        // keybindings
+                        gui_state=s.keybind
+                        play_snd(snd_menu_select)
                     }
                     
                     if select=4
@@ -1191,6 +1196,150 @@ if room=rm_title
             draw_config(fnt_tutorial,c_white,fa_middle,fa_bottom)
             draw_text(300,590,'Arrow keys to navigate, ESC to exit')
         }break
+        
+        case s.keybind:
+        {
+            select=clamp(select,0,6)
+            
+            draw_area(0,0,599,599,6581117,c_black,3)    // Kalamata
+            
+            draw_config(fnt_keybind_big,c_black,fa_middle,fa_middle)
+            draw_text(300,30,'KEYBINDINGS')
+            
+            draw_config(fnt_keybind,4995380,fa_middle,fa_middle)    // Grayish
+            draw_text(300,70,'hold ctrl to reset bindings')
+            
+            draw_config(fnt_keybind,4995380,fa_middle,fa_middle)    // Grayish
+            draw_text(300,100,'ESC to exit')
+            
+            draw_config(fnt_keybind_big,c_black,fa_middle,fa_middle)
+            draw_text(150,163,'up')
+            draw_text(150,225,'down')
+            draw_text(150,288,'left')
+            draw_text(150,350,'right')
+            draw_text(150,413,'jump')
+            draw_text(150,475,'throw axe')
+            draw_text(150,538,'dash')
+            
+            draw_config(fnt_keybind,c_black,fa_middle,fa_middle)
+            draw_key(450,163,global.k[? 'up'])
+            draw_key(450,225,global.k[? 'down'])
+            draw_key(450,288,global.k[? 'left'])
+            draw_key(450,350,global.k[? 'right'])
+            draw_key(450,413,global.k[? 'jump'])
+            draw_key(450,475,global.k[? 'throw'])
+            draw_key(450,538,global.k[? 'dash'])
+            
+            if binding_select=undefined
+            {
+                if select=0
+                {
+                    draw_select(450,163,string_width(string_key(global.k[? 'up']))+20,string_height(string_key(global.k[? 'left']))+20,4)
+                }
+            
+                if select=1
+                {
+                    draw_select(450,225,string_width(string_key(global.k[? 'down']))+20,string_height(string_key(global.k[? 'right']))+20,4)
+                }
+    
+                if select=2
+                {
+                    draw_select(450,288,string_width(string_key(global.k[? 'left']))+20,string_height(string_key(global.k[? 'up']))+20,4)
+                }
+            
+                if select=3
+                {
+                    draw_select(450,350,string_width(string_key(global.k[? 'right']))+20,string_height(string_key(global.k[? 'down']))+20,4)
+                }
+    
+                if select=4
+                {
+                    draw_select(450,413,string_width(string_key(global.k[? 'jump']))+20,string_height(string_key(global.k[? 'throw']))+20,4)
+                }
+            
+                if select=5
+                {
+                    draw_select(450,475,string_width(string_key(global.k[? 'throw']))+20,string_height(string_key(global.k[? 'jump']))+20,4)
+                }
+                
+                if select=6
+                {
+                    draw_select(450,538,string_width(string_key(global.k[? 'dash']))+20,string_height(string_key(global.k[? 'dash']))+20,4)
+                }
+            }
+            else
+            {
+                draw_area(330,133+63*binding_select,570,193+63*binding_select,6581117,0,0)    // Kalamata
+                
+                if prompt_timer&gt;0
+                {
+                    prompt_timer-=1
+                }
+                else
+                {
+                    binding_prompt='Press new key'  
+                }
+                              
+                if keyboard_key and keyboard_key!=vk_enter
+                {
+                    if keyboard_key!=vk_escape and keyboard_key!=vk_backspace and !binding_taken()
+                    {
+                        update_bindings()                        
+                        binding_select=undefined
+                    }
+                    else if binding_taken()
+                    {
+                        prompt_timer=50
+                        binding_prompt='Already taken'
+                    }
+                    else
+                    {
+                        prompt_timer=50
+                        binding_prompt='Invalid Key'
+                    }
+                }                              
+            }
+            
+            if binding_select!=undefined
+            {
+                draw_config(fnt_keybind,c_black,fa_middle,fa_middle)
+                draw_text(450,163+63*binding_select,binding_prompt)
+                draw_select(450,163+63*binding_select,string_width(binding_prompt)+20,string_height(binding_prompt)+20,4)
+            }
+            
+            if keyboard_check_pressed(vk_enter)
+            {
+                binding_select=select
+                play_snd(snd_menu_select)
+            }
+                
+            if keyboard_check(vk_control)
+            {
+                reset_timer+=1
+                if reset_timer=100
+                {
+                    global.k[? 'up']   =vk_up
+                    global.k[? 'down'] =vk_down
+                    global.k[? 'left'] =vk_left
+                    global.k[? 'right']=vk_right
+                    global.k[? 'jump'] =ord('Z')
+                    global.k[? 'throw']=ord('X')
+                    global.k[? 'dash'] =vk_shift
+                }
+            }
+            else
+            {
+                reset_timer=0
+            }
+
+            if keyboard_check_pressed(vk_escape)
+            {
+                gui_state=s.profile_create
+                select=3
+                skip_navigate_sound=true
+                play_snd(snd_menu_exit)
+            }                                 
+        }break 
     }   
 }
 
@@ -2076,6 +2225,7 @@ if room=rm_main
                 }
 
                 download_overlay-=1
+                draw_set_alpha(1)
             }
         }break
         

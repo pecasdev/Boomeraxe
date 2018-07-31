@@ -20,7 +20,7 @@ for i in range(input('Number of Users: ')):
     profile_data=[]
     
     for x in range(random.randint(5,50)):
-        runtime=random.randint(21000,60000)
+        runtime=random.randint(2000,20000)
         datetime=random.randint(1000000000,1500000000)
         kills=random.randint(5,50)
         deaths=random.randint(10,150)
@@ -28,7 +28,7 @@ for i in range(input('Number of Users: ')):
         dashes=random.randint(30,300)
         profile_data.append([runtime,datetime,kills,deaths,jumps,dashes])
 
-    best_time=runtime
+    best_time=20000
     best_date=0
     
     for item in profile_data:

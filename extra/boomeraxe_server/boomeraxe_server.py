@@ -18,7 +18,6 @@ def tasks():
             data,client=server_queue.pop(0)
         
             msg_id=data[0]
-            print data
 
             if msg_id=='ping':
                 print log('ping',client[0],data[1])
@@ -50,7 +49,6 @@ def tasks():
                     print log('pull',client[0],'current version',data[1],data[2])
                     
                 client_send(['pull','done',tag],client)
-                print tag
                         
             if msg_id=='push_run':
                 new_run=str(int(float(ini_read(data[1],'run_count'))))
@@ -109,7 +107,7 @@ def tasks():
             if msg_id=='login':
                 name=data[1]
                 
-                if hashlib.sha256(data[2]).hexdigest()==ini_read(name,'pass'):
+                if hashlib.sha256(hashlib.sha256(data[2]).hexdigest()).hexdigest()==ini_read(name,'pass'):
                     print log('login_pass',client[0],name,data[2])
                     client_send(['login','pass',name],client)
 
@@ -121,7 +119,7 @@ def tasks():
                 if not config.has_section(data[1]):
                     config.add_section(data[1])
                     
-                    ini_write(data[1],'pass',hashlib.sha256(data[2]).hexdigest(),True)
+                    ini_write(data[1],'pass',hashlib.sha256(hashlib.sha256(data[2]).hexdigest()).hexdigest(),True)
                     ini_write(data[1],'best_time','0',False)
                     ini_write(data[1],'best_date','0',False)
                     ini_write(data[1],'run_count','0',False)

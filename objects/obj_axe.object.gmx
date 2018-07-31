@@ -219,9 +219,10 @@ if sp!=noone and sp.state=s.close
     {
         with(obj_player)
         {
-            instance_destroy()
             teleport=instance_create(x,y,obj_player_teleport)
             teleport.target=other.sp
+            teleport.prev_image_xscale=obj_player.image_xscale            
+            instance_destroy()
             
             play_snd(snd_savepoint_get)            
         } 
@@ -245,9 +246,11 @@ if tp!=noone
         {
             with(obj_player)
             {
-                instance_destroy()
                 teleport=instance_create(x,y,obj_player_teleport)
-                teleport.target=other.tp   
+                teleport.target=other.tp 
+                teleport.prev_image_xscale=obj_player.image_xscale
+                
+                instance_destroy()  
             }        
         }
     }

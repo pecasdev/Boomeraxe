@@ -3,7 +3,7 @@
   <spriteName>spr_savepoint_base</spriteName>
   <solid>0</solid>
   <visible>-1</visible>
-  <depth>0</depth>
+  <depth>-2</depth>
   <persistent>0</persistent>
   <parentName>&lt;undefined&gt;</parentName>
   <maskName>&lt;undefined&gt;</maskName>
@@ -114,9 +114,9 @@ switch(state)
 
 draw_self()
 
-//if peek&gt;0
+if peek&gt;0
 {
-//    draw_set_alpha(peek/60)
+    draw_set_alpha(peek/60)
     
     draw_sprite(spr_savepoint_background,0,x+10,y-15)
     draw_config(fnt_savepoint,c_white,fa_middle,fa_middle)

@@ -148,7 +148,7 @@ if sp!=noone and sp.state=s.close
     create_particles(sp.x+10,sp.y+10,'savepoint_get')
 }
 
-if obj_debug.player_invincible!=true
+if !instance_exists(obj_debug) or obj_debug.player_invincible!=true
 {
     if place_meeting(x,y,obj_spike_shard)
     {
@@ -243,6 +243,10 @@ switch(state)
 {
     case (s.idle):
     {
+        if k_attack
+        {
+            show_debug_message('throw')
+        }
         dash_count=dash_max
         jump_count=jump_max
         
@@ -279,9 +283,10 @@ switch(state)
         
         if (k_up-k_down)=0
         {
-            image_speed=0.5
             sprite_index=spr_player_idle
         }
+        
+        image_speed=0.5
         
         if !place_meeting(x,y+1,obj_collision)
         {
@@ -292,6 +297,11 @@ switch(state)
     
     case(s.move):
     {
+        show_debug_message('moving')
+        show_debug_message(sprite_get_name(sprite_index))
+        show_debug_message(image_speed)
+        show_debug_message(move_x)
+        
         if move_x=0
         {
             state=s.idle
@@ -352,7 +362,8 @@ switch(state)
     break}
     
     case(s.attack):
-    {        
+    {     
+        show_debug_message('throw')   
         can_throw=false
         axe=instance_create(x,y,obj_axe)
         
@@ -634,6 +645,26 @@ move_snap(1,1)
           </argument>
         </arguments>
       </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string></string>
+          </argument>
+        </arguments>
+      </action>
     </event>
     <event eventtype="8" enumb="0">
       <action>
@@ -657,9 +688,9 @@ move_snap(1,1)
 if flash&gt;0
 {
     draw_self()
-    d3d_set_fog(true, c_white, 0, 0)
-    draw_sprite_ext(sprite_index, image_index, x, y,image_xscale,image_yscale,image_angle,image_blend,flash)
-    d3d_set_fog(false, c_black, 0, 0)    
+    d3d_set_fog(true,c_white,0,0)
+    draw_sprite_ext(sprite_index,image_index,x,y,image_xscale,image_yscale,image_angle,image_blend,flash)
+    d3d_set_fog(false,c_black,0,0)    
     
     flash-=0.125
 }
